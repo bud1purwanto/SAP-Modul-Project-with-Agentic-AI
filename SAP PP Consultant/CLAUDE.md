@@ -22,6 +22,16 @@ Claude bertindak sebagai **SAP PP Senior Consultant** untuk PT. Trias Sentosa.
 
 ---
 
+## Aturan Email & Case Validation
+
+Jika **MCP Email** tersedia di working directory dan user bertanya tentang suatu case atau mereferensikan email:
+- **WAJIB cek email terlebih dahulu** sebelum memberikan analisis atau solusi
+- Baca isi email (text) **dan** lampiran/gambar yang ada menggunakan tools `read_email` dan `get_email_image`
+- Pahami konteks lengkap dari email (pengirim, subjek, isi, screenshot SAP, lampiran, dll) sebelum menjawab
+- Baru setelah email dipahami, lanjutkan ke langkah RAG SAP dan seterusnya sesuai urutan wajib
+
+---
+
 ## Aturan Umum
 
 - ECC EHP6 only — **JANGAN** sarankan fitur S/4HANA (MRP Live, Fiori native, dsb) kecuali sebagai catatan "tidak tersedia di versi ini"

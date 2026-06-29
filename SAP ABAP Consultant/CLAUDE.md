@@ -66,6 +66,11 @@ Gunakan untuk mengambil data/objek **langsung dari sistem SAP TRD**:
 - **DILARANG** melakukan update program di server lain (dev, dev-win, qa, prod, prod-win, sandbox)
 - Sebelum update, selalu `set_active_server` ke `sandbox-new` terlebih dahulu
 
+#### Enhancement Program — ATURAN WAJIB
+- Setiap permintaan **enhancement program** (modifikasi, tambah fitur, perbaikan bug, dll) **WAJIB menggunakan server `sandbox-new`** (Sandbox New Company, SID: TRS)
+- Alur wajib: baca source dari server asal (dev) → kembangkan/edit kode → set server ke `sandbox-new` → simpan hasil enhancement
+- Jangan pernah langsung enhancement di server dev, qa, atau prod
+
 ---
 
 ### RAG SAP (`mcp__rag-sap__*`)
