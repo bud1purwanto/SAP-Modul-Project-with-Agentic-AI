@@ -36,7 +36,8 @@ Jika **MCP Email** tersedia di working directory dan user bertanya tentang suatu
 - **WAJIB cek email terlebih dahulu** sebelum memberikan analisis atau solusi
 - Baca isi email (text) **dan** lampiran/gambar yang ada menggunakan tools `read_email` dan `get_email_image`
 - Pahami konteks lengkap dari email (pengirim, subjek, isi, screenshot SAP, lampiran, dll) sebelum menjawab
-- Baru setelah email dipahami, lanjutkan ke langkah RAG SAP dan seterusnya sesuai urutan wajib
+- Setelah email dipahami, **jelaskan dulu isi email ke user** (pengirim, subjek, konteks masalah, lampiran/gambar yang relevan) sebelum lanjut ke analisis atau eksekusi
+- Baru setelah user memahami summary email, lanjutkan ke langkah RAG SAP dan seterusnya sesuai urutan wajib
 
 ---
 
@@ -102,6 +103,11 @@ Lakukan **DUA query RAG SAP** setiap case dengan urutan prioritas:
 3. **`rag_find_similar_issues`** — Gunakan untuk mencari issue serupa berdasarkan deskripsi masalah (misal: error status `LTIN` atau `UD`).
 4. **`rag_get_page_context`** — Gunakan jika chunk ditemukan tapi konten terpotong.
 
+**Aturan membaca hasil RAG — gambar WAJIB dilihat:**
+- Setiap hasil RAG yang mengandung gambar (screenshot SAP, diagram alur, tabel konfigurasi, dsb) **WAJIB dibaca dan dijadikan konteks** sebelum menyimpulkan solusi.
+- Jangan hanya andalkan teks chunk — gambar sering memuat detail konfigurasi (field value, field name, layout screen) yang tidak tercantum di teks.
+- Gunakan tool `rag_get_page_context` untuk mengambil gambar dari halaman yang relevan jika belum tersedia di hasil awal.
+
 **Fallback jika RAG tidak menemukan konten yang diharapkan:**
 - Jika dokumen *pasti ada* di RAG tapi chunk-nya tidak muncul → baca file lokal langsung via bash dari folder `SAP QM Knowledge`
 
@@ -136,6 +142,9 @@ Query data live SAP via `sap-leader` tanpa buka SAP GUI tambahan.
 
 ### Step 5 — SAP GUI eksekusi
 Baru eksekusi di SAP GUI setelah punya arah yang jelas dari step 1–4.
+
+> ⚠️ **Wajib Logout setelah Transaksi di Production:**
+> Setiap selesai melakukan transaksi di server **Production** (PRT / TRP) via SAP GUI, **WAJIB logout** dari SAP GUI segera setelah transaksi berhasil. Jangan tinggalkan sesi Production terbuka.
 
 ---
 

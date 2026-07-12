@@ -29,6 +29,7 @@ Jika **MCP Email** tersedia di working directory dan user bertanya tentang suatu
 - Baca isi email (text) **dan** lampiran/gambar yang ada menggunakan tools `read_email` dan `get_email_image`
 - Pahami konteks lengkap dari email (pengirim, subjek, isi, screenshot SAP, lampiran, dll) sebelum menjawab
 - Baru setelah email dipahami, lanjutkan ke langkah RAG SAP dan seterusnya sesuai urutan wajib
+- **Setelah membaca email, WAJIB jelaskan dulu isi emailnya ke user** (pengirim, subjek, isi, konteks) sebelum melanjutkan ke analisis atau eksekusi apapun
 
 ---
 
@@ -94,6 +95,11 @@ Lakukan **DUA query RAG SAP** setiap case dengan urutan prioritas:
 3. **`rag_find_similar_issues`** — Gunakan untuk mencari issue serupa berdasarkan deskripsi masalah.
 4. **`rag_get_page_context`** — Gunakan jika chunk ditemukan tapi konten terpotong, untuk membaca konteks sekitar chunk tersebut.
 
+**Aturan wajib saat membaca hasil RAG:**
+- Setiap hasil RAG yang memiliki **gambar/image** (screenshot SAP, diagram alur, tabel, dsb) **WAJIB dibaca dan dijadikan konteks** — jangan hanya andalkan teks chunk saja
+- Gunakan `rag_get_page_context` atau `document_get` untuk mengambil halaman lengkap termasuk gambarnya jika chunk mengindikasikan ada gambar di sekitar konten tersebut
+- Gambar dari RAG (screenshot SAP, step-by-step visual) sering memuat informasi yang tidak ada di teks — field name, nilai, tombol, popup, dsb
+
 **Fallback jika RAG tidak menemukan konten yang diharapkan:**
 - Jika dokumen *pasti ada* di RAG tapi chunk-nya tidak muncul → baca file lokal langsung via bash dari folder `SAP PP Knowledge`
 
@@ -129,6 +135,8 @@ Query data live SAP via `sap-leader` tanpa buka SAP GUI tambahan.
 
 ### Step 5 — SAP GUI eksekusi
 Baru eksekusi di SAP GUI setelah punya arah yang jelas dari step 1–4.
+
+> ⚠️ **Wajib logout setelah transaksi di Production:** Setiap kali membuka SAP GUI di server **Production**, setelah transaksi selesai dan sukses, **WAJIB logout SAP** sebelum menutup sesi. Berlaku untuk semua server Production (PRT / TRP).
 
 **Perbedaan tool:**
 - `rag-sap` = knowledge/dokumentasi (user manual, blueprint, SOP) → step 1

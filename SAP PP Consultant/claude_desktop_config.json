@@ -1,0 +1,94 @@
+{
+  "mcpServers": {
+    "sap-leader-mcp": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\Lenovo\\Documents\\Claude\\MCP SAP\\sap-leader-mcp\\index.js"
+      ]
+    },
+    "rag-sap": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\Lenovo\\Documents\\Claude\\RAG SAP\\index.js"
+      ],
+      "env": {
+        "RAG_URL": "http://192.168.1.162:8090/mcp",
+        "RAG_TOKEN": "Trias123"
+      }
+    },
+    "mcp-email-connector": {
+      "command": "node",
+      "args": [
+        "C:\\Users\\Lenovo\\Documents\\Claude\\MCP Email\\dist\\index.js"
+      ],
+      "env": {
+        "EMAIL_PASS": "Abap12345678"
+      }
+    }
+  },
+  "coworkUserFilesPath": "C:\\Users\\Lenovo\\Claude",
+  "preferences": {
+    "localAgentModeTrustedFolders": [
+      "C:\\Users\\Lenovo\\Documents\\Claude\\RAG SAP",
+      "C:\\Users\\Lenovo\\Claude\\Projects\\SAP PP Consultant",
+      "C:\\Users\\Lenovo\\Claude\\Projects\\SAP QM Consultant",
+      "C:\\Users\\Lenovo\\Documents\\Claude\\MCP SAP",
+      "C:\\Users\\Lenovo\\Claude\\Projects\\SAP ABAP Consultant",
+      "C:\\Users\\Lenovo\\Documents\\Claude\\MCP Email"
+    ],
+    "coworkScheduledTasksEnabled": true,
+    "coworkHipaaRestricted": false,
+    "ccdScheduledTasksEnabled": true,
+    "sidebarMode": "task",
+    "bypassPermissionsGateByAccount": {
+      "81504b2c-74a9-4c30-914d-c4379dc1bee3": false
+    },
+    "coworkWebSearchEnabled": true,
+    "coworkModelAutoFallbackByAccount": {
+      "81504b2c-74a9-4c30-914d-c4379dc1bee3": true
+    },
+    "keepAwakeEnabled": true,
+    "chicagoEnabled": true,
+    "remoteToolsDeviceName": "kr-it-budi",
+    "epitaxyPrefs": {
+      "desktop-frame.paneStore.v1": {
+        "state": {
+          "extraPanesByMode": {},
+          "colWeightsByMode": {},
+          "rowSplit": 0.5,
+          "draftNonce": 0
+        },
+        "version": 4
+      },
+      "ccd-sessions-filter": {
+        "state": {
+          "selectedProjects": []
+        },
+        "version": 0
+      },
+      "epitaxy-perm-mode-acks.81504b2c-74a9-4c30-914d-c4379dc1bee3": [
+        "C:\\Users\\Lenovo\\Documents\\Claude\\Wed-App:auto",
+        "C:\\Users\\Lenovo\\Documents\\Claude\\MCP Email:auto",
+        "C:\\Users\\Lenovo\\Documents\\Claude\\MCP SAP:auto",
+        "C:\\Users\\Lenovo\\Documents\\Claude\\RAG SAP:auto",
+        "C:\\Users\\Lenovo\\Documents\\Personal Project\\ABAP Git and Versioning:auto"
+      ],
+      "epitaxy-folder-permission-mode.81504b2c-74a9-4c30-914d-c4379dc1bee3": {
+        "C:\\Users\\Lenovo\\Documents\\Claude\\Wed-App": "auto",
+        "C:\\Users\\Lenovo\\Documents\\Claude\\MCP Email": "auto",
+        "C:\\Users\\Lenovo\\Documents\\Claude\\MCP SAP": "auto",
+        "C:\\Users\\Lenovo\\Documents\\Claude\\RAG SAP": "auto",
+        "C:\\Users\\Lenovo\\Documents\\Personal Project\\ABAP Git and Versioning": "auto"
+      },
+      "starred-local-code-sessions": [],
+      "starred-cowork-spaces": [],
+      "starred-session-groups": [],
+      "dframe-local-slice": {
+        "pinnedOrder": [],
+        "customGroupAssignments": {},
+        "customGroupOrder": {}
+      },
+      "cc-landing-draft-permission-mode": "default"
+    }
+  }
+}

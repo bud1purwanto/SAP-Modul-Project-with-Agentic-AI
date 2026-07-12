@@ -62,14 +62,49 @@ Gunakan untuk mengambil data/objek **langsung dari sistem SAP TRD**:
 
 #### Update Program ABAP — ATURAN WAJIB
 - Update/save source code program ke SAP **HANYA boleh di server `sandbox-new`** (Sandbox New Company, SID: TRS, Host: 192.168.6.243)
-- Gunakan RFC `Z_RFC_PROGRAM_UPDATE` via `call_function` untuk menyimpan perubahan kode
 - **DILARANG** melakukan update program di server lain (dev, dev-win, qa, prod, prod-win, sandbox)
 - Sebelum update, selalu `set_active_server` ke `sandbox-new` terlebih dahulu
+- **PRIORITAS UTAMA push/update program: SELALU gunakan `Z_RFC_PROGRAM_UPDATE` via `call_function`** — sudah verified berfungsi di sistem TRS. Jangan gunakan mekanisme lain kecuali ada error spesifik dari FM ini.
+
+#### Mekanisme Push/Update Program ABAP — STATUS RFC (PENTING!)
+
+| RFC / FM | Status | Keterangan |
+|---|---|---|
+| `Z_RFC_PROGRAM_UPDATE` | ✅ **GUNAKAN INI — CARA PALING MUDAH** | Custom FM, kirim full source langsung. Parameter: `IV_PROGRAM_NAME`, `IV_PACKAGE`, `IV_CORRNUMBER` (optional), `IT_SOURCE` (ABAPTXT255) |
+| `READ_REPORT` | ❌ **Tidak tersedia** | Function module not found / not RFC-enabled di sistem ini |
+| `RFC_ABAP_INSTALL_AND_RUN` | ✅ Berfungsi | Bootstrap: kirim temp ABAP program sebagai text, SAP compile & execute. Gunakan jika perlu patch logic kompleks |
+| `RPY_PROGRAM_READ` | ✅ Berfungsi | Baca source via TABLES `SOURCE_EXTENDED` (TYPE C LENGTH 255) |
+| `RPY_PROGRAM_UPDATE` | ✅ Berfungsi | Simpan source — parameter wajib: `TRANSPORT_NUMBER = ' '`, `DEVELOPMENT_CLASS = '$TMP'` |
+
+**Alur paling mudah — pakai `Z_RFC_PROGRAM_UPDATE` langsung:**
+1. `set_active_server` → `sandbox-new`
+2. Baca source program (via `read_program` atau `RPY_PROGRAM_READ`)
+3. Modifikasi source di sisi client (array of lines)
+4. Panggil `Z_RFC_PROGRAM_UPDATE`:
+   ```
+   IV_PROGRAM_NAME = 'ZNAMA_PROGRAM'
+   IV_PACKAGE      = '$TMP'
+   IV_CORRNUMBER   = ' '   (optional, isi space)
+   IT_SOURCE       = [ {LINE: '...'}, ... ]   (ABAPTXT255, max 255 char/line)
+   ```
+5. Cek `EV_SUCCESS = 'X'` dan `EV_MESSAGE` untuk konfirmasi
+
+**Alur alternatif — Bootstrap via `RFC_ABAP_INSTALL_AND_RUN`** (untuk patch kompleks):
+1. `set_active_server` → `sandbox-new`
+2. Buat patch ABAP program yang di dalamnya: baca via `RPY_PROGRAM_READ` → loop & patch → simpan via `RPY_PROGRAM_UPDATE`
+3. Kirim via `call_function` FM = `RFC_ABAP_INSTALL_AND_RUN`, PROGRAM = array of {LINE} (max **72 char/line**)
+
+#### Batasan Teknis PROGTAB (Hanya untuk RFC_ABAP_INSTALL_AND_RUN)
+- Setiap LINE dalam tabel PROGRAM maksimal **72 karakter**
+- **REPLACE syntax** — WAJIB gunakan NEW syntax:
+  - ✅ `REPLACE FIRST OCCURRENCE OF 'X' IN field WITH 'Y'.`
+  - ❌ `REPLACE 'X' WITH 'Y' IN field.` → error "Specification WITH ... is not expected"
 
 #### Enhancement Program — ATURAN WAJIB
 - Setiap permintaan **enhancement program** (modifikasi, tambah fitur, perbaikan bug, dll) **WAJIB menggunakan server `sandbox-new`** (Sandbox New Company, SID: TRS)
 - Alur wajib: baca source dari server asal (dev) → kembangkan/edit kode → set server ke `sandbox-new` → simpan hasil enhancement
 - Jangan pernah langsung enhancement di server dev, qa, atau prod
+- **Default server: Jika user meminta perubahan/modifikasi program tanpa menyebutkan server secara eksplisit → otomatis gunakan `sandbox-new` sebagai target. Tidak perlu konfirmasi, langsung set ke `sandbox-new`.**
 
 ---
 
