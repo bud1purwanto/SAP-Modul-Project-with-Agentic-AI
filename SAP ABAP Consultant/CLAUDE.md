@@ -130,6 +130,47 @@ Gunakan untuk mencari **knowledge, dokumentasi, dan referensi SAP**:
 
 ---
 
+## Grounding Rules — Kode ABAP (WAJIB Self-Check Sebelum Output)
+
+### 1. Batasan Sintaks Keras (Syntax Guardrails)
+- **Dilarang Inline Declaration:** Jangan gunakan `DATA(...)` atau `FIELD-SYMBOL(...)`. Semua variabel wajib dideklarasikan eksplisit di blok `DATA:` / `TYPES:`.
+- **Dilarang New Constructor Operators:** Jangan gunakan `NEW`, `VALUE`, `REDUCE`, `CORRESPONDING`, `FILTER`. Gunakan cara klasik: `CLEAR`, `MOVE-CORRESPONDING`, `APPEND`, `INSERT`.
+- **Open SQL Klasik:** Tanpa `@` untuk host variables. Gunakan spasi (bukan koma) sebagai pemisah field pada `SELECT`.
+- **String Manipulation Klasik:** Gunakan `CONCATENATE`, `SPLIT`, `REPLACE`, `CONDENSE`. Dilarang string template `|...|`.
+
+### 2. Fase Analisis RAG & Kesesuaian Bisnis
+- **Validasi Proses Bisnis:** Baca RAG Business Process (FS) terlebih dahulu. Petakan ke struktur tabel standar ECC (seperti `MARA`, `VBAK`, `EKKO`).
+- **Verifikasi DDIC:** Pastikan tipe data yang dideklarasikan sesuai dengan Data Element standar SAP untuk mencegah *type mismatch*.
+
+### 3. Optimasi Performa Database (Oracle & Open SQL 7.31)
+- **Cek Index Oracle:** Susun `WHERE` clause mengikuti urutan indeks tabel agar Oracle Query Optimizer menggunakan *Index Scan*, bukan *Full Table Scan*.
+- **Aturan Ketat FOR ALL ENTRIES:**
+  - Wajib pasang `IF lt_table IS NOT INITIAL.` sebelum `FOR ALL ENTRIES IN lt_table`.
+  - Lakukan `SORT` dan `DELETE ADJACENT DUPLICATES` pada tabel pengontrol sebelum digunakan di `FOR ALL ENTRIES`.
+- **Seleksi Field Spesifik:** Hindari `SELECT *`. Sebutkan field secara eksplisit; gunakan `INTO CORRESPONDING FIELDS OF TABLE` jika struktur berbeda.
+
+### 4. Efisiensi Memori & Pemrosesan Internal
+- **Strategi READ TABLE:** Wajib gunakan `BINARY SEARCH` + pastikan tabel sudah di-`SORT` sesuai key. Sarankan `SORTED TABLE` atau `HASHED TABLE` untuk volume besar.
+- **Work Area yang Aman:** Lakukan `CLEAR <work_area>` sebelum `APPEND` atau `READ TABLE` untuk mencegah kontaminasi data lama.
+- **Manajemen Memori:** Sisipkan `REFRESH` atau `FREE` setelah tabel internal selesai digunakan pada pemrosesan data masif.
+
+### 5. Standardisasi Ekstensi & Error Handling
+- **Teknologi Enhancement Valid (7.31):** Enhancement Framework, Classic/New BAdIs, User Exits (`EXIT_...`), BTE. Jangan sarankan RAP atau AMDP.
+- **Error Handling Konsisten:** Cek `IF sy-subrc <> 0` setelah operasi database, `READ TABLE`, atau pemanggilan FM. Gunakan `TRY ... CATCH ... ENDTRY` untuk ABAP OO.
+
+### 6. Integritas Data & Validasi Proses Bisnis
+- **Filter Dokumen Batal (Reversal/Storno):** Saat query dokumen logistik/finansial, wajib filter dokumen yang sudah dibatalkan. Contoh: cek field `SMBLN`/`SJAHR` di `MSEG`, atau indikator Storno `STFLG`.
+- **Validasi Status Transaksional:** Untuk program yang memproses Production Order (interface ke MES), wajib validasi System Status order via `STATUS_READ` atau tabel `JEST`. Dilarang memproses order berstatus **TECO**, **DLV**, atau **CLSD**.
+- **Larangan Direct Update Tabel Standar:** Dilarang menggunakan `UPDATE`, `INSERT`, atau `DELETE` langsung pada tabel standar SAP (`MARA`, `EKKO`, `VBAK`, `MSEG`, dll). Wajib gunakan **BAPI** atau FM standar (contoh: `BAPI_GOODSMVT_CREATE`).
+- **Manajemen Kuncian (Lock Objects / SAP LUW):** Sebelum modifikasi data krusial, terapkan *Enqueue*/*Dequeue* Function Modules untuk mencegah *race condition*.
+- **Authority Check Proaktif:** Sertakan `AUTHORITY-CHECK` di awal program/proses sensitif. Validasi berdasarkan level organisasional: Plant (`WERKS`), Company Code (`BUKRS`), atau Purchasing Org (`EKORG`).
+- **Penanganan Transaksi BAPI:** Setelah BAPI yang mengubah data, cek return parameter. Jika ada error (`TYPE = 'E'`) → jalankan `BAPI_TRANSACTION_ROLLBACK`. Jika sukses → jalankan `BAPI_TRANSACTION_COMMIT` dengan wait parameter = `abap_true`.
+
+### Self-Correction Step (Wajib Sebelum Output Kode)
+> Sebelum memberikan output kode ABAP, jalankan pemeriksaan internal: Apakah ada sintaks inline `DATA(` atau `@`? Apakah ada string template `|...|`? Jika ada, hapus dan tulis ulang menggunakan deklarasi eksplisit dan `CONCATENATE`. Pastikan kode memvalidasi status dokumen (reversal/TECO), menangani error/kuncian, dan menggunakan BAPI (bukan direct update) sesuai standar ABAP 7.31.
+
+---
+
 ## Cara Menjawab — WAJIB Setiap Jawaban Teknis
 
 1. Sebutkan **TCODE** yang relevan (SE38, SE80, SE11, SM30, dll)
