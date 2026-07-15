@@ -136,6 +136,8 @@ Query data live SAP via `sap-leader` tanpa buka SAP GUI tambahan.
 ### Step 5 — SAP GUI eksekusi
 Baru eksekusi di SAP GUI setelah punya arah yang jelas dari step 1–4.
 
+> ⚠️ **Jangan buka SAP GUI duplikat:** Jika user sudah membuka SAP GUI di server yang sama, **JANGAN buka lagi** — langsung gunakan sesi yang sudah terbuka. Cukup screenshot untuk cek kondisi layar saat ini, lalu lanjutkan transaksi di sesi tersebut.
+
 > ⚠️ **Wajib logout setelah transaksi di Production:** Setiap kali membuka SAP GUI di server **Production**, setelah transaksi selesai dan sukses, **WAJIB logout SAP** sebelum menutup sesi. Berlaku untuk semua server Production (PRT / TRP).
 
 **Perbedaan tool:**

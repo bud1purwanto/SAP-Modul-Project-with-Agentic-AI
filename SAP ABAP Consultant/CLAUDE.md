@@ -106,6 +106,12 @@ Gunakan untuk mengambil data/objek **langsung dari sistem SAP TRD**:
 - Jangan pernah langsung enhancement di server dev, qa, atau prod
 - **Default server: Jika user meminta perubahan/modifikasi program tanpa menyebutkan server secara eksplisit → otomatis gunakan `sandbox-new` sebagai target. Tidak perlu konfirmasi, langsung set ke `sandbox-new`.**
 
+#### Aturan Universal Perubahan Program — TIDAK ADA PENGECUALIAN
+- **Analisis boleh di server mana saja** (dev, qa, prod, sandbox, dll) sesuai kebutuhan investigasi.
+- **Namun SETIAP perubahan / modifikasi / update program — tanpa terkecuali — WAJIB dilakukan di `sandbox-new`.**
+- Tidak peduli server mana yang sedang dianalisis, tidak peduli user menyebut server lain: **target save/push program selalu `sandbox-new`**.
+- Sebelum setiap `call_function` yang bersifat write (update program), wajib `set_active_server` ke `sandbox-new` terlebih dahulu.
+
 ---
 
 ### RAG SAP (`mcp__rag-sap__*`)
