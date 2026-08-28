@@ -1,0 +1,2675 @@
+*&---------------------------------------------------------------------*
+*& Report  ZPPR_PENDING_ORDER_ALF
+*&
+*&---------------------------------------------------------------------*
+*& Created by : Alifi
+*& Created on : 19-06-2013
+*& Ref. from  : ZPPR_PENDING_ORDER_REPORT
+*& Remark     :
+*& UPDATE     : 08-05-2023 by Ryan : add 3 columns (Production Month  Production Yea
+*&                  for Digital Boardroom Project Needs
+*&              14-05-2025 by Ryan : add SKU Design Column
+*&                  for SubCont Project CKI
+*&---------------------------------------------------------------------*
+REPORT  ZPPR_PENDING_ORDER_ALF.
+TABLES : VBAP, VBAK, VBEP, VBPA, VBUP, AFPO, MSKA, KNA1, P0001,AUFK, MSEG, VBUK.
+DATA : BEGIN OF IT_DETAIL OCCURS 0,
+        MATNR LIKE VBAP-MATNR,
+        COMBINATION(25) TYPE C,
+        WIDTH(10) TYPE C,
+        PACKING(2) TYPE C,
+        CRITERIA(1) TYPE C,
+        LABEL(4) TYPE C,
+        EXL(30) TYPE C,
+        VGBEL LIKE VBAP-VGBEL,
+        VGPOS LIKE VBAP-VGPOS,
+        ZKWMENG1 LIKE VBAP-KWMENG,
+        ZKWMENG2 LIKE VBAP-KWMENG,
+        VRKME    LIKE VBAP-VRKME,
+        ALIAS(20) TYPE C,
+        PACKCODE(20) TYPE C,
+        KDGRP LIKE KNVV-KDGRP,
+        KTEXT LIKE T151T-KTEXT,
+        KVGR1 LIKE TVV1T-BEZEI,
+        KVGR2 LIKE TVV2T-BEZEI,
+        KVGR3 LIKE TVV3T-BEZEI,
+        KVGR4 LIKE TVV4T-BEZEI,
+        KVGR5 LIKE TVV5T-BEZEI,
+        BNDDT LIKE VBAK-BNDDT,
+        VBELN LIKE VBAP-VBELN,
+        POSNR LIKE VBAP-POSNR,
+        VBTYP LIKE VBAK-VBTYP,
+        AUART LIKE VBAK-AUART,
+        NAME1 LIKE ADRC-NAME1,
+        KWMENG LIKE VBAP-KWMENG,
+        VDATU LIKE VBAK-VDATU,
+        OPENPO LIKE AFPO-PSMNG,
+        QTYTOBESLIT LIKE VBAP-KWMENG,
+        PROD1W LIKE MSKA-KALAB,
+        PROD1K LIKE MSKA-KALAB,
+        PROD2W LIKE MSKA-KASPE,
+        PROD2K LIKE MSKA-KASPE,
+        TPRODW LIKE MSKA-KALAB, "TOTAL PRODUCTION WARU
+        TPRODK LIKE MSKA-KALAB, "TOTAL PRODUCTION KRIAN
+        ZTPRODW TYPE STRING, "TOTAL PRODUCTION WARU
+        ZTPRODK TYPE STRING, "TOTAL PRODUCTION KRIAN
+        FGS1W  LIKE MSKA-KALAB,
+        FGS1K  LIKE MSKA-KALAB,
+        FGS2W  LIKE MSKA-KASPE,
+        FGS2K  LIKE MSKA-KASPE,
+        TFGSW  LIKE MSKA-KALAB, "TOTAL FGS WARU
+        TFGSK  LIKE MSKA-KALAB, "TOTAL FGS KRIAN
+        TFGSJ  LIKE MSKA-KALAB, "TOTAL FGS JAKARTA
+        ZTFGSW  TYPE STRING, "TOTAL FGS WARU
+        ZTFGSK  TYPE STRING, "TOTAL FGS KRIAN
+        INT1W  LIKE MSKA-KALAB,
+        INT1K  LIKE MSKA-KALAB,
+        INT2W  LIKE MSKA-KASPE,
+        INT2K  LIKE MSKA-KASPE,
+        TINTW  LIKE MSKA-KALAB, "TOTAL INTRANSIT WARU
+        TINTK  LIKE MSKA-KALAB, "TOTAL INTRANSIT KRIAN
+        ZTINTW  TYPE STRING, "TOTAL INTRANSIT WARU
+        ZTINTK  TYPE STRING, "TOTAL INTRANSIT KRIAN
+        NONWM1W LIKE MSKA-KALAB,
+        NONWM1K LIKE MSKA-KALAB,
+        NONWM2W LIKE MSKA-KASPE,
+        NONWM2K LIKE MSKA-KASPE,
+        TNONWMW LIKE MSKA-KALAB, "TOTAL NONWM WARU
+        TNONWMK LIKE MSKA-KALAB, "TOTAL NONWM KRIAN
+        ZTNONWMW TYPE STRING, "TOTAL NONWM WARU
+        ZTNONWMK TYPE STRING, "TOTAL NONWM KRIAN
+        OTW    LIKE MSKA-KALAB,
+        EXCLUDE LIKE MSKA-KALAB,
+        WERKS LIKE VBAP-WERKS,
+        CONVKG TYPE P DECIMALS 3,
+        TYPE(6) TYPE C,
+        THICKNESS(10) TYPE C,
+        LENGTH(10) TYPE C,
+        TREATMENT(30) TYPE C,
+        CORE(1) TYPE C,
+"add by Ryan- 14.05.2025 | SubCont Project CKI
+        SKUDESIGN(30) TYPE C,
+"end by Ryan- 14.05.2025 | SubCont Project CKI
+        VSTEL LIKE VBAP-VSTEL,
+        WEIGHTSLIT LIKE VBAP-KWMENG,
+        BSTNK LIKE VBKD-BSTKD,
+        POSEX LIKE VBAP-POSEX,
+        QTYD  LIKE VBAP-KWMENG,
+        GRADE(2) TYPE C,
+        PSTYV LIKE VBAP-PSTYV,
+        EMPLOYEE LIKE PA0001-ENAME,
+        SHIPTOPARTY LIKE PA0001-ENAME,
+        MEINS LIKE VBAP-MEINS,
+        MATKL LIKE VBAP-MATKL,
+        CUOBJ LIKE VBAP-CUOBJ,
+       CUOBJ2 LIKE VBAP-CUOBJ,
+        KUNNR LIKE VBAK-KUNNR,
+        BRSCH LIKE KNA1-BRSCH,
+        KTOKD LIKE KNA1-KTOKD,
+        BZIRK LIKE KNVV-BZIRK,
+        VKBUR LIKE KNVV-VKBUR,
+        WADAT_IST LIKE LIKP-WADAT_IST,
+        PINO(100) TYPE C,
+        REMARKS(200) TYPE C,
+        CONVKG2 TYPE P DECIMALS 3,
+       ZZKWMENG1(18),   " TYPE STRING,
+       ZZKWMENG2 TYPE STRING,
+       ZKWMENG TYPE STRING,
+       ZOPENPO TYPE STRING,
+       ZQTYTOBESLIT TYPE STRING,
+       ZPROD1W TYPE STRING,
+       ZPROD1K TYPE STRING,
+       ZPROD2W TYPE STRING,
+       ZPROD2K TYPE STRING,
+       ZFGS1W  TYPE STRING,
+       ZFGS1K  TYPE STRING,
+       ZFGS2W  TYPE STRING,
+       ZFGS2K  TYPE STRING,
+       ZINT1W  TYPE STRING,
+       ZINT1K  TYPE STRING,
+       ZINT2W  TYPE STRING,
+       ZINT2K  TYPE STRING,
+       ZNONWM1W TYPE STRING,
+       ZNONWM1K TYPE STRING,
+       ZNONWM2W TYPE STRING,
+       ZNONWM2K TYPE STRING,
+       ZOTW     TYPE STRING,
+       ZEXCLUDE TYPE STRING,
+       ZTFGSJ TYPE STRING,
+       ZCONVKG TYPE STRING,
+       ZWEIGHTSLIT TYPE STRING,
+       ZQTYD TYPE STRING,
+       VDUEDT TYPE SY-DATUM,
+       VAGING TYPE C LENGTH 10,
+       VSTAT  TYPE C LENGTH 7,
+       KNUMV LIKE VBAK-KNUMV,
+       KBETR LIKE KONV-KBETR,
+       KBETR2 LIKE KONV-KBETR,
+       NETWR LIKE VBAK-NETWR,
+       WAERK LIKE VBAK-WAERK,
+       ERDAT LIKE VBAK-ERDAT,
+       UMVKN LIKE VBAP-UMVKN,
+       UMVKZ LIKE VBAP-UMVKZ,
+       ZTHICKNESS(10) TYPE C,
+       PRODH LIKE VBAP-PRODH,
+       VTEXT1 LIKE T179T-VTEXT,
+       VTEXT2 LIKE T179T-VTEXT,
+       VTEXT3 LIKE T179T-VTEXT,
+       MVGR1 LIKE VBAP-MVGR1,
+       MVGR2 LIKE VBAP-MVGR2,
+       MVGR3 LIKE VBAP-MVGR3,
+       MVGR4 LIKE VBAP-MVGR4,
+       MVGR5 LIKE VBAP-MVGR5,
+       MATG1 LIKE TVM1T-BEZEI,
+       MATG2 LIKE TVM2T-BEZEI,
+       MATG3 LIKE TVM3T-BEZEI,
+       MATG4 LIKE TVM4T-BEZEI,
+       MATG5 LIKE TVM5T-BEZEI,
+       ZQTYSH1 LIKE VBAP-KWMENG,
+       ZQTYSH2 LIKE VBAP-KWMENG,
+       ZSOQTYSH(7) TYPE C,
+       GBSTA LIKE VBUP-GBSTA,
+       NUMOFPACK TYPE I,
+       NUMOFSHEET TYPE I,
+       NTGEW LIKE VBAP-NTGEW,
+       "Start - Added by AKBAR 13.02.2020 (to add SO and PO ref TRIAS at SO TTA)
+       IHREZ_E LIKE VBKD-IHREZ_E, "SO TS as Ref on SO TTA
+       "Data SO TTA / Intercompany Trading to OLAP
+       TAWERKS LIKE VBAP-WERKS,
+       TACOMBINATION(25) TYPE C,
+       TATYPE(6) TYPE C,
+       TATHICK(10) TYPE C,
+       TAWIDTH(10) TYPE C,
+       TALENGTH(10) TYPE C,
+       TAVBELN TYPE VBAP-VBELN,
+       TAPOSNR TYPE VBAP-POSNR,
+       TAMATNR TYPE VBAP-MATNR,
+       TACONVROLL TYPE STRING,
+       TAKWMENG_SOQTY TYPE STRING,  "SO Qty
+       TAQTYD TYPE I,
+       ZTAQTYD TYPE STRING,         "Qty Deliv
+       TASOQD TYPE I,
+       ZTASOQD TYPE STRING,         "SO-QD
+       TAPROD LIKE MSKA-KASPE,
+       ZTAPROD TYPE STRING, "TOTAL PRODUCTION TTA
+       TAFGS  LIKE MSKA-KALAB,
+       ZTAFGS  TYPE STRING, "TOTAL FGS TTA
+       "Data PO Trias / Intercompany Trading to OLAP
+       EBELN TYPE EKKO-EBELN,
+       EBELP TYPE EKPO-EBELP,
+       TXZ01 TYPE EKPO-TXZ01,
+       TSQTY_PO TYPE I,
+       ZTSQTY_PO TYPE STRING,
+       TSQTYGR_PO TYPE I,
+       ZTSQTYGR_PO TYPE STRING,
+       TSQGR_PO TYPE I,
+       ZTSQGR_PO TYPE STRING,
+       "End - Added by AKBAR 13.02.2020 (to add SO and PO ref TRIAS at SO TTA)
+       "ADDED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to reduce page memory
+       V_DLTM(15),
+       "Start - Addition by Ryan 29.03.2023
+       IHREZ_MN TYPE STRING,  "Production Month
+       IHREZ_YR TYPE STRING,  "Production Year
+       IHREZ_LN TYPE STRING,  "Production Line
+       IHREZ_GRP TYPE STRING,  "Production Group
+       "End - Addition by Ryan 29.03.2023
+       " Added by William at 07.11.2025 (add column delivery remarks)
+       DLVREMARKS TYPE STRING,  "Delivery Remarks
+  END OF IT_DETAIL.
+DATA: IT_DETAIL2 LIKE CONF_OUT OCCURS 0 WITH HEADER LINE,
+      IT_DETAIL3 LIKE IT_DETAIL OCCURS 0 WITH HEADER LINE,
+      IT_QUOTATION LIKE IT_DETAIL OCCURS 0 WITH HEADER LINE,
+      IT_LINE TYPE TLINE OCCURS 0 WITH HEADER LINE.
+"ADDED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to reduce page memory
+DATA: BEGIN OF IT_CABN OCCURS 0,
+        ATINN LIKE CABN-ATINN,
+        ATNAM LIKE CABN-ATNAM,
+      END OF IT_CABN.
+DATA: WA_CABN LIKE LINE OF IT_CABN.
+DATA: IT_CHARDESC TYPE STANDARD TABLE OF ZCHARACTER,
+      WA_CHARDESC TYPE ZCHARACTER.
+DATA: IT_SOCHAR TYPE STANDARD TABLE OF ZCHARACTER,
+      WA_SOCHAR TYPE ZCHARACTER.
+DATA: WA_VALTAB TYPE IBVALUE0.
+DATA: BEGIN OF IT_CHARAC OCCURS 0.
+        INCLUDE STRUCTURE CONF_OUT.
+DATA:   ATFLV LIKE CAWN-ATFLV,
+        SYMBOL_ID LIKE IBSYMBOL-SYMBOL_ID,
+      END OF IT_CHARAC.
+RANGES: R_ATNAM FOR CABN-ATNAM.
+DATA: V_ATWRT TYPE P,
+      V_ATWRT01 TYPE P DECIMALS 1.
+"ADDED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to reduce page memory
+DATA: BEGIN OF IT_SO OCCURS 0,
+        VBELN LIKE VBFA-VBELN,
+        POSNN LIKE VBFA-POSNN,
+      END OF IT_SO.
+DATA: BEGIN OF IT_BLOCK OCCURS 0,
+        KUNNR LIKE BSID-KUNNR,
+        ZFBDT LIKE BSID-ZFBDT,
+        ZBD1T LIKE BSID-ZBD1T,
+        WRBTR LIKE BSID-WRBTR,
+        SHKZG LIKE BSID-SHKZG,
+        VDUEDT TYPE SY-DATUM,
+      END OF IT_BLOCK.
+DATA: IT_BLOCK2 LIKE IT_BLOCK OCCURS 0 WITH HEADER LINE.
+DATA : BEGIN OF IT_AFPO OCCURS 0,
+        AUFNR LIKE AFPO-AUFNR,
+        POSNR LIKE AFPO-POSNR,
+        PSMNG LIKE AFPO-PSMNG,
+        WEMNG LIKE AFPO-WEMNG,
+        KDAUF LIKE AFPO-KDAUF,
+        KDPOS LIKE AFPO-KDPOS,
+      END OF IT_AFPO.
+DATA: BEGIN OF IT_KALAB OCCURS 0,
+       KALAB LIKE MSKA-KALAB,
+      END OF IT_KALAB.
+DATA: BEGIN OF IT_KASPE OCCURS 0,
+       KASPE LIKE MSKA-KASPE,
+      END OF IT_KASPE.
+DATA: BEGIN OF IT_KUNNR OCCURS 0,
+        KUNNR LIKE KNKK-KUNNR,
+        KNKLI LIKE KNKK-KNKLI,
+        VAGING TYPE C LENGTH 10,
+END OF IT_KUNNR.
+DATA: BEGIN OF IT_KNKLI OCCURS 0,
+        KNKLI LIKE KNKK-KNKLI,
+END OF IT_KNKLI.
+DATA: IT_KALAB2 LIKE IT_KALAB OCCURS 0 WITH HEADER LINE.
+"Start - Added by AKBAR 13.02.2020 (to add SO and PO ref TRIAS at SO TTA)
+TYPES : BEGIN OF TY_SO,
+        VBELN                TYPE VBAP-VBELN,      "SO Number
+        POSNR                TYPE VBAP-POSNR,      "SO Item
+        WERKS                TYPE VBAP-WERKS,      "Plant
+        MATNR                TYPE VBAP-MATNR,      "Material
+        IHREZ_E              TYPE VBKD-IHREZ_E,    "Your Reference
+        BSTKD_E              TYPE VBKD-BSTKD_E,    "Purchase Order
+        CUOBJ                TYPE VBAP-CUOBJ,      "Object Number
+        VRKME                TYPE VBAP-VRKME,      "Sales UoM
+        VGBEL                TYPE VBAP-VGBEL,      "Ref Doc SO No
+        VGPOS                TYPE VBAP-VGPOS,      "Ref Doc SO Item
+        CONVKG               TYPE P DECIMALS 3,    "Stock TTA
+        NUMOFSHEET           TYPE I,               "Number of Sheet
+        COMB(25)             TYPE C,               "Combination Char
+        FTYPE(20)            TYPE C,               "Film Type
+        THICK(20)            TYPE C,               "Thickness
+        WIDTH(10)            TYPE C,               "Width
+        LENGTH(10)           TYPE C,               "Length
+        ZCONV                TYPE P DECIMALS 3,    "Conversion Roll KG
+        ZQTYD                TYPE STRING,          "Delivery Qty
+        ZSOQD                TYPE STRING,          "SO-QD
+     END OF TY_SO.
+DATA : IT_SO_TTA TYPE TY_SO OCCURS 0 WITH HEADER LINE.
+DATA: BEGIN OF IT_VBFA_TADLV OCCURS 0,
+      VBELV                  LIKE VBFA-VBELV,
+      POSNV                  LIKE VBFA-POSNV,
+      RFMNG                  LIKE VBFA-RFMNG,
+      ZQTY                   TYPE P LENGTH 3,
+   END OF IT_VBFA_TADLV.
+DATA: BEGIN OF IT_VBFA_TASTCK OCCURS 0,
+        VBELN LIKE VBFA-VBELN,
+        POSNR LIKE VBFA-POSNN,
+        VGBEL LIKE VBFA-VBELV,
+        VGPOS LIKE VBFA-POSNV,
+  END OF IT_VBFA_TASTCK.
+DATA : BEGIN OF IT_PO OCCURS 0,
+        EBELN                  TYPE EKPO-EBELN,
+        EBELP                  TYPE EKPO-EBELP,
+        TXZ01                  TYPE EKPO-TXZ01,
+        MENGE                  TYPE EKPO-MENGE,
+        CUOBJ                  TYPE EKPO-CUOBJ,
+       END OF IT_PO.
+DATA : BEGIN OF IT_GR OCCURS 0,
+        MBLNR                  TYPE MSEG-MBLNR,
+        ZEILE                  TYPE MSEG-ZEILE,
+        MATNR                  TYPE MSEG-MATNR,
+        BWART                  TYPE MSEG-BWART,
+        CHARG                  TYPE MSEG-CHARG,
+        MENGE                  TYPE MSEG-MENGE,
+        SMBLN                  TYPE MSEG-SMBLN,
+        SMBLP                  TYPE MSEG-SMBLP,
+        EBELN                  TYPE MSEG-EBELN,
+        EBELP                  TYPE MSEG-EBELP,
+       END OF IT_GR.
+DATA: BEGIN OF IT_MSKA_TTA OCCURS 0,
+        VBELN LIKE MSKA-VBELN,
+        POSNR LIKE MSKA-POSNR,
+        WERKS LIKE MSKA-WERKS,
+        CHARG LIKE MSKA-CHARG,
+        LGORT LIKE MSKA-LGORT,
+        KALAB LIKE MSKA-KALAB,
+        KASPE LIKE MSKA-KASPE,
+      END OF IT_MSKA_TTA.
+DATA: IT_CHAR_TTA         LIKE CONF_OUT OCCURS 0 WITH HEADER LINE,
+      WA_CFG_TTA          TYPE IBCO2_INSTANCE_REC2,
+      WA_CFGI_TTA         TYPE IBVALUE0,
+      VATINN1_TTA(30)     TYPE C,
+      VATINN2_TTA(30)     TYPE C,
+      VKALAB2_TTA         LIKE MSKA-KALAB,
+      VNUMOFSHEET_TTA(30) TYPE C.
+DATA :  V_VBELN TYPE VBAP-VBELN,
+        V_POSNR TYPE VBAP-POSNR,
+        V_EBELN TYPE EKPO-EBELN,
+        V_EBELP TYPE EKPO-EBELP,
+        V_POINT(3) TYPE C.
+RANGES : R_VBELNF  FOR VBAK-VBELN,
+         R_POSNRF  FOR VBAP-POSNR,
+         R_IHREZ_E FOR VBKD-IHREZ_E,
+         R_EBELN   FOR EKKO-EBELN.
+DATA :  ZCONFIGURATION TYPE TABLE OF CONF_OUT,
+        WCONFIGURATION TYPE CONF_OUT,
+        INSTANCE TYPE INOB-CUOBJ.
+DATA :  V_TATREATMENT(20) TYPE C,
+        V_TACORE(20) TYPE C.
+DATA :  V_ZQTYCHARPO TYPE STRING,
+        V_QTYCHARPO TYPE MSEG-MENGE.
+"End - Added by AKBAR 13.02.2020 (to add SO and PO ref TRIAS at SO TTA)
+"Added by annisa wibowo at 2024.01.18 for fix bug recycle qty
+TYPES: BEGIN OF IVBFA_RCY,
+      VBELV                  LIKE VBFA-VBELV,
+      POSNV                  LIKE VBFA-POSNV,
+      VBTYP_N                LIKE VBFA-VBTYP_N, "Document Category
+      RFMNG                  LIKE VBFA-RFMNG,
+*      ZQTY                   TYPE P LENGTH 3,
+  END OF IVBFA_RCY.
+DATA :  ZQTY_DLRCY LIKE VBFA-RFMNG,
+        ZQTY_DLRCYH LIKE VBFA-RFMNG,
+        ZQTY_DLRCYR LIKE VBFA-RFMNG.
+DATA : IT_VBFA_RCY TYPE IVBFA_RCY OCCURS 0 WITH HEADER LINE.
+"ended by annisa wibowo at 2024.01.18 for fix bug recycle qty
+DATA : VPERNR LIKE VBPA-PERNR,
+       VPERNR2 LIKE VBPA-PERNR,
+       VTREATMENT(30) TYPE C,
+       VOBJNR LIKE AUFK-OBJNR,
+       V_PO_STATUS LIKE BSVX-STTXT,
+       VOPENPO LIKE AFPO-PSMNG,
+       VMATNR LIKE MSKA-MATNR,
+       VCHARG LIKE MSKA-CHARG,
+       VKALAB LIKE MSKA-KALAB,
+       VKASPE LIKE MSKA-KASPE,
+       VKALAB2 LIKE MSKA-KALAB,
+       VKASPE2 LIKE MSKA-KASPE,
+       VMENGE LIKE MSEG-MENGE,
+       VQTYD631 LIKE VBAP-KWMENG,
+       VQTYD632 LIKE VBAP-KWMENG,
+       VQTYD601 LIKE VBAP-KWMENG,
+       VQTYD602 LIKE VBAP-KWMENG,
+       WA_CFG TYPE IBCO2_INSTANCE_REC2,
+       WA_CFGI TYPE IBVALUE0,
+       VATINN1(30) TYPE C,
+       VATINN2(30) TYPE C,
+       VATINN3(30) TYPE C,
+       VVBELN TYPE THEAD-TDNAME,
+       VVBELN2 TYPE THEAD-TDNAME,
+       LINE1(50) TYPE C,
+       LINE2(50) TYPE C,
+       VKVGR1 LIKE KNVV-KVGR1,
+       VKVGR2 LIKE KNVV-KVGR2,
+       VKVGR3 LIKE KNVV-KVGR3,
+       VKVGR4 LIKE KNVV-KVGR4,
+       VKVGR5 LIKE KNVV-KVGR5,
+       VADDRNUMBER LIKE ADRC-ADDRNUMBER,
+       ZFBDT LIKE BSID-ZFBDT,
+       ZBD1T LIKE BSID-ZBD1T,
+       VKURS1 LIKE RKB1K-EXCHR,
+       VKURS2 LIKE RKB1K-EXCHR,
+       WAERS LIKE KONV-WAERS,
+       VKPEIN LIKE KONV-KPEIN,
+       VKMEIN LIKE KONV-KMEIN,
+       VAMOUNT1 LIKE BAPICURR-BAPICURR,
+       VAMOUNT2 LIKE BAPICURR-BAPICURR,
+       VPOINT(3) TYPE C,
+       VCOUNTER TYPE I,
+       VDIV TYPE P DECIMALS 4,
+       ZKBETR TYPE P DECIMALS 4,
+       ZKBETR2 TYPE P DECIMALS 4,
+       VNUMOFSHEET(30) TYPE C,
+       VDATE TYPE SY-DATUM,
+       VKNKLI LIKE KNKK-KNKLI.
+RANGES : PACK1000 FOR MSKA-LGORT,
+         PACK2000 FOR MSKA-LGORT.
+DATA : STRING(20) TYPE C.
+TYPE-POOLS: SLIS.
+DATA: GS_LAYOUT TYPE SLIS_LAYOUT_ALV,
+      G_EXIT_CAUSED_BY_CALLER,
+      GS_EXIT_CAUSED_BY_USER TYPE SLIS_EXIT_BY_USER,
+      GT_FIELDCAT TYPE SLIS_T_FIELDCAT_ALV WITH HEADER LINE,
+      G_REPID LIKE SY-REPID,
+      Y_PRINT TYPE SLIS_PRINT_ALV.
+DATA:
+      GT_EVENTS TYPE SLIS_T_EVENT,
+      GT_LIST_TOP_OF_PAGE TYPE SLIS_T_LISTHEADER,
+      G_STATUS_SET TYPE SLIS_FORMNAME VALUE 'PF_STATUS_SET',
+      G_USER_COMMAND TYPE SLIS_FORMNAME VALUE 'USER_COMMAND',
+      G_TOP_OF_PAGE TYPE SLIS_FORMNAME VALUE 'TOP_OF_PAGE',
+      G_TOP_OF_LIST TYPE SLIS_FORMNAME VALUE 'TOP_OF_LIST',
+      G_END_OF_LIST TYPE SLIS_FORMNAME VALUE 'END_OF_LIST'.
+DATA : GS_VARIANT LIKE DISVARIANT, G_SAVE.
+INCLUDE ZPPR_PENDING_ORDER_INCL.
+SELECTION-SCREEN BEGIN OF BLOCK BLOCK1 WITH FRAME TITLE TEXT-001.
+SELECT-OPTIONS :
+                MATNR FOR VBAP-MATNR NO INTERVALS,
+                WERKS FOR VBAP-WERKS NO INTERVALS OBLIGATORY, "Add new company
+                MATKL FOR VBAP-MATKL NO INTERVALS,
+                AUART FOR VBAK-AUART NO INTERVALS,
+                VDATU FOR VBAK-VDATU NO INTERVALS,
+                VSTEL FOR VBAP-VSTEL NO INTERVALS,
+                VBELN FOR VBAP-VBELN NO INTERVALS,
+                QUNUM FOR VBAK-VBELN NO INTERVALS,
+                LFGSK FOR VBUK-LFGSK NO INTERVALS,
+                ERDAT FOR VBAP-ERDAT NO INTERVALS.
+SELECTION-SCREEN END OF BLOCK BLOCK1.
+SELECTION-SCREEN BEGIN OF BLOCK BLOCK2 WITH FRAME TITLE TEXT-002.
+PARAMETERS : RB1 TYPE C RADIOBUTTON GROUP A DEFAULT 'X',
+             RB2 TYPE C RADIOBUTTON GROUP A.
+SELECTION-SCREEN END OF BLOCK BLOCK2.
+INITIALIZATION.
+  G_REPID = SY-REPID. "call report id
+  Y_PRINT-NO_PRINT_SELINFOS = 'X'.
+  Y_PRINT-NO_PRINT_LISTINFOS = 'X'.
+  PERFORM LAYOUT_INIT USING GS_LAYOUT. "call ALV layout for report by gs_layout
+*  PERFORM EVENTTAB_BUILD USING GT_EVENTS[]. "NEW COMPANY
+  GS_VARIANT-REPORT = G_REPID.
+  G_SAVE = 'A'.
+  PERFORM F_SET_ATNAM.  "ADDED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to redu
+**-- bagus 8 jan 13
+AT SELECTION-SCREEN OUTPUT.
+  AUTHORITY-CHECK OBJECT 'Z_OLAP' ID 'ZOLAP' FIELD '1'.
+  IF SY-SUBRC NE 0.
+    LOOP AT SCREEN.
+      IF SCREEN-NAME = 'RB2'.
+        SCREEN-ACTIVE = '0'.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
+******--------------******
+START-OF-SELECTION.
+  "Add new company : Authority Check
+  LOOP AT WERKS.
+    AUTHORITY-CHECK OBJECT 'Z_WERKS' ID 'ZWERKS' FIELD WERKS-LOW.
+    IF SY-SUBRC NE 0.
+      MESSAGE 'No Authorization to process data' TYPE 'I'.
+      LEAVE LIST-PROCESSING.
+    ENDIF.
+  ENDLOOP.
+  "End Add authority check Plant
+  PERFORM DEFINE_LGORT.
+  PERFORM GET_DETAIL.
+  READ TABLE IT_DETAIL WITH KEY AUART = 'ZDKB'.
+  IF SY-SUBRC = 0.
+    PERFORM GET_CONS_QTY.
+  ENDIF.
+*tambahan untuk ALV
+  IF IT_DETAIL[] IS NOT INITIAL.
+    IF RB1 EQ 'X'.
+      PERFORM BUILD_FIELDCATALOG.
+    ELSEIF RB2 EQ 'X'.
+      PERFORM GET_ICT_TTA.  "Added by AKBAR 13.02.2020 (to add SO and PO ref TRIAS a
+      PERFORM INSERT_OLAP.
+      PERFORM BUILD_FIELDCATALOG2.
+    ENDIF.
+*    PERFORM COMMENT_BUILD USING GT_LIST_TOP_OF_PAGE[]. "NEW COMPANY
+    CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+      EXPORTING
+        I_CALLBACK_PROGRAM       = G_REPID
+        I_CALLBACK_PF_STATUS_SET = 'F_GUI_STATUS'
+        IS_LAYOUT                = GS_LAYOUT
+        IT_FIELDCAT              = GT_FIELDCAT[]
+        IS_PRINT                 = Y_PRINT
+        I_SAVE                   = G_SAVE
+        IS_VARIANT               = GS_VARIANT
+        IT_EVENTS                = GT_EVENTS[]
+      TABLES
+        T_OUTTAB                 = IT_DETAIL
+      EXCEPTIONS
+        PROGRAM_ERROR            = 1
+        OTHERS                   = 2.
+    REFRESH: IT_DETAIL, IT_BLOCK, IT_BLOCK2,IT_KUNNR,IT_KNKLI,IT_T179T,IT_TVM1T,
+             IT_TVM2T, IT_TVM3T, IT_TVM4T, IT_TVM5T, IT_TVV1T, IT_TVV2T, IT_TVV3T,
+             IT_TVV4T,IT_TVV5T,IT_VBFA,IT_VBKD, IT_MSKA.
+  ENDIF.
+*&---------------------------------------------------------------------*
+*&      Form  GET_DETAIL
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM GET_DETAIL.
+  IF QUNUM-LOW IS NOT INITIAL.
+    SELECT VBFA~VBELN VBFA~POSNN
+      INTO CORRESPONDING FIELDS OF TABLE IT_SO
+      FROM VBFA
+      WHERE VBFA~MATNR IN MATNR
+      AND   VBFA~VBELN IN VBELN
+      AND   VBFA~VBELV IN QUNUM
+      AND   VBFA~VBTYP_N = 'C'
+      AND   VBFA~VBTYP_V = 'B'
+      AND   VBFA~ERDAT IN ERDAT.
+    SORT IT_SO ASCENDING BY VBELN.
+    DELETE ADJACENT DUPLICATES FROM IT_SO COMPARING VBELN.
+    LOOP AT IT_SO.
+      SELECT VBAP~MATNR VBAP~VBELN VBAP~POSNR VBAK~VBTYP VBAK~AUART VBAK~KUNNR VBAP~
+             VBAP~WERKS VBAP~VSTEL VBAK~BSTNK VBAP~PSTYV VBAP~MATKL VBAP~CUOBJ VBAK~
+             VBAP~MVGR1 VBAP~MVGR2 VBAP~MVGR3 VBAP~MVGR4 VBAP~MVGR5 VBAP~NTGEW
+             INTO CORRESPONDING FIELDS OF TABLE IT_DETAIL3
+             FROM VBAP
+             JOIN VBAK ON VBAK~VBELN = VBAP~VBELN
+             JOIN VBUP ON VBUP~VBELN = VBAP~VBELN AND VBUP~POSNR = VBAP~POSNR
+             JOIN VBUK ON VBUK~VBELN = VBAP~VBELN
+             JOIN MARA ON MARA~MATNR = VBAP~MATNR
+             WHERE VBAP~MATNR IN MATNR
+             AND   VBAP~MATKL IN MATKL
+             AND   VBAK~AUART IN AUART
+             AND   VBAK~VDATU IN VDATU
+             AND   VBAP~VSTEL IN VSTEL
+             AND   VBAP~VBELN = IT_SO-VBELN
+             AND   VBAP~ABGRU EQ '  '
+             AND   VBUK~LFGSK IN LFGSK
+             AND   VBAP~ERDAT IN ERDAT
+             AND   MARA~MTART = 'ZFGS'
+             AND   VBUP~GBSTA NE 'C'
+             AND   VBAP~WERKS IN WERKS. "Add new company
+      APPEND LINES OF IT_DETAIL3 TO IT_DETAIL.
+      SORT IT_DETAIL ASCENDING BY VBELN POSNR.
+      CLEAR IT_DETAIL3. REFRESH IT_DETAIL3.
+    ENDLOOP.
+  ELSE.     "QUNUM-LOW IS NOT INITIAL.
+    SELECT VBAP~MATNR VBAP~VBELN VBAP~POSNR VBAK~VBTYP VBAK~AUART  VBAK~KUNNR VBAP~K
+                 VBAP~WERKS VBAP~VSTEL VBAK~BSTNK VBAP~PSTYV VBAP~MATKL VBAP~CUOBJ V
+                 VBAP~MVGR1 VBAP~MVGR2 VBAP~MVGR3 VBAP~MVGR4 VBAP~MVGR5 VBUP~GBSTA V
+                 INTO CORRESPONDING FIELDS OF TABLE IT_DETAIL
+                 FROM VBAP
+                 JOIN VBAK ON VBAK~VBELN = VBAP~VBELN
+                 JOIN VBUP ON VBUP~VBELN = VBAP~VBELN AND VBUP~POSNR = VBAP~POSNR
+                 JOIN VBUK ON VBUK~VBELN = VBAP~VBELN
+                 JOIN MARA ON MARA~MATNR = VBAP~MATNR
+                 WHERE VBAP~MATNR IN MATNR
+                 AND   VBAP~MATKL IN MATKL
+                 AND   VBAK~AUART IN AUART
+                 AND   VBAK~VDATU IN VDATU
+                 AND   VBAP~VSTEL IN VSTEL
+                 AND   VBAP~VBELN IN VBELN
+                 AND   VBAP~ABGRU EQ '  '
+                 AND   VBAK~VBTYP = 'C'
+                 AND   VBUK~LFGSK IN LFGSK
+                 AND   VBAP~ERDAT IN ERDAT
+                 AND   MARA~MTART = 'ZFGS'
+                 AND   VBUP~GBSTA NE 'C'
+                 AND   VBAP~WERKS IN WERKS. "Add new company
+    SORT IT_DETAIL ASCENDING BY VBELN POSNR.
+  ENDIF.    "QUNUM-LOW IS NOT INITIAL.
+  PERFORM SET_CONS.
+  IF IT_DETAIL[] IS INITIAL.
+    MESSAGE 'Data has not found' TYPE 'I'.
+  ELSE.
+    PERFORM GET_MASTER.
+    LOOP AT IT_DETAIL.   "get Product hierarchy
+      PERFORM GET_HIERARCHY.
+    ENDLOOP.
+    REFRESH: IT_T179T, IT_TVM1T, IT_TVM2T, IT_TVM3T, IT_TVM4T, IT_TVM5T.
+    REFRESH: IT_TVV1T, IT_TVV2T, IT_TVV3T, IT_TVV4T, IT_TVV5T.
+    REFRESH: IT_VBFA, IT_VBKD, IT_KUNNR, IT_KNKLI, IT_BLOCK, IT_BLOCK2, IT_DETAIL2.
+    SELECT AFPO~AUFNR AFPO~POSNR AFPO~PSMNG AFPO~WEMNG AFPO~KDAUF AFPO~KDPOS
+       INTO TABLE IT_AFPO FROM AFPO
+       FOR ALL ENTRIES IN IT_DETAIL
+       WHERE KDAUF = IT_DETAIL-VBELN AND KDPOS = IT_DETAIL-POSNR.
+    IF IT_AFPO[] IS NOT INITIAL.
+      SORT IT_AFPO BY KDAUF KDPOS.
+      LOOP AT IT_DETAIL.
+        CLEAR VOPENPO.
+        IF IT_DETAIL-VBTYP NE 'B'.
+          LOOP AT IT_AFPO WHERE KDAUF = IT_DETAIL-VBELN AND KDPOS = IT_DETAIL-POSNR.
+            CLEAR: VOBJNR, V_PO_STATUS.
+            SELECT SINGLE OBJNR INTO VOBJNR FROM AUFK WHERE AUFNR = IT_AFPO-AUFNR.
+            CALL FUNCTION 'STATUS_TEXT_EDIT'
+              EXPORTING
+                CLIENT = SY-MANDT
+                OBJNR  = VOBJNR
+                SPRAS  = 'E'
+              IMPORTING
+                LINE   = V_PO_STATUS.
+            FIND 'TECO' IN V_PO_STATUS.
+            CHECK SY-SUBRC NE 0.
+            FIND 'CLSD' IN V_PO_STATUS.
+            CHECK SY-SUBRC NE 0.
+            VOPENPO = VOPENPO + IT_AFPO-PSMNG - IT_AFPO-WEMNG.
+          ENDLOOP.
+          IT_DETAIL-OPENPO = VOPENPO.
+          IF IT_DETAIL-VRKME EQ 'PAK'.
+            IT_DETAIL-OPENPO = ( ( IT_DETAIL-OPENPO / IT_DETAIL-CONVKG ) * IT_DETAIL
+          ENDIF.
+          MODIFY IT_DETAIL.
+        ENDIF.
+      ENDLOOP.
+      REFRESH IT_AFPO.
+    ENDIF.
+*- get stock
+    SELECT VBELN POSNR WERKS CHARG LGORT KALAB KASPE INTO TABLE IT_MSKA
+      FROM MSKA FOR ALL ENTRIES IN IT_DETAIL
+      WHERE VBELN = IT_DETAIL-VBELN AND POSNR = IT_DETAIL-POSNR.
+    DELETE IT_MSKA WHERE KALAB = 0 AND KASPE = 0.
+    LOOP AT IT_DETAIL.   "get stock
+      PERFORM GET_STOCK.
+    ENDLOOP.
+    REFRESH IT_MSKA.
+    LOOP AT IT_DETAIL.   "replace comma
+      PERFORM REPLACE_COMMA.
+    ENDLOOP.
+  ENDIF.
+*  REFRESH: IT_T179T, IT_TVM1T, IT_TVM2T, IT_TVM3T, IT_TVM4T, IT_TVM5T.
+*  REFRESH: IT_TVV1T, IT_TVV2T, IT_TVV3T, IT_TVV4T, IT_TVV5T.
+*  REFRESH: IT_VBFA, IT_VBKD, IT_KUNNR, IT_MSKA,IT_KNKLI, IT_BLOCK, IT_BLOCK2.
+ENDFORM.                    "GET_DETAIL
+*&---------------------------------------------------------------------*
+*&      Form  insert_olap
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM INSERT_OLAP.
+  "Modified by AKBAR 13.02.2020 (TRIASDB to TRIASDB04 - Migrasi ke 223)
+  EXEC SQL.
+    CONNECT TO 'TRIASDB04' AS 'DBTRIAL'
+  ENDEXEC.
+  EXEC SQL.
+    SET CONNECTION 'DBTRIAL'
+  ENDEXEC.
+  EXEC SQL.
+    DELETE FROM XPENDING_PP
+  ENDEXEC.
+** -- bap
+  EXEC SQL.
+    COMMIT WORK
+  ENDEXEC.
+** 3 jan 12*
+  "ADDED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to reduce page memory
+  CONCATENATE SY-DATUM SY-UZEIT INTO IT_DETAIL-V_DLTM SEPARATED BY SPACE.
+  CONDENSE IT_DETAIL-V_DLTM.
+  MODIFY IT_DETAIL TRANSPORTING V_DLTM WHERE V_DLTM = ''.
+  "Added by AKBAR at Col067 - Col086 13.02.2020 (to add SO and PO ref TRIAS at SO TT
+  LOOP AT IT_DETAIL.
+    EXEC SQL.
+      INSERT INTO XPENDING_PP(Col001,Col002,Col003,Col004,Col005,Col006,Col007,Col00
+                              Col011,Col012,Col013,Col014,Col015,Col016,Col017,Col01
+                              Col021,Col022,Col023,Col024,Col025,Col026,Col027,Col02
+                              Col031,Col032,Col033,Col034,Col035,Col036,Col037,Col03
+                              Col040,
+                              Col041,Col042,Col043,Col044,Col045,Col046,Col047,Col04
+                              Col051,Col052,Col053,Col054,Col055,Col056,Col057,Col05
+                              Col061,Col062,Col063,Col064,Col065,Col066,
+                              Col067,Col068,Col069,Col070,Col071,Col072,Col073,Col07
+                              Col077,Col078,Col079,Col080,Col081,Col082,Col083,Col08
+                              Col087,
+                              Col088, Col089, Col090, Col091,
+                              Col092)
+     VALUES(:IT_DETAIL-MATNR,:IT_DETAIL-COMBINATION,:IT_DETAIL-EXL,:IT_DETAIL-WIDTH,
+            :IT_DETAIL-POSNR,:IT_DETAIL-AUART,:IT_DETAIL-NAME1,:IT_DETAIL-KTEXT,:IT_
+            :IT_DETAIL-QTYTOBESLIT,:IT_DETAIL-TPRODW,:IT_DETAIL-TPRODK,:IT_DETAIL-TF
+            :IT_DETAIL-CONVKG,:IT_DETAIL-VSTEL,:IT_DETAIL-WERKS,:IT_DETAIL-PSTYV,:IT
+            :IT_DETAIL-ZZKWMENG1,
+            :IT_DETAIL-ZKWMENG2,:IT_DETAIL-BNDDT,:IT_DETAIL-TYPE,:IT_DETAIL-THICKNES
+            :IT_DETAIL-TREATMENT,:IT_DETAIL-CORE,:IT_DETAIL-WEIGHTSLIT,:IT_DETAIL-PO
+            :IT_DETAIL-MATG3,:IT_DETAIL-MATG4,:IT_DETAIL-MATG5,:IT_DETAIL-ERDAT,:IT_
+            :IT_DETAIL-TAWERKS,:IT_DETAIL-TACOMBINATION,:IT_DETAIL-TATYPE,:IT_DETAIL
+            :IT_DETAIL-ZTAQTYD,:IT_DETAIL-ZTASOQD,:IT_DETAIL-ZTAPROD,:IT_DETAIL-ZTAF
+            :IT_DETAIL-V_DLTM,
+            :IT_DETAIL-IHREZ_MN, :IT_DETAIL-IHREZ_YR, :IT_DETAIL-IHREZ_LN, :IT_DETAI
+            :IT_DETAIL-DLVREMARKS)
+    ENDEXEC.
+  ENDLOOP.
+  MESSAGE 'Penyimpanan Data ke SQL sukses!!!' TYPE 'I'.
+ENDFORM.                    "insert_olap
+*&---------------------------------------------------------------------*
+*&      Form  readtext
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->ID         text
+*      -->OBJECT     text
+*      -->NAME       text
+*----------------------------------------------------------------------*
+FORM READTEXT USING ID OBJECT NAME.
+  CLEAR : IT_LINE.
+  REFRESH : IT_LINE.
+  CALL FUNCTION 'READ_TEXT'
+    EXPORTING
+      ID                      = ID
+      LANGUAGE                = SY-LANGU
+      NAME                    = VVBELN
+      OBJECT                  = OBJECT
+    TABLES
+      LINES                   = IT_LINE
+    EXCEPTIONS
+      ID                      = 1
+      LANGUAGE                = 2
+      NAME                    = 3
+      NOT_FOUND               = 4
+      OBJECT                  = 5
+      REFERENCE_CHECK         = 6
+      WRONG_ACCESS_TO_ARCHIVE = 7
+      OTHERS                  = 8.
+ENDFORM.       "readtext
+*&---------------------------------------------------------------------*
+*&      Form  f_gui_status
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->FT_EXTAB   text
+*----------------------------------------------------------------------*
+FORM F_GUI_STATUS USING FT_EXTAB TYPE SLIS_T_EXTAB.
+  SET PF-STATUS 'STANDARD_FULLSCREEN'.
+ENDFORM.                    " F_ALV_STATUS
+*&---------------------------------------------------------------------*
+*&      Form  build_fieldcatalog
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM BUILD_FIELDCATALOG.
+  DATA: XFIELDCAT TYPE SLIS_FIELDCAT_ALV,
+        N TYPE I.
+  REFRESH GT_FIELDCAT.
+  N = 0.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'MATNR'.
+  "xfieldcat-tabname   = 'IT_DETAILS'.
+  XFIELDCAT-SELTEXT_M = 'Material Number'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Order No'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'COMBINATION'.
+  XFIELDCAT-SELTEXT_M = 'Combination Char.'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Item No'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'EXL'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Extra Length'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'WIDTH'.
+  XFIELDCAT-SELTEXT_M = 'Width'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Date'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PACKING'.
+  XFIELDCAT-SELTEXT_M = 'Packing'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Type'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PACKCODE'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Packing Code'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'CRITERIA'.
+  XFIELDCAT-SELTEXT_M = 'Criteria'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Material'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'LABEL'.
+  XFIELDCAT-SELTEXT_M = 'Label'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Plant'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ALIAS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Alias'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VBELN'.
+  XFIELDCAT-SELTEXT_M = 'SO Number'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Sloc'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'POSNR'.
+  XFIELDCAT-SELTEXT_M = 'SO Item'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Batch'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'AUART'.
+  XFIELDCAT-SELTEXT_M = 'SO Type'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Quantity'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'NAME1'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Customer Name'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'KTEXT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Customer Groups'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PINO'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PI. No'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'BSTNK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Purch. Order'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VDATU'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Deliv.Date'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZKWMENG'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO Qty'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+*
+*  n = n + 1.
+*  clear xfieldcat.
+*  xfieldcat-fieldname = 'ZSOQTYSH'.
+**  xfieldcat-tabname = 'it_details'.
+**  xfieldcat-row_pos = 1.
+*  xfieldcat-col_pos = n.
+*  xfieldcat-seltext_m = 'SO Qty (Sheet)'.
+*  xfieldcat-outputlen = 20.
+*  append xfieldcat to gt_fieldcat.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZQTYD'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Qty Delivery'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZOPENPO'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Open PO'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZQTYTOBESLIT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'QtyToBeSlit'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTPRODW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'W-PRD'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTPRODK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'K-PRD'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTFGSW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'W-FGS'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTFGSK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'K-FGS'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTFGSJ'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'J-FGS'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTINTW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'W-INT'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTINTK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'K-INT'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZOTW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'On The Way'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZEXCLUDE'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Others'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'CONVKG'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Conversion Roll'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VSTEL'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Ship Point'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'WERKS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Plant'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PSTYV'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Item Cat.'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'EMPLOYEE'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Employee'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VSTAT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Status Block'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VGBEL'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Number'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VGPOS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Item'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZZKWMENG1'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Qty'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZZKWMENG2'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Qty (Kg)'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'BNDDT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Valid to'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TYPE'.
+  XFIELDCAT-SELTEXT_M = 'Film Type'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Material'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'THICKNESS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Thickness'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ERDAT'.
+  XFIELDCAT-TABNAME = 'it_details'.
+  XFIELDCAT-ROW_POS = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO Created on'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'SHIPTOPARTY'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Ship to Party'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'KUNNR'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Customer'.
+  XFIELDCAT-OUTPUTLEN = 12.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  "Start - Addition by Ryan 29.03.2023
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_MN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Production Month'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_YR'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Production Year'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_LN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Production Line'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_GRP'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Prod. Line Group'.
+  XFIELDCAT-OUTPUTLEN = 21.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  "End - Addition by Ryan 29.03.2023
+  "add by Ryan - 14.05.2025 | SubCont Project CKI
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'SKUDESIGN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SKU Design'.
+  XFIELDCAT-OUTPUTLEN = 22.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  "end - add by Ryan - 14.05.2025 | SubCont Project CKI
+  " Added by William at 07.11.2025 (add delivery remarks)
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'DLVREMARKS'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Delivery Remarks'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  " End added by William at 07.11.2025 (add delivery remarks)
+ENDFORM. "build_fieldcatalog
+*&---------------------------------------------------------------------*
+*&      Form  build_fieldcatalog2
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM BUILD_FIELDCATALOG2.
+  DATA: XFIELDCAT TYPE SLIS_FIELDCAT_ALV,
+        N TYPE I.
+  REFRESH GT_FIELDCAT.
+  N = 0.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'MATNR'.
+  "xfieldcat-tabname   = 'IT_DETAILS'.
+  XFIELDCAT-SELTEXT_M = 'Material Number'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Order No'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'COMBINATION'.
+  XFIELDCAT-SELTEXT_M = 'Combination Char.'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Item No'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'EXL'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Extra Length'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'WIDTH'.
+  XFIELDCAT-SELTEXT_M = 'Width'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Date'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PACKING'.
+  XFIELDCAT-SELTEXT_M = 'Packing'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Type'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PACKCODE'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Packing Code'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'CRITERIA'.
+  XFIELDCAT-SELTEXT_M = 'Criteria'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Material'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'LABEL'.
+  XFIELDCAT-SELTEXT_M = 'Label'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Plant'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ALIAS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Alias'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VBELN'.
+  XFIELDCAT-SELTEXT_M = 'SO Number'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Sloc'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'POSNR'.
+  XFIELDCAT-SELTEXT_M = 'SO Item'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Batch'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'AUART'.
+  XFIELDCAT-SELTEXT_M = 'SO Type'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Delivery Quantity'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'NAME1'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Customer Name'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'KTEXT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Customer Groups'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PINO'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PI. No'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'BSTNK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Purch. Order'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VDATU'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Deliv.Date'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZKWMENG'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO Quantity'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZQTYD'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Qty Delivery'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZOPENPO'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Open PO'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+*
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZQTYTOBESLIT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'QtyToBeSlit'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTPRODW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'W-PRD'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTPRODK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'K-PRD'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTFGSW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'W-FGS'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTFGSK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'K-FGS'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTFGSJ'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'J-FGS'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTINTW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'W-INT'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTINTK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'K-INT'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZOTW'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'On The Way'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZEXCLUDE'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Others'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'CONVKG'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Conversion Roll'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VSTEL'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Ship Point'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'WERKS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Plant'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'PSTYV'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Item Cat.'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'EMPLOYEE'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Employee'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'SHIPTOPARTY'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Ship to Party'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VSTAT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Status Block'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VGBEL'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Number'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VGPOS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Item'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZZKWMENG1'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Qty'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZKWMENG2'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Quotation Qty (Kg)'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'BNDDT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Valid to'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TYPE'.
+  XFIELDCAT-SELTEXT_M = 'Film Type'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+*  xfieldcat-reptext_ddic = 'Material'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'THICKNESS'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Thickness'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'KBETR'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Price USD/KG'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'KBETR2'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Price Doc Curr/KG'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'WAERK'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Doc. Curr SO'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VDUEDT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Duedate'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VAGING'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Aging'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'KVGR1'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Customer Groups 1'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'LENGTH'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Length'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TREATMENT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Treatment'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'CORE'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Core'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'WEIGHTSLIT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Weight Slit'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'POSEX'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PO Item'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'NETWR'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Value in USD'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VTEXT1'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Prod. Hierarchy 1'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VTEXT2'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Prod. Hierarchy 2'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'VTEXT3'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Prod. Hierarchy 3'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'MATG1'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Mat.Group1'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'MATG2'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Mat.Group2'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'MATG3'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Mat.Group3'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'MATG4'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Mat.Group4'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'MATG5'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Mat.Group5'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ERDAT'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO Created on'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'KUNNR'.
+*  xfieldcat-tabname = 'it_details'.
+*  xfieldcat-row_pos = 1.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Customer'.
+  XFIELDCAT-OUTPUTLEN = 12.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  "Start - Added by AKBAR 13.02.2020 (to add SO and PO ref TRIAS at SO TTA)
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_E'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO Reference'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TAWERKS'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Plant TTA'.
+  XFIELDCAT-OUTPUTLEN = 4.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TACOMBINATION'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Combination TTA'.
+  XFIELDCAT-OUTPUTLEN = 25.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TATYPE'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Film Type TTA'.
+  XFIELDCAT-OUTPUTLEN = 6.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TATHICK'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Thickness TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TAWIDTH'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Width TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TALENGTH'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Length TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TAVBELN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO No TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TAPOSNR'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO Item TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TACONVROLL'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Conversion TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TAKWMENG_SOQTY'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO Qty TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTAQTYD'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Qty Delivery TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTASOQD'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SO QD TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTAPROD'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PRD Stock TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTAFGS'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'FGS Stock TTA'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  XFIELDCAT-EMPHASIZE = 'C310'.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'EBELN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PO Number'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'EBELP'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PO Item'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'TXZ01'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PO Text'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTSQTY_PO'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'PO Qty'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTSQTYGR_PO'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'GRN Qty'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'ZTSQGR_PO'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'GRN PO'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  "End - Added by AKBAR 13.02.2020 (to add SO and PO ref TRIAS at SO TTA)
+  "Start - Addition by Ryan 29.03.2023
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_MN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Production Month'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_YR'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Production Year'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_LN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Production Line'.
+  XFIELDCAT-OUTPUTLEN = 15.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'IHREZ_GRP'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Production Line Group'.
+  XFIELDCAT-OUTPUTLEN = 21.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  "End - Addition by Ryan 29.03.2023
+  "add by Ryan - 14.05.2025 | SubCont Project CKI
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'SKUDESIGN'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'SKU Design'.
+  XFIELDCAT-OUTPUTLEN = 22.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  "end - add by Ryan - 14.05.2025 | SubCont Project CKI
+  " Added by William at 07.11.2025 (add delivery remarks)
+  N = N + 1.
+  CLEAR XFIELDCAT.
+  XFIELDCAT-FIELDNAME = 'DLVREMARKS'.
+  XFIELDCAT-COL_POS = N.
+  XFIELDCAT-SELTEXT_M = 'Delivery Remarks'.
+  XFIELDCAT-OUTPUTLEN = 20.
+  APPEND XFIELDCAT TO GT_FIELDCAT.
+  " End added by William at 07.11.2025 (add delivery remarks)
+ENDFORM. "build_fieldcatalog2
+*&---------------------------------------------------------------------*
+*&      Form  layout_init
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->RS_LAYOUT  text
+*----------------------------------------------------------------------*
+FORM LAYOUT_INIT USING RS_LAYOUT TYPE SLIS_LAYOUT_ALV.
+  RS_LAYOUT-DETAIL_POPUP = 'X'.
+  RS_LAYOUT-COLWIDTH_OPTIMIZE = 'X'.
+  RS_LAYOUT-ZEBRA             = 'X'.
+ENDFORM.            "Layout_init
+*&---------------------------------------------------------------------*
+*&      Form  eventtab_build
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->RT_EVENTS  text
+*----------------------------------------------------------------------*
+FORM EVENTTAB_BUILD USING RT_EVENTS TYPE SLIS_T_EVENT.
+  DATA : LS_EVENT TYPE SLIS_ALV_EVENT.
+  CALL FUNCTION 'REUSE_ALV_EVENTS_GET'
+    EXPORTING
+      I_LIST_TYPE = 0
+    IMPORTING
+      ET_EVENTS   = RT_EVENTS.
+  READ TABLE RT_EVENTS WITH KEY NAME = SLIS_EV_TOP_OF_PAGE
+                            INTO LS_EVENT.
+  IF SY-SUBRC = 0.
+    MOVE G_TOP_OF_PAGE TO LS_EVENT-FORM.
+    APPEND LS_EVENT TO RT_EVENTS.
+  ENDIF.
+ENDFORM.              "eventtab_build
+*&---------------------------------------------------------------------*
+*&      Form  comment_build
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->LT_TOP_OF_PAGE  text
+*----------------------------------------------------------------------*
+FORM COMMENT_BUILD USING LT_TOP_OF_PAGE TYPE SLIS_T_LISTHEADER.
+  DATA: LS_LINE TYPE SLIS_LISTHEADER.
+  CLEAR LS_LINE.
+  REFRESH LT_TOP_OF_PAGE.
+  LS_LINE-TYP = 'H'.
+  LS_LINE-INFO = 'PT. Trias Sentosa,tbk'.
+  APPEND LS_LINE TO LT_TOP_OF_PAGE.
+  CLEAR LS_LINE.
+  LS_LINE-TYP = 'A'.
+  LS_LINE-INFO = 'Pending Order Report'.
+  APPEND LS_LINE TO LT_TOP_OF_PAGE.
+ENDFORM.                    "comment_build
+*&---------------------------------------------------------------------*
+*&      Form  top_of_page
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM TOP_OF_PAGE.
+  CALL FUNCTION 'REUSE_ALV_COMMENTARY_WRITE'
+    EXPORTING
+      I_LOGO             = ' '
+      IT_LIST_COMMENTARY = GT_LIST_TOP_OF_PAGE.
+ENDFORM.                    "top_of_page
+*&---------------------------------------------------------------------*
+*&      Form  Define_Lgort
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM DEFINE_LGORT.
+  PACK1000-SIGN   =  'I'.
+  PACK1000-OPTION =  'BT'.
+  PACK1000-LOW    =  '1301'.
+  PACK1000-HIGH   =  '1308'.
+  APPEND PACK1000.
+  PACK2000-SIGN   =  'I'.
+  PACK2000-OPTION =  'BT'.
+  PACK2000-LOW    =  '2301'.
+  PACK2000-HIGH   =  '2320'.
+  APPEND PACK2000.
+ENDFORM.                    "Define_Lgort
+*&---------------------------------------------------------------------*
+*&      Form  get_cons
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM SET_CONS.
+  DELETE IT_DETAIL[] WHERE AUART = 'ZDKE' OR
+  AUART = 'ZDKE' OR
+  AUART = 'ZDKR' OR
+  AUART = 'ZDKP' OR
+  AUART = 'ZDCM' OR
+  AUART = 'ZDRC'.
+  DELETE ADJACENT DUPLICATES FROM IT_DETAIL COMPARING VBELN POSNR.
+  SORT IT_DETAIL ASCENDING BY VBELN POSNR.
+ENDFORM.                    "get_cons
+*&---------------------------------------------------------------------*
+*&      Form  get_cons_qty
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+FORM GET_CONS_QTY.
+  DATA: BEGIN OF IT_VBFA OCCURS 0, "WITH HEADER LINE,
+    VBELV LIKE VBFA-VBELV,
+    POSNV LIKE VBFA-POSNV,
+    RFMNG LIKE VBFA-RFMNG,
+    ZQTY TYPE P LENGTH 3,
+    END OF IT_VBFA.
+  DATA: BEGIN OF IT_VBFA2 OCCURS 0, "WITH HEADER LINE,
+    VBELV LIKE VBFA-VBELV,
+    POSNV LIKE VBFA-POSNV,
+    RFMNG LIKE VBFA-RFMNG,
+    ZQTY TYPE P LENGTH 3,
+    END OF IT_VBFA2.
+  DATA: V_VBELN_NUM TYPE N LENGTH 10,
+        V_NOZERO TYPE P LENGTH 10,
+        V_TQTY TYPE P LENGTH 3.
+  LOOP AT IT_DETAIL WHERE AUART = 'ZDKB'.
+    CLEAR: IT_VBFA, V_NOZERO, V_TQTY.
+    REFRESH: IT_VBFA, IT_VBFA2.
+    V_VBELN_NUM = IT_DETAIL-VBELN.
+    SELECT A~VBELV A~POSNV A~RFMNG INTO TABLE IT_VBFA
+      FROM VBFA AS A JOIN VBUK AS B ON A~VBELN = B~VBELN
+      WHERE VBELV = V_VBELN_NUM AND POSNV = IT_DETAIL-POSNR AND VBTYP_N = 'J' AND B~
+    IF SY-SUBRC NE 0.
+      CONTINUE.
+    ENDIF.
+    LOOP AT IT_VBFA WHERE RFMNG > 0.
+      V_TQTY = V_TQTY + 1.
+    ENDLOOP.
+    IT_DETAIL-QTYD = V_TQTY.
+    IT_DETAIL-QTYTOBESLIT = IT_DETAIL-KWMENG - IT_DETAIL-QTYD - IT_DETAIL-OPENPO - I
+    - IT_DETAIL-PROD2W - IT_DETAIL-PROD2K - IT_DETAIL-FGS1W - IT_DETAIL-FGS1K - IT_D
+                         - IT_DETAIL-INT1W - IT_DETAIL-INT1K - IT_DETAIL-INT2W - IT_
+                         - IT_DETAIL-EXCLUDE - IT_DETAIL-TFGSJ.
+    IF IT_DETAIL-NUMOFSHEET IS NOT INITIAL.
+      IT_DETAIL-WEIGHTSLIT = ( IT_DETAIL-QTYTOBESLIT / IT_DETAIL-NUMOFSHEET ) * IT_D
+    ELSE.
+      IT_DETAIL-WEIGHTSLIT = IT_DETAIL-QTYTOBESLIT * IT_DETAIL-CONVKG.
+    ENDIF.
+    V_NOZERO = IT_DETAIL-QTYTOBESLIT.
+    IT_DETAIL-ZQTYTOBESLIT = V_NOZERO.
+    V_NOZERO = IT_DETAIL-QTYD.
+    IT_DETAIL-ZQTYD = V_NOZERO.
+    MODIFY IT_DETAIL TRANSPORTING QTYD ZQTYD QTYTOBESLIT ZQTYTOBESLIT WHERE VBELN =
+  ENDLOOP.
+  REFRESH: IT_VBFA, IT_VBFA2.
+ENDFORM.                    "GET_CONS_QTY
+*&---------------------------------------------------------------------*
+*&      Form  GET_ICT_TTA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM GET_ICT_TTA .
+  LOOP AT IT_DETAIL.
+    CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+      EXPORTING
+        INPUT  = IT_DETAIL-POSNR
+      IMPORTING
+        OUTPUT = IT_DETAIL-POSNR.
+    CONCATENATE IT_DETAIL-VBELN '-' IT_DETAIL-POSNR INTO IT_DETAIL-IHREZ_E.
+    MODIFY IT_DETAIL TRANSPORTING IHREZ_E.
+    "Collect SO-Item Reference (Trias) into Ranges
+    IF IT_DETAIL-IHREZ_E <> ''.
+      R_IHREZ_E-LOW = IT_DETAIL-IHREZ_E.
+      R_IHREZ_E-SIGN = 'I'.
+      R_IHREZ_E-OPTION = 'EQ'.
+      COLLECT R_IHREZ_E.
+    ENDIF.
+  ENDLOOP.
+  "Get Data SO TTA
+  SELECT VBAP~MATNR VBAP~VBELN VBAP~POSNR VBAP~NTGEW VBAP~GEWEI
+         VBAP~UMVKN VBAP~UMVKZ VBAP~WERKS VBAP~CUOBJ VBAP~ERDAT
+         VBAP~VRKME VBAP~NTGEW VBKD~IHREZ_E VBKD~BSTKD_E
+    INTO CORRESPONDING FIELDS OF TABLE IT_SO_TTA
+    FROM VBAP
+       JOIN VBKD ON VBKD~VBELN = VBAP~VBELN AND VBKD~POSNR = VBAP~POSNR
+    WHERE VBKD~IHREZ_E IN R_IHREZ_E.
+  "Get data ranges for parameter get data
+  LOOP AT IT_SO_TTA.
+    CLEAR: V_EBELN, V_EBELP.
+    "Collect SO No TTA into Ranges
+    R_VBELNF-LOW = IT_SO_TTA-VBELN.
+    R_VBELNF-SIGN = 'I'.
+    R_VBELNF-OPTION = 'EQ'.
+    COLLECT R_VBELNF.
+    "Collect SO Item TTA into Ranges
+    R_POSNRF-LOW = IT_SO_TTA-POSNR.
+    R_POSNRF-SIGN = 'I'.
+    R_POSNRF-OPTION = 'EQ'.
+    COLLECT R_POSNRF.
+    "Collect PO Number Trias into Ranges
+    SPLIT IT_SO_TTA-BSTKD_E AT '-' INTO V_EBELN V_EBELP.
+    IF V_EBELN <> ''.
+      R_EBELN-LOW = V_EBELN.
+      R_EBELN-SIGN = 'I'.
+      R_EBELN-OPTION = 'EQ'.
+      COLLECT R_EBELN.
+    ENDIF.
+  ENDLOOP.
+  "Get Data Delivery based on SO-From
+  IF R_VBELNF[] IS NOT INITIAL. "CHANGED BY FATHIR ON 01.12.2020 - TRDK917816 - skip
+    SELECT A~VBELV A~POSNV A~RFMNG
+    INTO CORRESPONDING FIELDS OF TABLE IT_VBFA_TADLV
+    FROM VBFA AS A JOIN VBUK AS B ON A~VBELN = B~VBELN
+    WHERE VBELV IN R_VBELNF
+      AND VBTYP_N = 'J' AND B~WBSTK = 'C' AND STUFE = ''.
+  ENDIF.
+  PERFORM GET_DETAIL_TTA.
+  REFRESH: IT_VBFA_TADLV.
+  "Get Data PO & GR Trias
+  IF R_EBELN[] IS NOT INITIAL.
+    SELECT EBELN EBELP MENGE TXZ01 CUOBJ
+      INTO CORRESPONDING FIELDS OF TABLE IT_PO
+      FROM EKPO
+      WHERE EBELN IN R_EBELN.
+    SELECT MBLNR ZEILE MATNR BWART CHARG MENGE SMBLN SMBLP EBELN EBELP
+      INTO CORRESPONDING FIELDS OF TABLE IT_GR
+      FROM MSEG
+      WHERE BWART IN ('101','102') AND EBELN IN R_EBELN.
+  ENDIF.
+  PERFORM GET_PO_TRIAS.
+  REFRESH: IT_PO, IT_GR, R_EBELN.
+*- get stock TTA
+  SELECT VBELN POSNR WERKS CHARG LGORT KALAB KASPE INTO TABLE IT_MSKA_TTA
+    FROM MSKA
+    WHERE VBELN IN R_VBELNF AND POSNR IN R_POSNRF.
+  DELETE IT_MSKA_TTA WHERE KALAB = 0 AND KASPE = 0.
+  SELECT VBFA~VBELN VBFA~POSNN VBFA~VBELV VBFA~POSNV
+    INTO TABLE IT_VBFA_TASTCK
+    FROM VBFA
+    FOR ALL ENTRIES IN IT_SO_TTA
+    WHERE VBFA~VBELN = IT_SO_TTA-VBELN
+    AND   VBFA~VBTYP_N = 'C'
+    AND   VBFA~VBTYP_V = 'B'.
+  PERFORM GET_STOCK_TTA.
+  REFRESH: IT_MSKA_TTA, IT_VBFA_TASTCK, R_VBELNF, R_POSNRF.
+ENDFORM.                    " GET_ICT_TTA
+*&---------------------------------------------------------------------*
+*&      Form  GET_DETAIL_TTA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM GET_DETAIL_TTA .
+  LOOP AT IT_DETAIL.
+    LOOP AT IT_SO_TTA WHERE IHREZ_E = IT_DETAIL-IHREZ_E.
+      IT_DETAIL-TAWERKS = IT_SO_TTA-WERKS.
+      IT_DETAIL-TAMATNR = IT_SO_TTA-MATNR.
+      IT_DETAIL-TAVBELN = IT_SO_TTA-VBELN.
+      IT_DETAIL-TAPOSNR = IT_SO_TTA-POSNR.
+      SPLIT IT_SO_TTA-BSTKD_E AT '-' INTO IT_DETAIL-EBELN IT_DETAIL-EBELP.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+        EXPORTING
+          INPUT  = IT_DETAIL-EBELN
+        IMPORTING
+          OUTPUT = IT_DETAIL-EBELN.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+        EXPORTING
+          INPUT  = IT_DETAIL-EBELP
+        IMPORTING
+          OUTPUT = IT_DETAIL-EBELP.
+      LOOP AT IT_VBFA_TADLV WHERE VBELV = IT_SO_TTA-VBELN AND POSNV = IT_SO_TTA-POSN
+        IT_DETAIL-TAQTYD = IT_DETAIL-TAQTYD + 1.
+      ENDLOOP.
+      IF IT_SO_TTA-CUOBJ NE ''.
+        CLEAR: INSTANCE, ZCONFIGURATION.
+        MOVE IT_SO_TTA-CUOBJ TO INSTANCE.
+        REFRESH ZCONFIGURATION.
+        CALL FUNCTION 'VC_I_GET_CONFIGURATION_IBASE'  "CHANGED BY FATHIR ON 01.12.20
+          EXPORTING
+            INSTANCE      = INSTANCE
+          TABLES
+            CONFIGURATION = ZCONFIGURATION.
+        IF SY-SUBRC <> 0.
+        ENDIF.
+        CLEAR WCONFIGURATION.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZTYPE'.
+        IF SY-SUBRC = 0.
+          IT_DETAIL-TATYPE = WCONFIGURATION-ATWTB.
+        ENDIF.
+        CLEAR WCONFIGURATION.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZWIDTH'.
+        IF SY-SUBRC = 0.
+          IT_DETAIL-TAWIDTH = WCONFIGURATION-ATWTB.
+          REPLACE ALL OCCURRENCES OF REGEX ',' IN IT_DETAIL-TAWIDTH WITH ''.
+        ENDIF.
+        CLEAR WCONFIGURATION.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZLENGTH'.
+        IF SY-SUBRC = 0.
+          IT_DETAIL-TALENGTH = WCONFIGURATION-ATWTB.
+          REPLACE ALL OCCURRENCES OF REGEX ',' IN IT_DETAIL-TALENGTH WITH ''.
+        ENDIF.
+        CLEAR WCONFIGURATION.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZNUMBEROFRO
+        IF SY-SUBRC = 0.
+          IT_DETAIL-TAKWMENG_SOQTY = WCONFIGURATION-ATWRT.
+          REPLACE ALL OCCURRENCES OF REGEX 'ROL' IN IT_DETAIL-TAKWMENG_SOQTY WITH ''
+        ENDIF.
+        CLEAR WCONFIGURATION.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZTHICKNESS'
+        IF SY-SUBRC = 0.
+          IT_DETAIL-TATHICK = WCONFIGURATION-ATWTB.
+          SPLIT IT_DETAIL-TATHICK AT '.' INTO IT_DETAIL-TATHICK VPOINT.
+          IF V_POINT = '0' OR V_POINT = '00' OR V_POINT = '000'.
+          ELSE.
+            IT_DETAIL-TATHICK = WCONFIGURATION-ATWTB.
+          ENDIF.
+        ENDIF.
+        CLEAR WCONFIGURATION.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZCONVERSION
+        IF SY-SUBRC = 0.
+          IT_DETAIL-TACONVROLL = WCONFIGURATION-ATWTB.
+          REPLACE ALL OCCURRENCES OF REGEX 'Kg/Rol' IN IT_DETAIL-TACONVROLL WITH ''.
+        ENDIF.
+        CLEAR: WCONFIGURATION, V_TATREATMENT.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZTREATMENT'
+        IF SY-SUBRC = 0.
+          V_TATREATMENT = WCONFIGURATION-ATWRT.
+        ENDIF.
+        CLEAR: WCONFIGURATION, V_TACORE.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZCORE'.
+        IF SY-SUBRC = 0.
+          V_TACORE = WCONFIGURATION-ATWRT.
+        ENDIF.
+        CONCATENATE IT_DETAIL-TATYPE IT_DETAIL-TATHICK IT_DETAIL-TAWIDTH V_TATREATME
+      ENDIF.
+      IT_DETAIL-TASOQD = IT_DETAIL-TAKWMENG_SOQTY - IT_DETAIL-TAQTYD.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+        EXPORTING
+          INPUT  = IT_DETAIL-TAVBELN
+        IMPORTING
+          OUTPUT = IT_DETAIL-TAVBELN.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+        EXPORTING
+          INPUT  = IT_DETAIL-TAPOSNR
+        IMPORTING
+          OUTPUT = IT_DETAIL-TAPOSNR.
+      MOVE IT_DETAIL-TAQTYD TO IT_DETAIL-ZTAQTYD.
+      REPLACE ALL OCCURRENCES OF ',' IN IT_DETAIL-ZTAQTYD WITH ' '.
+      SPLIT IT_DETAIL-ZTAQTYD  AT '.' INTO IT_DETAIL-ZTAQTYD VPOINT.
+      MOVE IT_DETAIL-TASOQD TO IT_DETAIL-ZTASOQD.
+      REPLACE ALL OCCURRENCES OF ',' IN IT_DETAIL-ZTASOQD WITH ' '.
+      SPLIT IT_DETAIL-ZTASOQD  AT '.' INTO IT_DETAIL-ZTASOQD VPOINT.
+      MODIFY IT_DETAIL TRANSPORTING TAWERKS TAMATNR TAVBELN TAPOSNR TAKWMENG_SOQTY
+                                    TATYPE TAWIDTH TALENGTH TATHICK TACONVROLL
+                                    TACOMBINATION TAQTYD ZTAQTYD TASOQD ZTASOQD EBEL
+             WHERE IHREZ_E = IT_SO_TTA-IHREZ_E.
+    ENDLOOP.
+  ENDLOOP.
+ENDFORM.                    " GET_DETAIL_TTA
+*&---------------------------------------------------------------------*
+*&      Form  GET_PO_TRIAS
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM GET_PO_TRIAS .
+  LOOP AT IT_DETAIL.
+    LOOP AT IT_PO WHERE EBELN = IT_DETAIL-EBELN AND EBELP = IT_DETAIL-EBELP.
+      IT_DETAIL-TXZ01 = IT_PO-TXZ01.
+      LOOP AT IT_GR WHERE EBELN = IT_PO-EBELN AND EBELP = IT_PO-EBELP.
+        IF IT_GR-BWART = '101'.
+          IT_DETAIL-TSQTYGR_PO = IT_DETAIL-TSQTYGR_PO + 1.
+        ELSE.
+          IT_DETAIL-TSQTYGR_PO = IT_DETAIL-TSQTYGR_PO - 1.
+        ENDIF.
+      ENDLOOP.
+      IF IT_PO-CUOBJ NE ''.
+        CLEAR: INSTANCE, ZCONFIGURATION.
+        MOVE IT_PO-CUOBJ TO INSTANCE.
+        REFRESH ZCONFIGURATION.
+        CALL FUNCTION 'VC_I_GET_CONFIGURATION_IBASE'  "CHANGED BY FATHIR ON 26.11.20
+          EXPORTING
+            INSTANCE      = INSTANCE
+          TABLES
+            CONFIGURATION = ZCONFIGURATION.
+        CLEAR WCONFIGURATION.
+        READ TABLE ZCONFIGURATION INTO WCONFIGURATION WITH KEY ATNAM = 'ZZCONVERSION
+        IF SY-SUBRC = 0.
+          CLEAR: V_QTYCHARPO.
+          V_ZQTYCHARPO = WCONFIGURATION-ATWTB.
+          REPLACE ALL OCCURRENCES OF REGEX 'Kg/Rol' IN V_ZQTYCHARPO WITH ''.
+          REPLACE ALL OCCURRENCES OF REGEX ',' IN V_ZQTYCHARPO WITH ''.
+          MOVE V_ZQTYCHARPO TO V_QTYCHARPO.
+          IT_DETAIL-TSQTY_PO = IT_PO-MENGE / V_QTYCHARPO.
+        ENDIF.
+      ENDIF.
+      IT_DETAIL-TSQGR_PO = IT_DETAIL-TSQTY_PO - IT_DETAIL-TSQTYGR_PO.
+      MOVE IT_DETAIL-TSQTY_PO TO IT_DETAIL-ZTSQTY_PO.
+      MOVE IT_DETAIL-TSQTYGR_PO TO IT_DETAIL-ZTSQTYGR_PO.
+      MOVE IT_DETAIL-TSQGR_PO TO IT_DETAIL-ZTSQGR_PO.
+      MODIFY IT_DETAIL TRANSPORTING TXZ01 TSQTY_PO ZTSQTY_PO TSQTYGR_PO ZTSQTYGR_PO
+                                    TSQGR_PO ZTSQGR_PO
+             WHERE EBELN = IT_PO-EBELN AND EBELP = IT_PO-EBELP.
+    ENDLOOP.
+  ENDLOOP.
+ENDFORM.                    " GET_PO_TRIAS
+*&---------------------------------------------------------------------*
+*&      Form  GET_STOCK_TTA
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM GET_STOCK_TTA .
+  LOOP AT IT_DETAIL.
+    LOOP AT IT_SO_TTA WHERE IHREZ_E = IT_DETAIL-IHREZ_E.
+      READ TABLE IT_VBFA_TASTCK WITH KEY VBELN = IT_SO_TTA-VBELN POSNR = IT_SO_TTA-P
+      IF SY-SUBRC = 0.
+        IT_SO_TTA-VGBEL = IT_VBFA-VGBEL.
+        IT_SO_TTA-VGPOS = IT_VBFA-VGPOS.
+      ENDIF.
+      "CHANGED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to reduce page memory
+      CLEAR: INSTANCE, IT_CHAR_TTA, WA_CFG_TTA, VATINN1_TTA, VATINN2_TTA, IT_CHARAC.
+      REFRESH: IT_CHAR_TTA, IT_CHARAC.
+      MOVE IT_SO_TTA-CUOBJ TO INSTANCE.
+      CALL FUNCTION 'CUCB_GET_SINGLE_INSTANCE'
+        EXPORTING
+          INSTANCE         = INSTANCE
+        IMPORTING
+          INSTANCE_REC     = WA_CFG_TTA
+        EXCEPTIONS
+          INVALID_INSTANCE = 1
+          OTHERS           = 2.
+      "ADDED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to reduce page memory
+      CLEAR: WA_VALTAB.
+      LOOP AT WA_CFG-VALUES INTO WA_VALTAB.
+        CLEAR: WA_CABN.
+        READ TABLE IT_CABN INTO WA_CABN WITH KEY ATINN = WA_VALTAB-ATINN.
+        IT_CHARAC-ATNAM = WA_CABN-ATNAM.
+        IT_CHARAC-ATINN = WA_VALTAB-ATINN.
+        IT_CHARAC-ATWRT = WA_VALTAB-ATWRT.
+        IT_CHARAC-ATFLV = WA_VALTAB-ATFLV.
+        IT_CHARAC-SYMBOL_ID = WA_VALTAB-SYMBOL_ID.
+        APPEND IT_CHARAC.
+      ENDLOOP.
+      "CHANGED BY FATHIR ON 01.12.2020 - TRDK917816 - tuning to reduce page memory
+      LOOP AT IT_CHARAC.
+        IF IT_CHARAC-ATNAM = 'ZZNUMBEROFSHEET'.
+          IT_SO_TTA-NUMOFSHEET = IT_CHARAC-ATFLV.
+        ELSEIF IT_CHARAC-ATNAM = 'ZZCONVERSIONPACKG'.
+          IT_SO_TTA-CONVKG = IT_CHARAC-ATFLV.
+        ELSEIF IT_CHARAC-ATNAM = 'ZZCONVERSIONROLLKG'.
+          IT_SO_TTA-CONVKG = IT_CHARAC-ATFLV.
+        ELSEIF IT_CHARAC-ATNAM = 'ZZNUMBEROFROLL'.
+          IF IT_SO_TTA-VGBEL IS NOT INITIAL.
+            IT_SO_TTA-CONVKG = WA_CFGI_TTA-ATFLV.
+          ENDIF.
+        ENDIF.
+        IF IT_DETAIL-CONVKG IS NOT INITIAL AND IT_DETAIL-ZKWMENG1 IS NOT INITIAL AND
+          IT_DETAIL-ZKWMENG2 = IT_DETAIL-ZKWMENG1 * IT_DETAIL-CONVKG.
+        ELSEIF IT_DETAIL-CONVKG IS NOT INITIAL AND IT_DETAIL-ZKWMENG1 IS NOT INITIAL
+          IT_DETAIL-ZKWMENG2 = IT_DETAIL-ZKWMENG2 * IT_DETAIL-CONVKG.
+        ENDIF.
+        MODIFY IT_DETAIL.
+      ENDLOOP.
+      LOOP AT IT_MSKA_TTA WHERE VBELN = IT_SO_TTA-VBELN AND POSNR = IT_SO_TTA-POSNR.
+        CLEAR: VKALAB2_TTA.
+*  - PRD
+        IF IT_MSKA_TTA-WERKS = 'TTA2'
+           AND ( IT_MSKA_TTA-LGORT = '2306' OR IT_MSKA_TTA-LGORT = '2308').
+          VKALAB2_TTA = IT_MSKA_TTA-KALAB + IT_MSKA_TTA-KASPE.
+          IF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME NE 'PAK'.
+            IT_DETAIL-TAPROD = IT_DETAIL-TAPROD + ( VKALAB2_TTA / IT_SO_TTA-CONVKG )
+          ELSEIF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME EQ 'PAK'.
+            IT_DETAIL-TAPROD = IT_DETAIL-TAPROD + ( ( VKALAB2_TTA / IT_SO_TTA-CONVKG
+          ENDIF.
+          CLEAR : VKALAB2_TTA.
+*  - FGS
+        ELSEIF IT_MSKA_TTA-WERKS = 'TTA2'
+             AND ( IT_MSKA_TTA-LGORT = '1801' OR IT_MSKA_TTA-LGORT = '1802' OR
+                   IT_MSKA_TTA-LGORT = '1806' OR IT_MSKA_TTA-LGORT = '1STS' OR
+                   IT_MSKA_TTA-LGORT = '1810' OR IT_MSKA_TTA-LGORT = '1813').
+          VKALAB2_TTA = IT_MSKA_TTA-KALAB + IT_MSKA_TTA-KASPE.
+          IF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME NE 'PAK'.
+            IT_DETAIL-TAFGS = IT_DETAIL-TAFGS + ( VKALAB2_TTA / IT_SO_TTA-CONVKG ).
+          ELSEIF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME EQ 'PAK'.
+            IT_DETAIL-TAFGS = IT_DETAIL-TAFGS + ( ( VKALAB2_TTA / IT_SO_TTA-CONVKG )
+          ENDIF.
+          CLEAR : VKALAB2_TTA.
+        ELSEIF IT_MSKA_TTA-WERKS = 'TTA2'
+             AND ( IT_MSKA_TTA-LGORT = '2801' OR IT_MSKA_TTA-LGORT = '2802' OR IT_MS
+                   IT_MSKA_TTA-LGORT = '2805' OR IT_MSKA_TTA-LGORT = '2806' OR IT_MS
+                   IT_MSKA_TTA-LGORT = '2808' OR IT_MSKA_TTA-LGORT = '2810' OR IT_MS
+                   IT_MSKA_TTA-LGORT = '2STS' ).
+          VKALAB2_TTA = IT_MSKA_TTA-KALAB + IT_MSKA_TTA-KASPE.
+          IF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME NE 'PAK'.
+            IT_DETAIL-TAFGS = IT_DETAIL-TAFGS + ( VKALAB2_TTA / IT_SO_TTA-CONVKG ).
+          ELSEIF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME EQ 'PAK'.
+            IT_DETAIL-TAFGS = IT_DETAIL-TAFGS + ( ( VKALAB2_TTA / IT_SO_TTA-CONVKG )
+          ENDIF.
+          CLEAR : VKALAB2_TTA.
+        ELSEIF IT_MSKA_TTA-WERKS = 'TTA2'
+             AND ( IT_MSKA_TTA-LGORT = '3801' OR IT_MSKA_TTA-LGORT = '3802' OR
+                   IT_MSKA_TTA-LGORT = '3810' OR IT_MSKA_TTA-LGORT = '3STS').
+          VKALAB2_TTA = IT_MSKA_TTA-KALAB + IT_MSKA_TTA-KASPE.
+          IF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME NE 'PAK'.
+            IT_DETAIL-TAFGS = IT_DETAIL-TAFGS + ( VKALAB2_TTA / IT_SO_TTA-CONVKG ).
+          ELSEIF IT_SO_TTA-CONVKG NE SPACE AND IT_SO_TTA-VRKME EQ 'PAK'.
+            IT_DETAIL-TAFGS = IT_DETAIL-TAFGS + ( ( VKALAB2_TTA / IT_SO_TTA-CONVKG )
+          ENDIF.
+          CLEAR : VKALAB2_TTA.
+        ENDIF.
+      ENDLOOP.
+      MODIFY IT_SO_TTA TRANSPORTING VGBEL VGPOS CONVKG NUMOFSHEET.
+      MOVE IT_DETAIL-TAPROD TO IT_DETAIL-ZTAPROD.
+      REPLACE ALL OCCURRENCES OF ',' IN IT_DETAIL-ZTAPROD WITH ' '.
+      SPLIT IT_DETAIL-ZTAPROD  AT '.' INTO IT_DETAIL-ZTAPROD VPOINT.
+      MOVE IT_DETAIL-TAFGS TO IT_DETAIL-ZTAFGS.
+      REPLACE ALL OCCURRENCES OF ',' IN IT_DETAIL-ZTAFGS WITH ' '.
+      SPLIT IT_DETAIL-ZTAFGS  AT '.' INTO IT_DETAIL-ZTAFGS VPOINT.
+      MODIFY IT_DETAIL TRANSPORTING TAPROD TAFGS ZTAPROD ZTAFGS
+             WHERE IHREZ_E = IT_SO_TTA-IHREZ_E.
+    ENDLOOP.
+  ENDLOOP.
+ENDFORM.                    " GET_STOCK_TTA
+*&---------------------------------------------------------------------*
+*&      Form  F_SET_ATNAM
+*&---------------------------------------------------------------------*
+*       ADDED BY FATHIR ON 01.12.2020 - TRDK917816
+*       fine tuning, set ranges ATNAM
+*----------------------------------------------------------------------*
+FORM F_SET_ATNAM.
+  CLEAR: R_ATNAM. REFRESH: R_ATNAM.
+  R_ATNAM-SIGN = 'I'.
+  R_ATNAM-OPTION = 'EQ'.
+  R_ATNAM-LOW = 'ZZCODE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZTYPE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZTHICKNESS'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZEXPIREDLIVE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZCORE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZWIDTH'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZLENGTH'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZTREATMENT'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZINSIDE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZOUTSIDE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZCONVERSIONMTRKG'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZCONVERSIONROLLKG'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZWEIGTHTOTAL'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZNUMBEROFROLL'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZTOTALM2'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZCRITERIA'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZDENSITY'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZGRAMMAGE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZLABEL'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZPACKING'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZPEMBILANGASAL'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZPENYEBUTASAL'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZPEMBILANGBARU'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZPENYEBUTBARU'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZCONVERSIONKGM2'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZCONVERSIONROLLM2'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZORDERUOM'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZORDERQTYREAD'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZORDERQTY'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZORDERQTYSET'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZORDERQTYWRITE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZEXLENGTH'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZWEIGHTEL'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZPACKINGCODE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZLENGTHSHT'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZALIAS'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZGRADE'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZNUMBEROFSHEET'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZCONVERSIONPACKG'. APPEND R_ATNAM.
+  R_ATNAM-LOW = 'ZZNUMOFPACK'. APPEND R_ATNAM.
+  "add by Ryan - 14.05.2025 | SubCont Project CKI
+  R_ATNAM-LOW = 'ZZSKU'. APPEND R_ATNAM.
+  "end - add by Ryan - 14.05.2025 | SubCont Project CKI
+  SELECT ATINN ATNAM INTO CORRESPONDING FIELDS OF TABLE IT_CABN
+    FROM CABN WHERE ATNAM IN R_ATNAM.
+  SORT IT_CABN BY ATINN.
+ENDFORM.                    "F_SET_ATNAM

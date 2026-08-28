@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Process Flow PO Release — AS-IS vs TO-BE</title>
+<style>
+  :root{
+    --text:#1f2328; --muted:#6b7280; --border:#d9dde2; --bg2:#f6f7f9;
+    --accent:#c8622d; --accent-bg:#fbf1ea;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,Segoe UI,Roboto,system-ui,sans-serif;color:var(--text);
+       margin:0;padding:28px 20px 40px;background:#fff;line-height:1.4;}
+  .head{max-width:980px;margin:0 auto 20px;}
+  .head h1{font-size:20px;margin:0 0 4px;}
+  .head p{font-size:12.5px;color:var(--muted);margin:0;}
+  .cols{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:700px){.cols{grid-template-columns:1fr;}}
+  .col h3{font-size:15px;margin:0 0 3px;}
+  .tag{font-size:11px;font-weight:600;color:var(--muted);margin:0 0 12px;}
+  .step{border:1px solid var(--border);border-radius:10px;padding:9px 11px;background:var(--bg2);}
+  .step .t{font-size:12.5px;font-weight:650;}
+  .step .d{font-size:11px;color:var(--muted);margin-top:2px;}
+  .conn{width:2px;height:14px;background:var(--border);margin:0 auto;}
+  .branch{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+  .branch .step{padding:8px;}
+  .branch .t{font-size:11.5px;}
+  .branch .d{font-size:10px;}
+  .acc{border-color:var(--accent);background:var(--accent-bg);}
+  .acc .t{color:var(--accent);}
+  .plan{border-style:dashed;opacity:.75;}
+  .pin{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:20px;margin-left:5px;vertical-align:middle;}
+  .pin.live{background:var(--accent);color:#fff;}
+  .pin.plan{background:transparent;border:1px dashed var(--muted);color:var(--muted);}
+  .legend{max-width:980px;margin:16px auto 0;display:flex;gap:18px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);align-items:center;}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .pain{margin-top:10px;font-size:11px;color:var(--muted);border-left:3px solid var(--border);padding:4px 0 4px 9px;}
+  .foot{max-width:980px;margin:22px auto 0;font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Process Flow — Release Purchase Order</h1>
+    <p>AS-IS (manual) vs TO-BE (otomatis via ZMMI_PO_RELEASE_PHASE2). Sistem TRS / ECC 6.0. Sumber: thread email "Purchasing Restructure" + implementasi Sprint 1–2.</p>
+  </div>
+
+  <div class="cols">
+    <div class="col">
+      <h3>AS-IS — Manual</h3>
+      <div class="tag">Kondisi sekarang, semua release manual</div>
+      <div class="step"><div class="t">Buyer buat PO — ME21N</div><div class="d">PO ter-block, FRGRL = 'X'</div></div>
+      <div class="conn"></div>
+      <div class="step"><div class="t">Masuk antrian release</div><div class="d">Semua nilai PO, tanpa filter</div></div>
+      <div class="conn"></div>
+      <div class="step"><div class="t">Approver cek satu per satu</div><div class="d">ME28 / ME29N, tanpa notifikasi</div></div>
+      <div class="conn"></div>
+      <div class="step"><div class="t">Evaluasi manual</div><div class="d">Nilai, vendor, harga dinilai sendiri</div></div>
+      <div class="conn"></div>
+      <div class="step"><div class="t">Release / tolak manual</div><div class="d">GM &amp; lead jadi bottleneck</div></div>
+      <div class="pain">Masalah: PO kecil ikut antre, GM overload, tak ada penanda risiko (vendor/harga), tak ada reminder, proses lambat.</div>
+    </div>
+
+    <div class="col">
+      <h3>TO-BE — Otomatis</h3>
+      <div class="tag">ZMMI_PO_RELEASE_PHASE2 (background job)</div>
+      <div class="step"><div class="t">Buyer buat PO — ME21N</div><div class="d">PO ter-block, FRGRL = 'X'</div></div>
+      <div class="conn"></div>
+      <div class="step acc"><div class="t">Background job jalan<span class="pin live">LIVE</span></div><div class="d">Terjadwal, baca PO pending</div></div>
+      <div class="conn"></div>
+      <div class="step acc"><div class="t">Hitung USD &amp; tentukan tier<span class="pin live">LIVE</span></div><div class="d">Kurs tgl PO → mapping ZMAP_TYPE</div></div>
+      <div class="conn"></div>
+      <div class="branch">
+        <div class="step acc"><div class="t">T0 &lt; $500</div><div class="d">AUTO release (BAPI)</div></div>
+        <div class="step acc"><div class="t">T1 $500–5k</div><div class="d">Route Purch. Lead</div></div>
+        <div class="step acc"><div class="t">T2 &gt; $5k</div><div class="d">Route GM Purch.</div></div>
+      </div>
+      <div class="conn"></div>
+      <div class="step acc"><div class="t">Exception flagging (T1/T2)<span class="pin live">LIVE</span></div><div class="d">Vendor/Material baru, HrgNaik, Stale, Svc/Capex</div></div>
+      <div class="conn"></div>
+      <div class="step plan"><div class="t">Email notif ke approver<span class="pin plan">RENCANA</span></div><div class="d">Blocker: SMTP/SCOT belum di-setup</div></div>
+      <div class="conn"></div>
+      <div class="step"><div class="t">Approver review &amp; release</div><div class="d">Flag terlihat → ME29N (T1/T2)</div></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><span class="pin live">LIVE</span> sudah jalan di sandbox TRS</span>
+    <span><span class="pin plan">RENCANA</span> belum / diblokir dependency</span>
+    <span>Approval tetap di dalam SAP — email hanya reminder</span>
+  </div>
+
+  <div class="foot">
+    Belum diterapkan di TO-BE: email notifikasi (blocker SMTP), aksi hilir exception, data GM asli, keputusan boundary tier, konstanta ke ZMAP_TYPE, optimasi performa lookup, transport ke DEV/QAS/PRD, penjadwalan job SM36. Semua masih di $TMP / sandbox TRS.
+  </div>
+</body>
+</html>

@@ -67,6 +67,26 @@ File tersebut berisi user, password, client, dan host untuk setiap server. Gunak
 - MCP SAP digunakan **diam-diam (background)** sebagai penunjang transaksi, bukan pengganti SAP GUI untuk eksekusi
 - Sebelum query MCP, **set active server** yang sesuai (sandbox/dev/prod)
 
+### Pengecualian: Posting/Eksekusi via RFC (MCP SAP)
+
+Default tetap **SAP GUI** untuk semua transaksi posting/eksekusi. Namun RFC via MCP SAP (`call_function`, mis. `BAPI_GOODSMVT_CREATE` untuk MB11, dll) boleh dipakai untuk posting/eksekusi **jika semua syarat berikut terpenuhi**:
+
+1. **User secara eksplisit meminta RFC** (contoh: "pakai RFC aja", "posting via RFC/BAPI") — Claude **tidak boleh** berinisiatif sendiri memilih RFC untuk posting tanpa diminta. Default tanpa permintaan eksplisit tetap SAP GUI.
+2. **Dilarang total di server Production (PRT/TRP)** — di Production, posting **wajib** via SAP GUI, tanpa pengecualian, walaupun user memintanya.
+3. Boleh dipakai di server non-Production (`sandbox-new`, `sandbox`/`eccdevlinux`, Dev AIX, Dev Windows, QA) — biasanya untuk kebutuhan testing/data dummy.
+4. Tetap ikuti **Urutan Wajib Sebelum Eksekusi Transaksi SAP** (RAG → verifikasi master data) sebelum posting via RFC — evidence dulu, baru eksekusi.
+5. Setelah posting via RFC, tetap laporkan hasilnya ke user (dokumen material/BAPI return message) seperti halnya laporan hasil transaksi GUI.
+
+### Pengecualian: Posting/Eksekusi via RFC (MCP SAP)
+
+Default tetap **SAP GUI** untuk semua transaksi posting/eksekusi. Namun RFC via MCP SAP (`call_function`, mis. `BAPI_GOODSMVT_CREATE` untuk MB11, dll) boleh dipakai untuk posting/eksekusi **jika semua syarat berikut terpenuhi**:
+
+1. **User secara eksplisit meminta RFC** (contoh: "pakai RFC aja", "posting via RFC/BAPI") — Claude **tidak boleh** berinisiatif sendiri memilih RFC untuk posting tanpa diminta. Default tanpa permintaan eksplisit tetap SAP GUI.
+2. **Dilarang total di server Production (PRT/TRP)** — di Production, posting **wajib** via SAP GUI, tanpa pengecualian, walaupun user memintanya.
+3. Boleh dipakai di server non-Production (`sandbox-new`, `sandbox`/`eccdevlinux`, Dev AIX, Dev Windows, QA) — biasanya untuk kebutuhan testing/data dummy.
+4. Tetap ikuti **Urutan Wajib Sebelum Eksekusi Transaksi SAP** (RAG → verifikasi master data) sebelum posting via RFC — evidence dulu, baru eksekusi.
+5. Setelah posting via RFC, tetap laporkan hasilnya ke user (dokumen material/BAPI return message) seperti halnya laporan hasil transaksi GUI.
+
 **SAP Server yang tersedia (via MCP SAP):**
 - `sandbox-new` = Sandbox New Company (TRS / 192.168.6.243, client 130) — untuk testing BB2
 - `sandbox` / `eccdevlinux` = Sandbox Build Competence (TRD / 192.168.88.199)

@@ -75,6 +75,16 @@ File tersebut berisi user, password, client, dan host untuk setiap server. Gunak
 - MCP SAP digunakan **diam-diam (background)** sebagai penunjang transaksi, bukan pengganti SAP GUI untuk eksekusi
 - Sebelum query MCP, **set active server** yang sesuai (sandbox/dev/prod)
 
+### Aturan RFC untuk Posting / Eksekusi
+
+**Default:** semua transaksi posting/eksekusi **wajib via SAP GUI**, kecuali user secara eksplisit meminta RFC.
+
+**Pengecualian — RFC boleh digunakan untuk posting/testing, dengan syarat:**
+1. User **secara eksplisit** meminta ("pakai RFC aja", "posting via RFC", dsb) — bukan inisiatif atau asumsi Claude
+2. **Dilarang di server Production (PRT / TRP)** — di Production, posting tetap wajib via SAP GUI tanpa pengecualian
+3. **Boleh di server non-Production** (sandbox-new, sandbox/eccdevlinux, Dev AIX, Dev Windows, QA) untuk kebutuhan testing atau input data dummy
+4. Tetap ikuti urutan wajib (RAG SAP → verifikasi master data via MCP SAP) sebelum eksekusi via RFC
+
 **SAP Server yang tersedia (via MCP SAP):**
 - `sandbox-new` = Sandbox New Company (TRS / 192.168.6.243, client 130) — untuk testing BB2
 - `sandbox` / `eccdevlinux` = Sandbox Build Competence (TRD / 192.168.88.199)

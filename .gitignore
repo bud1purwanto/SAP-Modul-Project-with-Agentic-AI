@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Logs & RFC runtime files
+*.log
+_noderfc.log
+dev_rfc.log
+
+# Microsoft Office / LibreOffice temporary lock files
+~$*
+.~lock.*#
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Tool state & local caches
+.superpowers/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
