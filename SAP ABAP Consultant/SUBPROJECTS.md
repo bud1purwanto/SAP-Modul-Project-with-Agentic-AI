@@ -14,7 +14,9 @@ SAP ABAP Consultant/
 │   ├── PO_AUTO_RELEASE/
 │   ├── PO_EMAIL/
 │   ├── AUTO_TECO/
-│   └── COA/
+│   ├── COA/
+│   ├── BARRIER/
+│   └── GI_JR_CLOSING/
 ├── _SHARED/                <- helper generik lintas program
 └── _REVIEW_IMAGES/         <- screenshot lama belum teridentifikasi
 ```
@@ -38,6 +40,7 @@ Setiap sub-project memakai subfolder standar:
 | `subproject/AUTO_TECO/` | `ZPPI_COHVPI` | Auto TECO Production Order (interface MES), FS Auto TECO, validasi status order, email notif TECO | cohvpi, zppi, teco, auto teco, zpp001, zppr, production order |
 | `subproject/COA/` | `ZQMI_COA` / `ZQMR_COA` (include `ZQMI_CERTIFICATE_F01`) | Certificate of Analysis — mode print (ZQM002) & ALV (ZQM003) via cabang `SY-TCODE`, perbaikan decimal MIC dari master QPMK, bootstrap patcher `ZTMP*` | coa, zqmi_coa, zqmr_coa, zqm002, zqm003, certificate, MIC, QPMK, decimal |
 | `subproject/BARRIER/` | `ZQMI_PENDING_BARRIER` | Barrier Inspection List & Upload (ZQM004), Result Recording & Usage Decision untuk karakteristik barrier (WVTR/MVTR, OTR/O2TR) | barrier, pending barrier, zqmi_pending_barrier, zqm004, wvtr, otr, mvtr, o2tr, barrier judgement |
+| `subproject/GI_JR_CLOSING/` | `ZPPR_GI_JR_CLOSING` | Observasi closing PP: exception GI Jumbo Roll vs GR (tanpa 261, selisih toleransi, GI < GR), ALV report & email notifikasi per line | gi jr closing, zppr_gi_jr_closing, jumbo roll, gi jr, closing pp, gi vs gr, zzprodline, zznomorroll |
 
 ## Folder Non-Sub-Project
 

@@ -1,7 +1,10 @@
 import { pathToFileURL } from 'node:url';
 
+import path from 'node:path';
+
+const userProfile = process.env.USERPROFILE || 'C:\\Users\\User';
 const registryPath =
-  'C:\\Users\\Lenovo\\Documents\\Claude\\MCP SAP\\sap-leader-mcp\\src\\tool-registry.js';
+  path.join(userProfile, 'Documents', 'Claude', 'MCP SAP', 'sap-leader-mcp', 'src', 'tool-registry.js');
 
 const toolName = process.argv[2];
 const rawArguments = process.argv[3] || '{}';

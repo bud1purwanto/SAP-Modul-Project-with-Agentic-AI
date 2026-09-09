@@ -81,7 +81,6 @@ TYPES: BEGIN OF TY_EXC_RULE,
 TYPES: BEGIN OF TY_EKPOD,
          EBELP TYPE EKPO-EBELP,
          MATNR TYPE EKPO-MATNR,
-         WERKS TYPE EKPO-WERKS,
          TXZ01 TYPE EKPO-TXZ01,
          NETPR TYPE EKPO-NETPR,
          PEINH TYPE EKPO-PEINH,
@@ -133,35 +132,25 @@ TYPES: BEGIN OF TY_RESULT,
          MESSAGE   TYPE BAPI_MSG,
        END OF TY_RESULT.
 
-* Struktur header penerima email (1 email per recipient)
-TYPES: BEGIN OF TY_RECIP_HDR,
-         RECIPIENT_MAIL TYPE AD_SMTPADR,
-         RECIPIENT_NAME TYPE ZMAP_TYPE-VALUE,
-         RECIPIENT_SEX  TYPE ZMAP_TYPE-TEXT3,
-       END OF TY_RECIP_HDR.
-
-* Struktur pengumpul email per item PO & recipient
+* Struktur pengumpul email: APPR_OPT WAJIB field pertama (utk AT NEW)
+* Satu baris = satu ITEM PO, selaras dgn TY_RESULT.
 TYPES: BEGIN OF TY_MAIL,
-         RECIPIENT_MAIL TYPE AD_SMTPADR,
-         RECIPIENT_NAME TYPE ZMAP_TYPE-VALUE,
-         RECIPIENT_SEX  TYPE ZMAP_TYPE-TEXT3,
-         APPR_OPT       TYPE ZMAP_TYPE-OPT,
-         EBELN          TYPE EKKO-EBELN,
-         EBELP          TYPE EKPO-EBELP,
-         EKGRP          TYPE EKKO-EKGRP,
-         BSART          TYPE EKKO-BSART,
-         BSART_DESC     TYPE T161T-BATXT,
-         LIFNR          TYPE EKKO-LIFNR,
-         NAME1          TYPE LFA1-NAME1,
-         MATNR          TYPE EKPO-MATNR,
-         TXZ01          TYPE EKPO-TXZ01,
-         WAERS          TYPE EKKO-WAERS,
-         PRICE_NATIVE   TYPE P DECIMALS 2,
-         PRICE_USD      TYPE P DECIMALS 2,
-         MEINS          TYPE EKPO-MEINS,
-         TIER           TYPE ZMAP_TYPE-OPT,
-         EXC_FLAG       TYPE CHAR1,
-         EXC_REASON     TYPE C LENGTH 120,
+         APPR_OPT   TYPE ZMAP_TYPE-OPT,
+         EBELN      TYPE EKKO-EBELN,
+         EBELP      TYPE EKPO-EBELP,
+         BSART      TYPE EKKO-BSART,
+         BSART_DESC TYPE T161T-BATXT,
+         LIFNR      TYPE EKKO-LIFNR,
+         NAME1      TYPE LFA1-NAME1,
+         MATNR      TYPE EKPO-MATNR,
+         TXZ01      TYPE EKPO-TXZ01,
+         WAERS      TYPE EKKO-WAERS,
+         PRICE_NATIVE TYPE P DECIMALS 2,
+         PRICE_USD    TYPE P DECIMALS 2,
+         MEINS      TYPE EKPO-MEINS,
+         TIER       TYPE ZMAP_TYPE-OPT,
+         EXC_FLAG   TYPE CHAR1,
+         EXC_REASON TYPE C LENGTH 120,
        END OF TY_MAIL.
 
 DATA: LT_EKKO      TYPE STANDARD TABLE OF TY_EKKO,
@@ -277,10 +266,28 @@ CLASS LCL_EVENT_HANDLER IMPLEMENTATION.
     LS_TOOLBAR-BUTN_TYPE = 0. " Normal Button
     INSERT LS_TOOLBAR INTO E_OBJECT->MT_TOOLBAR INDEX 1.
 
-    " Tambahkan pemisah di sebelah kanan tombol (Index 2)
+    " Sisipkan tombol Select All Checkbox (Index 2)
+    CLEAR LS_TOOLBAR.
+    LS_TOOLBAR-FUNCTION  = 'CHK_ALL'.
+    LS_TOOLBAR-ICON      = ICON_SELECT_ALL. " '@4B@'
+    LS_TOOLBAR-TEXT      = 'Select All'.
+    LS_TOOLBAR-QUICKINFO = 'Select All Checkbox'.
+    LS_TOOLBAR-BUTN_TYPE = 0.
+    INSERT LS_TOOLBAR INTO E_OBJECT->MT_TOOLBAR INDEX 2.
+
+    " Sisipkan tombol Unselect All Checkbox (Index 3)
+    CLEAR LS_TOOLBAR.
+    LS_TOOLBAR-FUNCTION  = 'CHK_DALL'.
+    LS_TOOLBAR-ICON      = ICON_DESELECT_ALL. " '@4D@'
+    LS_TOOLBAR-TEXT      = 'Unselect All'.
+    LS_TOOLBAR-QUICKINFO = 'Unselect All Checkbox'.
+    LS_TOOLBAR-BUTN_TYPE = 0.
+    INSERT LS_TOOLBAR INTO E_OBJECT->MT_TOOLBAR INDEX 3.
+
+    " Tambahkan pemisah di sebelah kanan tombol (Index 4)
     CLEAR LS_TOOLBAR.
     LS_TOOLBAR-BUTN_TYPE = 3. " Separator
-    INSERT LS_TOOLBAR INTO E_OBJECT->MT_TOOLBAR INDEX 2.
+    INSERT LS_TOOLBAR INTO E_OBJECT->MT_TOOLBAR INDEX 4.
   ENDMETHOD.                    "ON_TOOLBAR
 
   METHOD ON_USER_COMMAND.
@@ -290,6 +297,51 @@ CLASS LCL_EVENT_HANDLER IMPLEMENTATION.
 
     IF E_UCOMM EQ 'REL_PO'.
       PERFORM F_RELEASE_SELECTED_PO.
+
+      CALL FUNCTION 'GET_GLOBALS_FROM_SLVC_FULLSCR'
+        IMPORTING
+          E_GRID = LR_GRID.
+
+      IF LR_GRID IS BOUND.
+        LS_STBL-ROW = 'X'.
+        LS_STBL-COL = 'X'.
+        CALL METHOD LR_GRID->REFRESH_TABLE_DISPLAY
+          EXPORTING
+            IS_STABLE = LS_STBL.
+      ENDIF.
+    ELSEIF E_UCOMM EQ 'CHK_ALL'.
+      REFRESH GT_SELECTED_EBELN.
+      LOOP AT LT_RESULT INTO LS_RESULT.
+        LV_IDX = SY-TABIX.
+        READ TABLE GT_SELECTED_EBELN WITH KEY TABLE_LINE = LS_RESULT-EBELN
+             TRANSPORTING NO FIELDS.
+        IF SY-SUBRC <> 0.
+          APPEND LS_RESULT-EBELN TO GT_SELECTED_EBELN.
+        ENDIF.
+        LS_RESULT-SEL        = 'X'.
+        LS_RESULT-LINE_COLOR = 'C310'.
+        MODIFY LT_RESULT FROM LS_RESULT INDEX LV_IDX TRANSPORTING SEL LINE_COLOR.
+      ENDLOOP.
+
+      CALL FUNCTION 'GET_GLOBALS_FROM_SLVC_FULLSCR'
+        IMPORTING
+          E_GRID = LR_GRID.
+
+      IF LR_GRID IS BOUND.
+        LS_STBL-ROW = 'X'.
+        LS_STBL-COL = 'X'.
+        CALL METHOD LR_GRID->REFRESH_TABLE_DISPLAY
+          EXPORTING
+            IS_STABLE = LS_STBL.
+      ENDIF.
+    ELSEIF E_UCOMM EQ 'CHK_DALL'.
+      REFRESH GT_SELECTED_EBELN.
+      LOOP AT LT_RESULT INTO LS_RESULT.
+        LV_IDX = SY-TABIX.
+        LS_RESULT-SEL        = SPACE.
+        LS_RESULT-LINE_COLOR = SPACE.
+        MODIFY LT_RESULT FROM LS_RESULT INDEX LV_IDX TRANSPORTING SEL LINE_COLOR.
+      ENDLOOP.
 
       CALL FUNCTION 'GET_GLOBALS_FROM_SLVC_FULLSCR'
         IMPORTING
@@ -686,7 +738,7 @@ START-OF-SELECTION.
 
 *     --- 4e-4. Ambil semua item PO ini -> satu baris output per item ---
       REFRESH LT_EKPOD.
-      SELECT EBELP MATNR WERKS TXZ01 NETPR PEINH BPRME MEINS NETWR PSTYP KNTTP RETPO
+      SELECT EBELP MATNR TXZ01 NETPR PEINH BPRME MEINS NETWR PSTYP KNTTP RETPO
         INTO TABLE LT_EKPOD
         FROM EKPO
         WHERE EBELN = LS_EKKO-EBELN
@@ -816,16 +868,12 @@ START-OF-SELECTION.
                                CHANGING LS_LASTM LV_HASMAT.
           ENDIF.
 
-*         Kolom Report: Last Price dinamis berbasis Plant (T001W)
-          IF P_RPT EQ 'X'.
-            PERFORM F_GET_LPRINT USING LS_EKPOD-WERKS
-                                       LS_EKPOD-MATNR
-                                       LS_EKKO-EBELN
-                                       LS_EKPOD-EBELP
-                                       LS_EKKO-WAERS
-                                       LS_EKKO-BSART
-                                       LS_EKPOD-BPRME
-                                 CHANGING LS_RESULT-LAST_PRICE.
+*         Kolom Report: Hitung Last Price dari data histori (hanya bila mode Report)
+          IF P_RPT EQ 'X' AND LV_HASMAT EQ 'X'.
+            PERFORM F_CALC_LAST_PRICE USING LS_LASTM
+                                            LS_EKKO-WAERS
+                                            LS_EKPOD-BPRME
+                                   CHANGING LS_RESULT-LAST_PRICE.
           ENDIF.
 
 *         Sumbu MATERIAL:
@@ -848,38 +896,26 @@ START-OF-SELECTION.
 
         LS_RESULT-EXC_FLAG = LV_EXC.
 
-*       --- Kumpulkan utk email per recipient (hanya bila approver ketemu) ---
+*       --- Kumpulkan utk email (hanya bila approver ketemu) ---
         IF LS_RESULT-APPR_OPT IS NOT INITIAL.
-          LOOP AT LT_APPROVER INTO LS_APPROVER WHERE OPT = LS_RESULT-APPR_OPT.
-            CLEAR LV_MAILTO.
-            PERFORM F_BUILD_EMAIL USING LS_APPROVER-TEXT1 LS_APPROVER-TEXT2
-                                  CHANGING LV_MAILTO.
-            IF LV_MAILTO CS '@'.
-              TRANSLATE LV_MAILTO TO LOWER CASE.
-              CLEAR LS_MAIL.
-              LS_MAIL-RECIPIENT_MAIL = LV_MAILTO.
-              LS_MAIL-RECIPIENT_NAME = LS_APPROVER-VALUE.
-              LS_MAIL-RECIPIENT_SEX  = LS_APPROVER-TEXT3.
-              LS_MAIL-APPR_OPT       = LS_RESULT-APPR_OPT.
-              LS_MAIL-EBELN          = LS_RESULT-EBELN.
-              LS_MAIL-EBELP          = LS_RESULT-EBELP.
-              LS_MAIL-EKGRP          = LS_EKKO-EKGRP.
-              LS_MAIL-BSART          = LS_RESULT-BSART.
-              LS_MAIL-BSART_DESC     = LS_RESULT-BSART_DESC.
-              LS_MAIL-LIFNR          = LS_RESULT-LIFNR.
-              LS_MAIL-NAME1          = LS_RESULT-NAME1.
-              LS_MAIL-MATNR          = LS_RESULT-MATNR.
-              LS_MAIL-TXZ01          = LS_RESULT-TXZ01.
-              LS_MAIL-WAERS          = LS_RESULT-WAERS.
-              LS_MAIL-PRICE_NATIVE   = LS_RESULT-PRICE_NATIVE.
-              LS_MAIL-PRICE_USD      = LS_RESULT-PRICE_USD.
-              LS_MAIL-MEINS          = LS_RESULT-MEINS.
-              LS_MAIL-TIER           = LS_RESULT-TIER.
-              LS_MAIL-EXC_FLAG       = LS_RESULT-EXC_FLAG.
-              LS_MAIL-EXC_REASON     = LS_RESULT-EXC_REASON.
-              APPEND LS_MAIL TO GT_MAIL.
-            ENDIF.
-          ENDLOOP.
+          CLEAR LS_MAIL.
+          LS_MAIL-APPR_OPT     = LS_RESULT-APPR_OPT.
+          LS_MAIL-EBELN        = LS_RESULT-EBELN.
+          LS_MAIL-EBELP        = LS_RESULT-EBELP.
+          LS_MAIL-BSART        = LS_RESULT-BSART.
+          LS_MAIL-BSART_DESC   = LS_RESULT-BSART_DESC.
+          LS_MAIL-LIFNR        = LS_RESULT-LIFNR.
+          LS_MAIL-NAME1        = LS_RESULT-NAME1.
+          LS_MAIL-MATNR        = LS_RESULT-MATNR.
+          LS_MAIL-TXZ01        = LS_RESULT-TXZ01.
+          LS_MAIL-WAERS        = LS_RESULT-WAERS.
+          LS_MAIL-PRICE_NATIVE = LS_RESULT-PRICE_NATIVE.
+          LS_MAIL-PRICE_USD    = LS_RESULT-PRICE_USD.
+          LS_MAIL-MEINS        = LS_RESULT-MEINS.
+          LS_MAIL-TIER         = LS_RESULT-TIER.
+          LS_MAIL-EXC_FLAG     = LS_RESULT-EXC_FLAG.
+          LS_MAIL-EXC_REASON   = LS_RESULT-EXC_REASON.
+          APPEND LS_MAIL TO GT_MAIL.
         ENDIF.
 
         APPEND LS_RESULT TO LT_RESULT.
@@ -994,21 +1030,6 @@ ENDFORM.                    "F_DISPLAY_ALV
 *& Form F_SET_PF_STATUS -- Standard GUI Status ALV
 *&---------------------------------------------------------------*
 FORM F_SET_PF_STATUS USING RT_EXTAB TYPE SLIS_T_EXTAB.
-  DATA: LS_EXTAB TYPE SLIS_EXTAB.
-
-  CLEAR LS_EXTAB.
-  LS_EXTAB-FCODE = '&ALL'.
-  APPEND LS_EXTAB TO RT_EXTAB.
-  CLEAR LS_EXTAB.
-  LS_EXTAB-FCODE = '&SAL'.
-  APPEND LS_EXTAB TO RT_EXTAB.
-  CLEAR LS_EXTAB.
-  LS_EXTAB-FCODE = '&OAA'.
-  APPEND LS_EXTAB TO RT_EXTAB.
-  CLEAR LS_EXTAB.
-  LS_EXTAB-FCODE = '&OAD'.
-  APPEND LS_EXTAB TO RT_EXTAB.
-
   SET PF-STATUS 'STANDARD_FULLSCREEN' EXCLUDING RT_EXTAB.
 ENDFORM.                    "F_SET_PF_STATUS
 
@@ -1069,6 +1090,34 @@ FORM F_USER_COMMAND USING P_UCOMM LIKE SY-UCOMM
     RETURN.
   ENDIF.
 
+  IF P_UCOMM EQ 'CHK_ALL'.
+    REFRESH GT_SELECTED_EBELN.
+    LOOP AT LT_RESULT INTO LS_RESULT.
+      LV_IDX = SY-TABIX.
+      READ TABLE GT_SELECTED_EBELN WITH KEY TABLE_LINE = LS_RESULT-EBELN
+           TRANSPORTING NO FIELDS.
+      IF SY-SUBRC <> 0.
+        APPEND LS_RESULT-EBELN TO GT_SELECTED_EBELN.
+      ENDIF.
+      LS_RESULT-SEL        = 'X'.
+      LS_RESULT-LINE_COLOR = 'C310'.
+      MODIFY LT_RESULT FROM LS_RESULT INDEX LV_IDX TRANSPORTING SEL LINE_COLOR.
+    ENDLOOP.
+    PS_SELFIELD-REFRESH = 'X'.
+    RETURN.
+  ENDIF.
+
+  IF P_UCOMM EQ 'CHK_DALL'.
+    REFRESH GT_SELECTED_EBELN.
+    LOOP AT LT_RESULT INTO LS_RESULT.
+      LV_IDX = SY-TABIX.
+      LS_RESULT-SEL        = SPACE.
+      LS_RESULT-LINE_COLOR = SPACE.
+      MODIFY LT_RESULT FROM LS_RESULT INDEX LV_IDX TRANSPORTING SEL LINE_COLOR.
+    ENDLOOP.
+    PS_SELFIELD-REFRESH = 'X'.
+    RETURN.
+  ENDIF.
 
   IF P_UCOMM EQ '&IC1'.
     IF PS_SELFIELD-FIELDNAME EQ 'EBELN'.
@@ -1375,46 +1424,36 @@ FORM F_ADD_HTML USING P_LINE TYPE STRING.
 ENDFORM.                    "F_ADD_HTML
 
 *&---------------------------------------------------------------*
-*& Form F_SEND_ALL  -- kirim email per recipient (1 email per recipient)
+*& Form F_SEND_ALL  -- kirim email per grup approver (control break)
 *&---------------------------------------------------------------*
 FORM F_SEND_ALL.
-  DATA: LT_RECIP_HDR TYPE STANDARD TABLE OF TY_RECIP_HDR,
-        LS_RECIP_HDR TYPE TY_RECIP_HDR.
-
   IF GT_MAIL IS INITIAL.
     RETURN.
   ENDIF.
 
-* Hapus duplikasi item per recipient (jika ada mapping ganda)
-  SORT GT_MAIL BY RECIPIENT_MAIL EBELN EBELP.
-  DELETE ADJACENT DUPLICATES FROM GT_MAIL COMPARING RECIPIENT_MAIL EBELN EBELP.
+  SORT GT_MAIL BY APPR_OPT EBELN.
 
-* Ambil daftar recipient unik
-  REFRESH LT_RECIP_HDR.
   LOOP AT GT_MAIL INTO LS_MAIL.
-    LS_RECIP_HDR-RECIPIENT_MAIL = LS_MAIL-RECIPIENT_MAIL.
-    LS_RECIP_HDR-RECIPIENT_NAME = LS_MAIL-RECIPIENT_NAME.
-    LS_RECIP_HDR-RECIPIENT_SEX  = LS_MAIL-RECIPIENT_SEX.
-    APPEND LS_RECIP_HDR TO LT_RECIP_HDR.
-  ENDLOOP.
-  SORT LT_RECIP_HDR BY RECIPIENT_MAIL.
-  DELETE ADJACENT DUPLICATES FROM LT_RECIP_HDR COMPARING RECIPIENT_MAIL.
 
-* Kirim 1 email per recipient menggabungkan semua PO miliknya
-  LOOP AT LT_RECIP_HDR INTO LS_RECIP_HDR.
-    PERFORM F_MAIL_START USING LS_RECIP_HDR.
-    LOOP AT GT_MAIL INTO LS_MAIL WHERE RECIPIENT_MAIL = LS_RECIP_HDR-RECIPIENT_MAIL.
-      PERFORM F_MAIL_ROW USING LS_MAIL.
-    ENDLOOP.
-    PERFORM F_MAIL_SEND USING LS_RECIP_HDR.
+    AT NEW APPR_OPT.
+      PERFORM F_MAIL_START USING LS_MAIL-APPR_OPT.
+    ENDAT.
+
+    PERFORM F_MAIL_ROW USING LS_MAIL.
+
+    AT END OF APPR_OPT.
+      PERFORM F_MAIL_SEND USING LS_MAIL-APPR_OPT.
+    ENDAT.
+
   ENDLOOP.
 ENDFORM.                    "F_SEND_ALL
 
 *&---------------------------------------------------------------*
-*& Form F_MAIL_START  -- inisialisasi body + recipient per person
+*& Form F_MAIL_START  -- inisialisasi body + recipients per grup
 *&---------------------------------------------------------------*
-FORM F_MAIL_START USING PS_RECIP TYPE TY_RECIP_HDR.
+FORM F_MAIL_START USING P_OPT TYPE ZMAP_TYPE-OPT.
   DATA: LV_LINE  TYPE STRING,
+        LV_MAIL  TYPE AD_SMTPADR,
         LV_NM    TYPE STRING,
         LV_SEX   TYPE C LENGTH 1,
         LV_NAMES TYPE STRING,
@@ -1425,32 +1464,45 @@ FORM F_MAIL_START USING PS_RECIP TYPE TY_RECIP_HDR.
   REFRESH: GT_BODY, GT_RCP.
   CLEAR: GV_XLS_XML, LV_NAMES.
 
-* Single recipient: email recipient saat ini
-  APPEND PS_RECIP-RECIPIENT_MAIL TO GT_RCP.
-
-* Susun sapaan dari nama + gender
-  CLEAR: LV_NM, LV_SEX.
-  LV_NM  = PS_RECIP-RECIPIENT_NAME.
-  LV_SEX = PS_RECIP-RECIPIENT_SEX.
-  CONDENSE LV_NM.
-  CONDENSE LV_SEX NO-GAPS.
-  TRANSLATE LV_SEX TO UPPER CASE.
-  IF LV_NM IS NOT INITIAL.
-    IF LV_SEX EQ 'M'.
-      CONCATENATE 'Bapak' LV_NM INTO LV_NAMES SEPARATED BY SPACE.
-    ELSEIF LV_SEX EQ 'F'.
-      CONCATENATE 'Ibu' LV_NM INTO LV_NAMES SEPARATED BY SPACE.
-    ELSE.
-      LV_NAMES = LV_NM.
+* Recipients: semua approver grup ini (jadi TO). Sekalian susun
+* sapaan dari kolom VALUE (nama apa adanya) + TEXT3 (gender):
+*   M = 'Bapak <nama>', F = 'Ibu <nama>', kosong = '<nama>' saja.
+  LOOP AT LT_APPROVER INTO LS_APPROVER WHERE OPT = P_OPT.
+    CLEAR LV_MAIL.
+    PERFORM F_BUILD_EMAIL USING LS_APPROVER-TEXT1 LS_APPROVER-TEXT2
+                          CHANGING LV_MAIL.
+    IF LV_MAIL CS '@'.
+      APPEND LV_MAIL TO GT_RCP.
     ENDIF.
-  ELSE.
+    CLEAR: LV_NM, LV_SEX.
+    LV_NM  = LS_APPROVER-VALUE.
+    LV_SEX = LS_APPROVER-TEXT3.
+    CONDENSE LV_NM.
+    CONDENSE LV_SEX NO-GAPS.
+    TRANSLATE LV_SEX TO UPPER CASE.
+    IF LV_NM IS NOT INITIAL.
+      IF LV_SEX EQ 'M'.
+        CONCATENATE 'Bapak' LV_NM INTO LV_NM SEPARATED BY SPACE.
+      ELSEIF LV_SEX EQ 'F'.
+        CONCATENATE 'Ibu' LV_NM INTO LV_NM SEPARATED BY SPACE.
+      ENDIF.
+    ENDIF.
+    IF LV_NM IS NOT INITIAL.
+      IF LV_NAMES IS INITIAL.
+        LV_NAMES = LV_NM.
+      ELSE.
+        CONCATENATE LV_NAMES LV_NM INTO LV_NAMES SEPARATED BY ', '.
+      ENDIF.
+    ENDIF.
+  ENDLOOP.
+  IF LV_NAMES IS INITIAL.
     LV_NAMES = 'Bapak/Ibu Approver'.
   ENDIF.
 
-* Hitung total PO pending unik untuk recipient ini
+* Hitung PO pending khusus grup recipient ini (header PO unik).
   CLEAR: LV_PENDING, LV_COUNT.
   REFRESH LT_EBELN.
-  LOOP AT GT_MAIL INTO LS_MAIL WHERE RECIPIENT_MAIL = PS_RECIP-RECIPIENT_MAIL.
+  LOOP AT GT_MAIL INTO LS_MAIL WHERE APPR_OPT = P_OPT.
     APPEND LS_MAIL-EBELN TO LT_EBELN.
   ENDLOOP.
   SORT LT_EBELN.
@@ -1468,10 +1520,13 @@ FORM F_MAIL_START USING PS_RECIP TYPE TY_RECIP_HDR.
               'PO yang menunggu persetujuan.</b></p>'
               INTO LV_LINE SEPARATED BY SPACE.
   PERFORM F_ADD_HTML USING LV_LINE.
-  PERFORM F_ADD_HTML USING '<p>Berikut Purchase Order yang menunggu persetujuan Anda:</p>'.
+  CONCATENATE '<p>Berikut Purchase Order yang menunggu persetujuan Anda (grup'
+              P_OPT INTO LV_LINE SEPARATED BY SPACE.
+  CONCATENATE LV_LINE '):</p>' INTO LV_LINE.
+  PERFORM F_ADD_HTML USING LV_LINE.
   PERFORM F_ADD_HTML USING '<table border="1" cellspacing="0" cellpadding="5" style="border-collapse:collapse;font-size:12px;">'.
   PERFORM F_ADD_HTML USING '<tr style="background:#2F3A46;color:#ffffff;">'.
-  PERFORM F_ADD_HTML USING '<th>No PO</th><th>Item PO</th><th>Purch.<br>Group</th><th>PO Type</th><th>PO Type Description</th><th>Vendor</th><th>Vendor Name</th><th>Material</th>'.
+  PERFORM F_ADD_HTML USING '<th>No PO</th><th>Item PO</th><th>PO Type</th><th>PO Type Description</th><th>Vendor</th><th>Vendor Name</th><th>Material</th>'.
   PERFORM F_ADD_HTML USING '<th>Short text</th><th>Currency</th><th>Price per Unit</th><th>Price per Unit (USD)</th><th>Order Unit</th><th>Tier</th><th>Flag</th><th>Alasan Exception</th></tr>'.
 
 ENDFORM.                    "F_MAIL_START
@@ -1516,8 +1571,6 @@ FORM F_MAIL_ROW USING P_MAIL TYPE TY_MAIL.
   PERFORM F_ADD_HTML USING LV_LINE.
   CONCATENATE '<td>' LV_EBELP '</td>' INTO LV_LINE.
   PERFORM F_ADD_HTML USING LV_LINE.
-  CONCATENATE '<td>' P_MAIL-EKGRP '</td>' INTO LV_LINE.
-  PERFORM F_ADD_HTML USING LV_LINE.
   CONCATENATE '<td>' P_MAIL-BSART '</td>' INTO LV_LINE.
   PERFORM F_ADD_HTML USING LV_LINE.
   CONCATENATE '<td>' P_MAIL-BSART_DESC '</td>' INTO LV_LINE.
@@ -1549,7 +1602,7 @@ ENDFORM.                    "F_MAIL_ROW
 *&---------------------------------------------------------------*
 *& Form F_MAIL_SEND  -- tutup HTML, lampirkan Excel, kirim via CL_BCS
 *&---------------------------------------------------------------*
-FORM F_MAIL_SEND USING PS_RECIP TYPE TY_RECIP_HDR.
+FORM F_MAIL_SEND USING P_OPT TYPE ZMAP_TYPE-OPT.
   DATA: LV_SUBJ TYPE SOOD-OBJDES,
         LV_ATTS TYPE SOOD-OBJDES,
         LV_LINE TYPE STRING,
@@ -1664,7 +1717,7 @@ FORM F_MAIL_SEND USING PS_RECIP TYPE TY_RECIP_HDR.
   ENDIF.
 
   PERFORM F_ADD_HTML USING '</ul>'.
-  PERFORM F_ADD_HTML USING '<p>Mohon lakukan persetujuan melalui transaksi ZMM059.</p>'.
+  PERFORM F_ADD_HTML USING '<p>Mohon lakukan persetujuan melalui transaksi ME29N.</p>'.
   PERFORM F_ADD_HTML USING '<p style="color:#6B7280;font-size:11px;">Email ini dikirim otomatis oleh sistem. Mohon tidak membalas email ini.</p>'.
   PERFORM F_ADD_HTML USING '</body></html>'.
 
@@ -1673,16 +1726,16 @@ FORM F_MAIL_SEND USING PS_RECIP TYPE TY_RECIP_HDR.
     RETURN.
   ENDIF.
 
-* Bangun lampiran SpreadsheetML (.XLS) untuk recipient ini.
+* Bangun lampiran SpreadsheetML (.XLS) untuk grup approver ini.
 * Tanggal Indonesia dipakai konsisten di subject, nama file, dan header.
   PERFORM F_FORMAT_DATE_ID USING SY-DATUM CHANGING GV_DATE_ID.
-  PERFORM F_BUILD_XLS USING PS_RECIP-RECIPIENT_MAIL GV_DATE_ID CHANGING GV_XLS_XML.
+  PERFORM F_BUILD_XLS USING P_OPT GV_DATE_ID CHANGING GV_XLS_XML.
   CONCATENATE 'Detail PO -' GV_DATE_ID INTO LV_ATTS
               SEPARATED BY SPACE.
 
 * Test mode: tidak mengirim, hanya catat di list output
   IF P_TEST EQ 'X'.
-    WRITE: / 'TEST MODE - email TIDAK dikirim. Penerima:', PS_RECIP-RECIPIENT_MAIL.
+    WRITE: / 'TEST MODE - email TIDAK dikirim. Grup:', P_OPT.
     WRITE: / '   would-attach XLS:', LV_ATTS.
     LOOP AT GT_RCP INTO LV_MAILTO.
       WRITE: / '   would-send TO:', LV_MAILTO.
@@ -1746,11 +1799,11 @@ FORM F_MAIL_SEND USING PS_RECIP TYPE TY_RECIP_HDR.
 
       LO_SEND->SEND( I_WITH_ERROR_SCREEN = 'X' ).
       COMMIT WORK.
-      WRITE: / 'Email terkirim untuk penerima:', PS_RECIP-RECIPIENT_MAIL.
+      WRITE: / 'Email terkirim untuk grup:', P_OPT.
 
     CATCH CX_BCS INTO LX_BCS.
       GV_ERR = LX_BCS->GET_TEXT( ).
-      WRITE: / 'Email GAGAL penerima', PS_RECIP-RECIPIENT_MAIL, ':', GV_ERR.
+      WRITE: / 'Email GAGAL grup', P_OPT, ':', GV_ERR.
   ENDTRY.
 ENDFORM.                    "F_MAIL_SEND
 
@@ -1802,16 +1855,15 @@ ENDFORM.                    "F_XML_ESC
 *& Header biru, kolom tetap, AutoFilter, freeze header, dan
 *& baris merah muda untuk PO dengan exception.
 *&---------------------------------------------------------------*
-FORM F_BUILD_XLS USING P_RECIPIENT TYPE AD_SMTPADR
-                       P_DATE      TYPE STRING
-                 CHANGING P_XML    TYPE STRING.
+FORM F_BUILD_XLS USING P_OPT  TYPE ZMAP_TYPE-OPT
+                       P_DATE TYPE STRING
+                 CHANGING P_XML TYPE STRING.
   DATA: LT_X      TYPE STANDARD TABLE OF STRING,
         LS_MAIL   TYPE TY_MAIL,
         LV_NL     TYPE STRING,
         LV_ROW    TYPE STRING,
         LV_EBELN  TYPE STRING,
         LV_EBELP  TYPE STRING,
-        LV_EKGRP  TYPE STRING,
         LV_BSART  TYPE STRING,
         LV_BDESC  TYPE STRING,
         LV_VENDOR TYPE STRING,
@@ -1862,7 +1914,6 @@ FORM F_BUILD_XLS USING P_RECIPIENT TYPE AD_SMTPADR
 
   APPEND '<Worksheet ss:Name="PO Approval"><Table>' TO LT_X.
   APPEND '<Column ss:Width="80"/><Column ss:Width="55"/>' TO LT_X.
-  APPEND '<Column ss:Width="70"/>' TO LT_X.
   APPEND '<Column ss:Width="70"/><Column ss:Width="160"/>' TO LT_X.
   APPEND '<Column ss:Width="100"/><Column ss:Width="125"/>' TO LT_X.
   APPEND '<Column ss:Width="95"/><Column ss:Width="180"/>' TO LT_X.
@@ -1870,17 +1921,16 @@ FORM F_BUILD_XLS USING P_RECIPIENT TYPE AD_SMTPADR
   APPEND '<Column ss:Width="100"/><Column ss:Width="75"/>' TO LT_X.
   APPEND '<Column ss:Width="55"/><Column ss:Width="95"/>' TO LT_X.
   APPEND '<Column ss:Width="260"/>' TO LT_X.
-  APPEND '<Row ss:Height="24"><Cell ss:StyleID="title" ss:MergeAcross="15">' TO LT_X.
+  APPEND '<Row ss:Height="24"><Cell ss:StyleID="title" ss:MergeAcross="14">' TO LT_X.
   APPEND '<Data ss:Type="String">Detail PO Menunggu Persetujuan</Data></Cell></Row>' TO LT_X.
-  CONCATENATE '<Row><Cell ss:StyleID="sub" ss:MergeAcross="15"><Data ss:Type="String">Tanggal Pengiriman: '
+  CONCATENATE '<Row><Cell ss:StyleID="sub" ss:MergeAcross="14"><Data ss:Type="String">Tanggal Pengiriman: '
               P_DATE '</Data></Cell></Row>' INTO LV_ROW.
   APPEND LV_ROW TO LT_X.
-  CONCATENATE '<Row><Cell ss:StyleID="sub" ss:MergeAcross="15"><Data ss:Type="String">Penerima: '
-              P_RECIPIENT '</Data></Cell></Row>' INTO LV_ROW.
+  CONCATENATE '<Row><Cell ss:StyleID="sub" ss:MergeAcross="14"><Data ss:Type="String">Grup Approver: '
+              P_OPT '</Data></Cell></Row>' INTO LV_ROW.
   APPEND LV_ROW TO LT_X.
   APPEND '<Row><Cell ss:StyleID="header"><Data ss:Type="String">No. PO</Data></Cell>' TO LT_X.
   APPEND '<Cell ss:StyleID="header"><Data ss:Type="String">Item PO</Data></Cell>' TO LT_X.
-  APPEND '<Cell ss:StyleID="header"><Data ss:Type="String">Purch. Group</Data></Cell>' TO LT_X.
   APPEND '<Cell ss:StyleID="header"><Data ss:Type="String">PO Type</Data></Cell>' TO LT_X.
   APPEND '<Cell ss:StyleID="header"><Data ss:Type="String">PO Type Description</Data></Cell>' TO LT_X.
   APPEND '<Cell ss:StyleID="header"><Data ss:Type="String">Vendor</Data></Cell>' TO LT_X.
@@ -1895,13 +1945,12 @@ FORM F_BUILD_XLS USING P_RECIPIENT TYPE AD_SMTPADR
   APPEND '<Cell ss:StyleID="header"><Data ss:Type="String">Flag</Data></Cell>' TO LT_X.
   APPEND '<Cell ss:StyleID="header"><Data ss:Type="String">Alasan Exception</Data></Cell></Row>' TO LT_X.
 
-  LOOP AT GT_MAIL INTO LS_MAIL WHERE RECIPIENT_MAIL = P_RECIPIENT.
-    CLEAR: LV_EBELN, LV_EBELP, LV_EKGRP, LV_BSART, LV_BDESC, LV_VENDOR, LV_VNAME,
+  LOOP AT GT_MAIL INTO LS_MAIL WHERE APPR_OPT = P_OPT.
+    CLEAR: LV_EBELN, LV_EBELP, LV_BSART, LV_BDESC, LV_VENDOR, LV_VNAME,
            LV_MATNR, LV_TXZ01, LV_WAERS, LV_PNAT, LV_PUSD, LV_MEINS,
            LV_TIER, LV_FLAG, LV_REAS, LV_STYLE, LV_NSTYLE.
     LV_EBELN  = LS_MAIL-EBELN.
     LV_EBELP  = LS_MAIL-EBELP.
-    LV_EKGRP  = LS_MAIL-EKGRP.
     LV_BSART  = LS_MAIL-BSART.
     LV_BDESC  = LS_MAIL-BSART_DESC.
     LV_VENDOR = LS_MAIL-LIFNR.
@@ -1923,7 +1972,6 @@ FORM F_BUILD_XLS USING P_RECIPIENT TYPE AD_SMTPADR
     CONDENSE LV_PUSD.
     REPLACE ALL OCCURRENCES OF ',' IN LV_PUSD WITH '.'.
     PERFORM F_XML_ESC CHANGING LV_EBELN.
-    PERFORM F_XML_ESC CHANGING LV_EKGRP.
     PERFORM F_XML_ESC CHANGING LV_BSART.
     PERFORM F_XML_ESC CHANGING LV_BDESC.
     PERFORM F_XML_ESC CHANGING LV_VENDOR.
@@ -1947,8 +1995,7 @@ FORM F_BUILD_XLS USING P_RECIPIENT TYPE AD_SMTPADR
 
     CONCATENATE '<Row><Cell ss:StyleID="' LV_STYLE '"><Data ss:Type="String">'
                 LV_EBELN '</Data></Cell><Cell ss:StyleID="' LV_STYLE
-                '"><Data ss:Type="String">' LV_EBELP '</Data></Cell><Cell ss:StyleID="' LV_STYLE
-                '"><Data ss:Type="String">' LV_EKGRP '</Data></Cell>'
+                '"><Data ss:Type="String">' LV_EBELP '</Data></Cell>'
                 INTO LV_ROW.
     APPEND LV_ROW TO LT_X.
     CONCATENATE '<Cell ss:StyleID="' LV_STYLE '"><Data ss:Type="String">'
@@ -2086,511 +2133,94 @@ FORM F_GET_LAST USING P_MATNR TYPE MATNR P_LIFNR TYPE LIFNR
 ENDFORM.                    "F_GET_LAST
 
 *&---------------------------------------------------------------*
-*& Form F_GET_LPRINT -- Router Last Price Dinamis Berbasis Plant
-*&   Deteksi Plant (T001W / T001K) untuk routing:
-*&   - TTE          -> F_GET_LP_TTE
-*&   - TTA          -> F_GET_LP_TTA
-*&   - Trias/Unggul -> F_GET_LP_TRIAS (PO Biasa)
+*& Form F_CALC_LAST_PRICE -- Hitung last price sesuai Print PO
+*&                           (konversi currency PO aktif via IDR)
 *&---------------------------------------------------------------*
-FORM F_GET_LPRINT USING P_WERKS TYPE WERKS_D
-                        P_MATNR TYPE MATNR
-                        P_EBELN TYPE EBELN
-                        P_EBELP TYPE EBELP
-                        P_WAERS TYPE WAERS
-                        P_BSART TYPE ESART
-                        P_BPRME TYPE BPRME
-                  CHANGING P_LAST_PRICE TYPE P.
-  TYPES: BEGIN OF TY_PLANT_MAP,
-           WERKS TYPE WERKS_D,
-           TYPE  TYPE CHAR10,
-         END OF TY_PLANT_MAP.
-  STATICS: ST_PLANT_MAP TYPE TABLE OF TY_PLANT_MAP.
-  DATA: LS_PMAP  TYPE TY_PLANT_MAP,
-        LV_NAME1 TYPE T001W-NAME1,
-        LV_BWKEY TYPE T001W-BWKEY,
-        LV_BUKRS TYPE T001K-BUKRS.
+FORM F_CALC_LAST_PRICE USING PS_LAST TYPE TY_LAST
+                             P_TGT_WAERS TYPE EKKO-WAERS
+                             P_TGT_BPRME TYPE EKPO-BPRME
+                       CHANGING P_LAST_PRICE TYPE P.
+  DATA: LC_KBETR    TYPE P DECIMALS 4,
+        V_KURS      LIKE RKB1K-EXCHR,
+        V_NEWAMOUNT LIKE WMTO_S-AMOUNT.
 
   CLEAR P_LAST_PRICE.
-  CHECK P_MATNR IS NOT INITIAL.
 
-* 1. Buffer memori per plant agar tidak query berulang
-  READ TABLE ST_PLANT_MAP INTO LS_PMAP WITH KEY WERKS = P_WERKS.
-  IF SY-SUBRC NE 0.
-    CLEAR: LS_PMAP, LV_NAME1, LV_BWKEY, LV_BUKRS.
-    LS_PMAP-WERKS = P_WERKS.
-    LS_PMAP-TYPE  = 'TRIAS'. " Default: Trias PO biasa / Unggul
+  IF PS_LAST-PEINH > 0.
+    LC_KBETR = PS_LAST-NETPR / PS_LAST-PEINH.
+  ELSE.
+    LC_KBETR = PS_LAST-NETPR.
+  ENDIF.
 
-    SELECT SINGLE NAME1 BWKEY INTO (LV_NAME1, LV_BWKEY)
-      FROM T001W
-      WHERE WERKS = P_WERKS.
-    IF SY-SUBRC = 0.
-      SELECT SINGLE BUKRS INTO LV_BUKRS
-        FROM T001K
-        WHERE BWKEY = LV_BWKEY.
+  IF P_TGT_BPRME NE PS_LAST-BPRME AND PS_LAST-BPRME IS NOT INITIAL
+                                  AND P_TGT_BPRME IS NOT INITIAL.
+    CALL FUNCTION 'UNIT_CONVERSION_SIMPLE'
+      EXPORTING
+        INPUT    = LC_KBETR
+        UNIT_IN  = PS_LAST-BPRME
+        UNIT_OUT = P_TGT_BPRME
+      IMPORTING
+        OUTPUT   = LC_KBETR
+      EXCEPTIONS
+        OTHERS   = 1.
+  ENDIF.
 
-      IF P_WERKS CP 'TTE*' OR LV_NAME1 CS 'TOYO'
-         OR LV_NAME1 CS 'TTE' OR LV_BUKRS = '2000'.
-        LS_PMAP-TYPE = 'TTE'.
-      ELSEIF P_WERKS CP 'TTA*' OR LV_NAME1 CS 'TIRTA'
-         OR LV_NAME1 CS 'TTA' OR LV_BUKRS = '3000'.
-        LS_PMAP-TYPE = 'TTA'.
-      ELSE.
-        " Termasuk 'UNGGUL' / Trias biasa -> tetap 'TRIAS'
-        LS_PMAP-TYPE = 'TRIAS'.
+  IF P_TGT_WAERS NE PS_LAST-WAERS.
+    IF PS_LAST-WAERS NE 'IDR'.
+      CALL FUNCTION 'RKC_SINGLE_EXCHANGE_RATE_GET'
+        EXPORTING
+          DATUM         = SY-DATUM
+          KURST         = 'M'
+          NCURR         = 'IDR'
+          VCURR         = PS_LAST-WAERS
+        IMPORTING
+          EXCHR         = V_KURS
+        EXCEPTIONS
+          NO_RATE_FOUND = 1
+          OTHERS        = 2.
+      IF SY-SUBRC EQ 0.
+        LC_KBETR = LC_KBETR * V_KURS.
       ENDIF.
     ENDIF.
 
-    APPEND LS_PMAP TO ST_PLANT_MAP.
-  ENDIF.
+    V_NEWAMOUNT = LC_KBETR.
+    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
+      EXPORTING
+        CURRENCY        = PS_LAST-WAERS
+        AMOUNT_INTERNAL = V_NEWAMOUNT
+      IMPORTING
+        AMOUNT_DISPLAY  = V_NEWAMOUNT.
+    LC_KBETR = V_NEWAMOUNT.
 
-* 2. Router ke sub-form sesuai entitas
-  CASE LS_PMAP-TYPE.
-    WHEN 'TTE'.
-      PERFORM F_GET_LP_TTE USING P_MATNR P_EBELN P_EBELP P_WAERS P_BSART
-                           CHANGING P_LAST_PRICE.
-
-    WHEN 'TTA'.
-      PERFORM F_GET_LP_TTA USING P_MATNR P_EBELN P_EBELP P_WAERS P_BSART
-                           CHANGING P_LAST_PRICE.
-
-    WHEN OTHERS. " 'TRIAS' (Trias PO biasa & Unggul)
-      PERFORM F_GET_LP_TRIAS USING P_MATNR P_EBELN P_WAERS P_BSART P_BPRME
-                             CHANGING P_LAST_PRICE.
-  ENDCASE.
-ENDFORM.                    "F_GET_LPRINT
-
-*&---------------------------------------------------------------*
-*& Form F_GET_LP_TTE -- Last Price Entitas TTE
-*&   (driver ZMMF_TTE_PO_LOCAL_PDF / ZMMF_TTE_PO_IMPORT_PDF)
-*&   PO Local: WAERS dari KONV, KBETR = NETPR PO EBELN tertinggi
-*&   PO Import: WAERS dari EKKO-WAERS, KBETR = NETPR PO EBELN tertinggi
-*&---------------------------------------------------------------*
-FORM F_GET_LP_TTE USING P_MATNR TYPE MATNR
-                        P_EBELN TYPE EBELN
-                        P_EBELP TYPE EBELP
-                        P_WAERS TYPE WAERS
-                        P_BSART TYPE ESART
-                  CHANGING P_LAST_PRICE TYPE P.
-  DATA: LV_KNUMV TYPE KONV-KNUMV,
-        LV_KPOSN TYPE KONV-KPOSN,
-        LV_LW    TYPE KONV-WAERS,
-        LC_KBETR TYPE KONV-KBETR,
-        LV_KURS  TYPE RKB1K-EXCHR,
-        LV_NEW   TYPE WMTO_S-AMOUNT,
-        LV_MTART TYPE MARA-MTART,
-        LV_CHARG TYPE EKET-CHARG.
-
-  CLEAR: P_LAST_PRICE, LV_KNUMV, LV_KPOSN, LV_MTART, LV_CHARG.
-
-* Batch hanya utk RPV/RPC/RPM (ZRAW), spt driver TTE
-  IF P_MATNR = 'RPV' OR P_MATNR = 'RPC' OR P_MATNR = 'RPM'.
-    SELECT SINGLE MTART INTO LV_MTART FROM MARA
-      WHERE MATNR = P_MATNR AND MTART = 'ZRAW'.
-    IF SY-SUBRC = 0.
-      SELECT SINGLE CHARG INTO LV_CHARG FROM EKET
-        WHERE EBELN = P_EBELN AND EBELP = P_EBELP.
-    ENDIF.
-  ENDIF.
-
-* 1. PO acuan KNUMV tertinggi -> KNUMV/KPOSN (sumber WAERS)
-  IF LV_CHARG IS NOT INITIAL.
-    SELECT A~KNUMV A~WAERS B~EBELP INTO (LV_KNUMV, LV_LW, LV_KPOSN)
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-                     JOIN EKET AS C ON C~EBELN = B~EBELN
-                          AND C~EBELP = B~EBELP AND C~CHARG = LV_CHARG
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-  ELSE.
-    SELECT A~KNUMV A~WAERS B~EBELP INTO (LV_KNUMV, LV_LW, LV_KPOSN)
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-  ENDIF.
-  IF SY-SUBRC NE 0.
-    RETURN.
-  ENDIF.
-
-* 2. WAERS acuan:
-*    - PO Import (BSART = 'PO09'): driver ZMMF_TTE_PO_IMPORT_PDF ambil dari EKKO-WAERS (LV_LW).
-*    - PO Local (BSART = 'PO19'/lainnya): driver ZMMF_TTE_PO_LOCAL_PDF ambil dari KONV.
-  IF P_BSART NE 'PO09'.
-    CLEAR LV_LW.
-    SELECT SINGLE WAERS INTO LV_LW FROM KONV
-      WHERE KNUMV = LV_KNUMV AND KPOSN = LV_KPOSN
-        AND ( KSCHL = 'PB00' OR KSCHL = 'PBXX' ).
-  ENDIF.
-
-* 3. KBETR = NETPR PO EBELN tertinggi (baris terakhir ORDER BY ASC)
-  IF LV_CHARG IS NOT INITIAL.
-    SELECT B~NETPR INTO LC_KBETR
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-                     JOIN EKET AS C ON C~EBELN = B~EBELN
-                          AND C~EBELP = B~EBELP AND C~CHARG = LV_CHARG
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-  ELSE.
-    SELECT B~NETPR INTO LC_KBETR
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~EBELN ASCENDING.
-    ENDSELECT.
-  ENDIF.
-
-* 4. Konversi 2-hop via IDR pakai WAERS dari step 2
-  CLEAR: LV_KURS, LV_NEW.
-  IF P_WAERS NE LV_LW.
-    IF LV_LW EQ 'IDR'.
-      LC_KBETR = LC_KBETR.
-    ELSE.
+    IF P_TGT_WAERS NE 'IDR'.
       CALL FUNCTION 'RKC_SINGLE_EXCHANGE_RATE_GET'
         EXPORTING
           DATUM         = SY-DATUM
           KURST         = 'M'
           NCURR         = 'IDR'
-          VCURR         = LV_LW
+          VCURR         = P_TGT_WAERS
         IMPORTING
-          EXCHR         = LV_KURS
+          EXCHR         = V_KURS
         EXCEPTIONS
           NO_RATE_FOUND = 1
           OTHERS        = 2.
-      LC_KBETR = LC_KBETR * LV_KURS.
-    ENDIF.
-    LV_NEW = LC_KBETR.
-    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
-      EXPORTING
-        CURRENCY        = LV_LW
-        AMOUNT_INTERNAL = LV_NEW
-      IMPORTING
-        AMOUNT_DISPLAY  = LV_NEW.
-    LC_KBETR = LV_NEW.
-    IF P_WAERS EQ 'IDR'.
-      LC_KBETR = LC_KBETR.
-    ELSE.
-      CALL FUNCTION 'RKC_SINGLE_EXCHANGE_RATE_GET'
-        EXPORTING
-          DATUM         = SY-DATUM
-          KURST         = 'M'
-          NCURR         = 'IDR'
-          VCURR         = P_WAERS
-        IMPORTING
-          EXCHR         = LV_KURS
-        EXCEPTIONS
-          NO_RATE_FOUND = 1
-          OTHERS        = 2.
-      LC_KBETR = LC_KBETR * 1 / LV_KURS.
-    ENDIF.
-  ELSE.
-    LV_NEW = LC_KBETR.
-    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
-      EXPORTING
-        CURRENCY        = LV_LW
-        AMOUNT_INTERNAL = LV_NEW
-      IMPORTING
-        AMOUNT_DISPLAY  = LV_NEW.
-    LC_KBETR = LV_NEW.
-  ENDIF.
-
-  P_LAST_PRICE = LC_KBETR.
-ENDFORM.                    "F_GET_LP_TTE
-
-*&---------------------------------------------------------------*
-*& Form F_GET_LP_TTA -- Last Price Entitas TTA
-*&   (driver ZMMF_TTA_PO_LOCAL_PDF / ZMMF_TTA_PO_IMPORT_PDF)
-*&   Sesuai driver TTA: hybrid KNUMV (WAERS) + EBELN (NETPR)
-*&---------------------------------------------------------------*
-FORM F_GET_LP_TTA USING P_MATNR TYPE MATNR
-                        P_EBELN TYPE EBELN
-                        P_EBELP TYPE EBELP
-                        P_WAERS TYPE WAERS
-                        P_BSART TYPE ESART
-                  CHANGING P_LAST_PRICE TYPE P.
-  DATA: LV_KNUMV TYPE KONV-KNUMV,
-        LV_KPOSN TYPE KONV-KPOSN,
-        LV_LW    TYPE KONV-WAERS,
-        LC_KBETR TYPE KONV-KBETR,
-        LV_KURS  TYPE RKB1K-EXCHR,
-        LV_NEW   TYPE WMTO_S-AMOUNT,
-        LV_MTART TYPE MARA-MTART,
-        LV_CHARG TYPE EKET-CHARG.
-
-  CLEAR: P_LAST_PRICE, LV_KNUMV, LV_KPOSN, LV_MTART, LV_CHARG.
-
-* Batch hanya utk RPV/RPC/RPM (ZRAW)
-  IF P_MATNR = 'RPV' OR P_MATNR = 'RPC' OR P_MATNR = 'RPM'.
-    SELECT SINGLE MTART INTO LV_MTART FROM MARA
-      WHERE MATNR = P_MATNR AND MTART = 'ZRAW'.
-    IF SY-SUBRC = 0.
-      SELECT SINGLE CHARG INTO LV_CHARG FROM EKET
-        WHERE EBELN = P_EBELN AND EBELP = P_EBELP.
-    ENDIF.
-  ENDIF.
-
-* 1. PO acuan KNUMV tertinggi -> KNUMV/KPOSN (sumber WAERS)
-  IF LV_CHARG IS NOT INITIAL.
-    SELECT A~KNUMV A~WAERS B~EBELP INTO (LV_KNUMV, LV_LW, LV_KPOSN)
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-                     JOIN EKET AS C ON C~EBELN = B~EBELN
-                          AND C~EBELP = B~EBELP AND C~CHARG = LV_CHARG
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-  ELSE.
-    SELECT A~KNUMV A~WAERS B~EBELP INTO (LV_KNUMV, LV_LW, LV_KPOSN)
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-  ENDIF.
-  IF SY-SUBRC NE 0.
-    RETURN.
-  ENDIF.
-
-* 2. WAERS acuan:
-*    - PO Import (BSART = 'PO08'): driver ZMMF_TTA_PO_IMPORT_PDF ambil dari EKKO-WAERS (LV_LW).
-*    - PO Local (BSART = 'PO18'/lainnya): driver ZMMF_TTA_PO_LOCAL_PDF ambil dari KONV.
-  IF P_BSART NE 'PO08'.
-    CLEAR LV_LW.
-    SELECT SINGLE WAERS INTO LV_LW FROM KONV
-      WHERE KNUMV = LV_KNUMV AND KPOSN = LV_KPOSN
-        AND ( KSCHL = 'PB00' OR KSCHL = 'PBXX' ).
-  ENDIF.
-
-* 3. KBETR = NETPR PO EBELN tertinggi
-  IF LV_CHARG IS NOT INITIAL.
-    SELECT B~NETPR INTO LC_KBETR
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-                     JOIN EKET AS C ON C~EBELN = B~EBELN
-                          AND C~EBELP = B~EBELP AND C~CHARG = LV_CHARG
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-  ELSE.
-    SELECT B~NETPR INTO LC_KBETR
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~EBELN ASCENDING.
-    ENDSELECT.
-  ENDIF.
-
-* 4. Konversi 2-hop via IDR pakai WAERS dari step 2
-  CLEAR: LV_KURS, LV_NEW.
-  IF P_WAERS NE LV_LW.
-    IF LV_LW EQ 'IDR'.
-      LC_KBETR = LC_KBETR.
-    ELSE.
-      CALL FUNCTION 'RKC_SINGLE_EXCHANGE_RATE_GET'
-        EXPORTING
-          DATUM         = SY-DATUM
-          KURST         = 'M'
-          NCURR         = 'IDR'
-          VCURR         = LV_LW
-        IMPORTING
-          EXCHR         = LV_KURS
-        EXCEPTIONS
-          NO_RATE_FOUND = 1
-          OTHERS        = 2.
-      LC_KBETR = LC_KBETR * LV_KURS.
-    ENDIF.
-    LV_NEW = LC_KBETR.
-    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
-      EXPORTING
-        CURRENCY        = LV_LW
-        AMOUNT_INTERNAL = LV_NEW
-      IMPORTING
-        AMOUNT_DISPLAY  = LV_NEW.
-    LC_KBETR = LV_NEW.
-    IF P_WAERS EQ 'IDR'.
-      LC_KBETR = LC_KBETR.
-    ELSE.
-      CALL FUNCTION 'RKC_SINGLE_EXCHANGE_RATE_GET'
-        EXPORTING
-          DATUM         = SY-DATUM
-          KURST         = 'M'
-          NCURR         = 'IDR'
-          VCURR         = P_WAERS
-        IMPORTING
-          EXCHR         = LV_KURS
-        EXCEPTIONS
-          NO_RATE_FOUND = 1
-          OTHERS        = 2.
-      LC_KBETR = LC_KBETR * 1 / LV_KURS.
-    ENDIF.
-  ELSE.
-    LV_NEW = LC_KBETR.
-    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
-      EXPORTING
-        CURRENCY        = LV_LW
-        AMOUNT_INTERNAL = LV_NEW
-      IMPORTING
-        AMOUNT_DISPLAY  = LV_NEW.
-    LC_KBETR = LV_NEW.
-  ENDIF.
-
-  P_LAST_PRICE = LC_KBETR.
-ENDFORM.                    "F_GET_LP_TTA
-
-*&---------------------------------------------------------------*
-*& Form F_GET_LP_TRIAS -- Last Price Entitas Trias & Unggul
-*&   (driver ZMMF_PO_LOCAL_PDF / ZMMF_PO_IMPORT_PDF)
-*&   PO Biasa: KBETR murni dari KONV (PB00/PBXX), konversi via IDR
-*&   PO Import: KBETR = NETPR EKPO, WAERS dari EKKO-WAERS
-*&   Khusus PO05: Konversi satuan ke unit acuan driver (LV_LASTPOU)
-*&---------------------------------------------------------------*
-FORM F_GET_LP_TRIAS USING P_MATNR TYPE MATNR
-                          P_EBELN TYPE EBELN
-                          P_WAERS TYPE WAERS
-                          P_BSART TYPE ESART
-                          P_BPRME TYPE BPRME
-                    CHANGING P_LAST_PRICE TYPE P.
-  DATA: LV_KNUMV TYPE KONV-KNUMV,
-        LV_KPOSN TYPE KONV-KPOSN,
-        LV_LW    TYPE KONV-WAERS,
-        LC_KBETR TYPE KONV-KBETR,
-        LV_KURS  TYPE RKB1K-EXCHR,
-        LV_NEW   TYPE WMTO_S-AMOUNT.
-
-  CLEAR: P_LAST_PRICE, LV_KNUMV, LV_KPOSN.
-
-  IF P_BSART = 'PO05' OR P_BSART = 'PO04'.
-* Trias Import (driver ZMMF_PO_IMPORT_PDF)
-    SELECT A~KNUMV A~WAERS B~EBELP INTO (LV_KNUMV, LV_LW, LV_KPOSN)
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-    IF SY-SUBRC NE 0.
-      RETURN.
-    ENDIF.
-
-    SELECT B~NETPR INTO LC_KBETR
-      FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~EBELN ASCENDING.
-    ENDSELECT.
-  ELSE.
-* Trias Local / PO Biasa (driver ZMMF_PO_LOCAL)
-    SELECT A~KNUMV B~EBELP INTO (LV_KNUMV, LV_KPOSN)
-      FROM EKKO AS A INNER JOIN EKPO AS B ON B~EBELN = A~EBELN
-      WHERE B~MATNR = P_MATNR AND B~LOEKZ = SPACE
-        AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-      ORDER BY A~KNUMV ASCENDING.
-    ENDSELECT.
-    IF SY-SUBRC NE 0.
-      RETURN.
-    ENDIF.
-
-    CLEAR: LC_KBETR, LV_LW.
-    SELECT SINGLE KBETR WAERS INTO (LC_KBETR, LV_LW)
-      FROM KONV
-      WHERE KNUMV = LV_KNUMV
-        AND KPOSN = LV_KPOSN
-        AND ( KSCHL = 'PB00' OR KSCHL = 'PBXX' ).
-    IF SY-SUBRC NE 0.
-      RETURN.
-    ENDIF.
-  ENDIF.
-
-  CLEAR: LV_KURS, LV_NEW.
-  IF P_WAERS NE LV_LW.
-    IF LV_LW NE 'IDR'.
-      CALL FUNCTION 'RKC_SINGLE_EXCHANGE_RATE_GET'
-        EXPORTING
-          DATUM         = SY-DATUM
-          KURST         = 'M'
-          NCURR         = 'IDR'
-          VCURR         = LV_LW
-        IMPORTING
-          EXCHR         = LV_KURS
-        EXCEPTIONS
-          NO_RATE_FOUND = 1
-          OTHERS        = 2.
-      LC_KBETR = LC_KBETR * LV_KURS.
-    ENDIF.
-    LV_NEW = LC_KBETR.
-    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
-      EXPORTING
-        CURRENCY        = LV_LW
-        AMOUNT_INTERNAL = LV_NEW
-      IMPORTING
-        AMOUNT_DISPLAY  = LV_NEW.
-    LC_KBETR = LV_NEW.
-    IF P_WAERS NE 'IDR'.
-      CALL FUNCTION 'RKC_SINGLE_EXCHANGE_RATE_GET'
-        EXPORTING
-          DATUM         = SY-DATUM
-          KURST         = 'M'
-          NCURR         = 'IDR'
-          VCURR         = P_WAERS
-        IMPORTING
-          EXCHR         = LV_KURS
-        EXCEPTIONS
-          NO_RATE_FOUND = 1
-          OTHERS        = 2.
-      LC_KBETR = LC_KBETR * 1 / LV_KURS.
-    ENDIF.
-  ELSE.
-    LV_NEW = LC_KBETR.
-    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
-      EXPORTING
-        CURRENCY        = LV_LW
-        AMOUNT_INTERNAL = LV_NEW
-      IMPORTING
-        AMOUNT_DISPLAY  = LV_NEW.
-    LC_KBETR = LV_NEW.
-  ENDIF.
-
-* Khusus PO05: Unit conversion ke unit acuan driver (LV_LASTPOU)
-  IF P_BSART = 'PO05'.
-    DATA: LV_FIRST_MAT TYPE EKPO-MATNR,
-          LV_REF_EBELN TYPE EKPO-EBELN,
-          LV_REF_EBELP TYPE EKPO-EBELP,
-          LV_LASTPOU   TYPE EKPO-BPRME.
-    CLEAR: LV_FIRST_MAT, LV_REF_EBELN, LV_REF_EBELP, LV_LASTPOU.
-    SELECT MATNR UP TO 1 ROWS FROM EKPO INTO LV_FIRST_MAT
-      WHERE EBELN = P_EBELN AND LOEKZ = SPACE
-      ORDER BY EBELP ASCENDING.
-    ENDSELECT.
-    IF LV_FIRST_MAT IS NOT INITIAL.
-      SELECT A~EBELN B~EBELP UP TO 1 ROWS
-        INTO (LV_REF_EBELN, LV_REF_EBELP)
-        FROM EKKO AS A JOIN EKPO AS B ON B~EBELN = A~EBELN
-        WHERE B~MATNR = LV_FIRST_MAT AND B~LOEKZ = SPACE
-          AND A~EBELN < P_EBELN AND A~FRGZU = 'X'
-        ORDER BY A~EBELN DESCENDING.
-      ENDSELECT.
-      IF LV_REF_EBELN IS NOT INITIAL.
-        SELECT SINGLE BPRME FROM EKPO INTO LV_LASTPOU
-          WHERE EBELN = LV_REF_EBELN AND EBELP = LV_REF_EBELP.
+      IF SY-SUBRC EQ 0 AND V_KURS > 0.
+        LC_KBETR = LC_KBETR * 1 / V_KURS.
       ENDIF.
     ENDIF.
-    IF LV_LASTPOU IS NOT INITIAL AND LV_LASTPOU NE P_BPRME.
-      CALL FUNCTION 'UNIT_CONVERSION_SIMPLE'
-        EXPORTING
-          INPUT    = LC_KBETR
-          UNIT_IN  = P_BPRME
-          UNIT_OUT = LV_LASTPOU
-        IMPORTING
-          OUTPUT   = LC_KBETR
-        EXCEPTIONS
-          OTHERS   = 1.
-    ENDIF.
+  ELSE.
+    V_NEWAMOUNT = LC_KBETR.
+    CALL FUNCTION 'CURRENCY_AMOUNT_SAP_TO_DISPLAY'
+      EXPORTING
+        CURRENCY        = PS_LAST-WAERS
+        AMOUNT_INTERNAL = V_NEWAMOUNT
+      IMPORTING
+        AMOUNT_DISPLAY  = V_NEWAMOUNT.
+    LC_KBETR = V_NEWAMOUNT.
   ENDIF.
 
   P_LAST_PRICE = LC_KBETR.
-ENDFORM.                    "F_GET_LP_TRIAS
+ENDFORM.                    "F_CALC_LAST_PRICE
 
 *&---------------------------------------------------------------*
 *& Form F_CHK_NAIK  -- bandingkan harga USD skrg vs harga terakhir

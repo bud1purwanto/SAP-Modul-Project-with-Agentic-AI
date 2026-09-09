@@ -239,7 +239,16 @@ Gunakan untuk mencari **knowledge, dokumentasi, dan referensi SAP**:
 - **Penanganan Transaksi BAPI:** Setelah BAPI yang mengubah data, cek return parameter. Jika ada error (`TYPE = 'E'`) → jalankan `BAPI_TRANSACTION_ROLLBACK`. Jika sukses → jalankan `BAPI_TRANSACTION_COMMIT` dengan wait parameter = `abap_true`.
 
 ### Self-Correction Step (Wajib Sebelum Output Kode)
-> Sebelum memberikan output kode ABAP, jalankan pemeriksaan internal: Apakah ada sintaks inline `DATA(` atau `@`? Apakah ada string template `|...|`? Jika ada, hapus dan tulis ulang menggunakan deklarasi eksplisit dan `CONCATENATE`. Pastikan kode memvalidasi status dokumen (reversal/TECO), menangani error/kuncian, dan menggunakan BAPI (bukan direct update) sesuai standar ABAP 7.31.
+> Sebelum memberikan output kode ABAP, jalankan pemeriksaan internal: Apakah ada sintaks inline `DATA(` atau `@`? Apakah ada string template `|...|`? Jika ada, hapus dan tulis ulang menggunakan deklarasi eksplisit dan `CONCATENATE`. Pastikan kode memvalidasi status dokumen (reversal/TECO), menangani error/kuncian, dan menggunakan BAPI (bukan direct update) sesuai standar ABAP 7.31. Pastikan pula tidak ada baris kosong yang terhapus secara tidak sengaja dan diff murni sesuai permintaan user.
+
+---
+
+## Strict Scope & Minimal Diff — WAJIB DIPATUHI
+
+1. **Fokus Murni Sesuai Permintaan (Zero Scope Creep):** HANYA ubah baris kode atau logika yang secara eksplisit diminta user.
+2. **Preservasi Formatting & Whitespace:** Dilarang menghapus baris kosong (blank lines), mengubah indentasi, whitespace, atau komentar di luar area yang diminta.
+3. **No Unsolicited Logic / Refactoring:** Dilarang menambahkan fitur baru, rule baru, validasi baru, atau merombak struktur kode yang tidak diminta.
+4. **Verifikasi Diff Bersih:** Selalu verifikasi `git diff` sebelum push ke SAP TRS dan sebelum memberikan jawaban akhir ke user. Diff harus minimal, bersih, dan 100% tepat sasaran.
 
 ---
 
