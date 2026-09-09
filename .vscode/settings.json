@@ -1,0 +1,5 @@
+{
+  "git.path": "/home/abap/.local/bin/git",
+  "git.autorefresh": true,
+  "git.autoStash": true
+}
