@@ -20,6 +20,7 @@
 
 - SAP utama: ECC 6.0 EHP6, NetWeaver 7.31, ABAP 7.31, Oracle.
 - Gunakan `sap-leader-remote` untuk source, struktur, dan data SAP aktual. Jangan berasumsi.
+- Jika agent berjalan di server Linux, gunakan MCP SAP server di `/var/www/MCP/MCP SAP/sap-leader-mcp/`. Jika berjalan lokal melalui GPT/Codex desktop, gunakan MCP yang terdaftar di `config.toml`; jika melalui Claude desktop, gunakan MCP lokal Claude yang sudah dikonfigurasi. Jangan memakai path MCP Windows dari environment Linux.
 - Gunakan `manufacturing-rag` untuk knowledge dan dokumentasi manufacturing/SAP.
 - Analisis boleh pada server yang relevan.
 - Semua perubahan program SAP wajib hanya ke `sandbox-new` / SID `TRS`.

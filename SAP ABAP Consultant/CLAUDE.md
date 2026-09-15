@@ -75,6 +75,12 @@ Gunakan untuk mengambil data/objek **langsung dari sistem SAP TRD**:
 
 > **Kapan digunakan:** Selalu gunakan MCP SAP saat perlu tahu struktur tabel aktual, source code program di sistem, atau data yang ada di SAP TRD. **Jangan berasumsi — ambil data nyata dari sistem.**
 
+#### Routing MCP Berdasarkan Environment
+- **Agent berjalan di server Linux:** gunakan MCP SAP server di `/var/www/MCP/MCP SAP/sap-leader-mcp/`.
+- **GPT/Codex berjalan lokal di desktop:** gunakan MCP SAP yang terdaftar di `config.toml` lokal.
+- **Claude berjalan lokal di desktop:** gunakan MCP SAP lokal yang dikonfigurasi untuk Claude.
+- Jangan memakai path MCP Windows dari environment Linux. Bila koneksi RFC diblokir sandbox runtime, minta izin network hanya untuk operasi SAP yang diminta user.
+
 #### Update Program ABAP — ATURAN WAJIB
 - Update/save source code program ke SAP **HANYA boleh di server `sandbox-new`** (Sandbox New Company, SID: TRS, Host: 192.168.6.243)
 - **DILARANG** melakukan update program di server lain (dev, dev-win, qa, prod, prod-win, sandbox)

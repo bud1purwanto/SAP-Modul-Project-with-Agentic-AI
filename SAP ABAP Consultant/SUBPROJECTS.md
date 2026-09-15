@@ -43,6 +43,9 @@ Setiap sub-project memakai subfolder standar:
 | `subproject/MES_CONTROL_TOWER/` | `ZPP_MD_DL` (Include `LZPP_MDU01`) | MES Control Tower download object (MAST, MKAL, STPO/STKO) dengan handling default date 19000101 | mes control tower, mes, zpp_md_dl, mast, mkal, stpo, stko, stas |
 | `subproject/BARRIER/` | `ZQMI_PENDING_BARRIER` | Barrier Inspection List & Upload (ZQM004), Result Recording & Usage Decision untuk karakteristik barrier (WVTR/MVTR, OTR/O2TR) | barrier, pending barrier, zqmi_pending_barrier, zqm004, wvtr, otr, mvtr, o2tr, barrier judgement |
 | `subproject/GI_JR_CLOSING/` | `ZPPR_GI_JR_CLOSING` | Observasi closing PP: exception GI Jumbo Roll vs GR (tanpa 261, selisih toleransi, GI < GR), ALV report & email notifikasi per line | gi jr closing, zppr_gi_jr_closing, jumbo roll, gi jr, closing pp, gi vs gr, zzprodline, zznomorroll |
+| `subproject/PP_SLITTING_REPORT/` | `ZPPR_SLITTING_REKAP_DAILY`, `ZPPR_SLITTING_REKAP_PC_V2` | Rekap Slitting Harian, perbandingan ZPP016/ZPP016N, detail eksekusi dan traceability batch/final batch, export OLAP | zpp016, zpp016n, zpp106, rekap slitting harian, slitting report, final batch, zbatchistory |
+| `subproject/DAILY_ABAP_BRIEFING/` | Daily Briefing Agent | Triage email SAP/ABAP 24 jam, deteksi task development pending, dan checkpoint hasil briefing | daily briefing abap, briefing sap, email abap pending, cron abap |
+| `subproject/SAP_GUI_AUTOMATION/` | SAP GUI for Java + Cua Driver | Display X11 khusus, computer-use transaksi SAP, screenshot verification, dan pemantauan VNC lokal | sap gui, sap logon, computer use, cua-driver, gui automation, monitor transaksi |
 
 ## Folder Non-Sub-Project
 

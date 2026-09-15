@@ -40,7 +40,6 @@ TYPES: BEGIN OF T_TAB,
        ERR,                                 "Error Mark
        INDC           TYPE C LENGTH 4,      "Indicator
        MESS           TYPE C LENGTH 220,    "Message (BAPI_MSG = 220)
-       RESULT         TYPE C LENGTH 10,     "Outcome per order
        END OF T_TAB.
 
 "--- Types untuk optimasi (prefetch/cache) ---
@@ -643,11 +642,6 @@ FORM TECO.
     ENDLOOP.
 
     IF TECOORDER[] IS INITIAL.
-      ITAB-RESULT = 'SKIPPED'.
-      ITAB-MESS   = 'SKIPPED: status order bukan REL'.
-      ITAB-INDC   = WARNING.
-      MODIFY ITAB.
-      CLEAR ITAB.
       CONTINUE.
     ENDIF.
 
@@ -669,13 +663,11 @@ FORM TECO.
       ENDLOOP.
       IF L_HAS_ERROR = 'X'.
         CONCATENATE 'TEST RUN (tidak lolos):' L_MESS INTO ITAB-MESS SEPARATED BY SPACE.
-        ITAB-ERR    = 'X'.
-        ITAB-INDC   = ERROR.
-        ITAB-RESULT = 'ERROR'.
+        ITAB-ERR   = 'X'.
+        ITAB-INDC  = ERROR.
       ELSE.
-        ITAB-MESS   = 'TEST RUN: order memenuhi syarat TECO (simulasi)'.
-        ITAB-INDC   = WARNING.
-        ITAB-RESULT = 'TEST RUN'.
+        ITAB-MESS  = 'TEST RUN: order memenuhi syarat TECO (simulasi)'.
+        ITAB-INDC  = WARNING.
       ENDIF.
     ELSE.
       "=== TRANSAKSI NYATA: panggil BAPI ===
@@ -700,21 +692,17 @@ FORM TECO.
       LOOP AT LT_DETAIL_RETURN WHERE TYPE = 'E' OR TYPE = 'A'.
         L_HAS_ERROR = 'X'.
         IF L_MESS IS INITIAL.
-          CONCATENATE 'Order' LT_DETAIL_RETURN-ORDER_NUMBER
-                      ':' LT_DETAIL_RETURN-MESSAGE
-                      INTO L_MESS SEPARATED BY SPACE.
+          L_MESS = LT_DETAIL_RETURN-MESSAGE.
         ENDIF.
       ENDLOOP.
 
       IF L_HAS_ERROR = 'X'.
         CONCATENATE 'Teco Orders: ' L_MESS INTO ITAB-MESS SEPARATED BY SPACE.
         ITAB-ERR    = 'X'.
-        ITAB-INDC   = ERROR.
-        ITAB-RESULT = 'ERROR'.
+        ITAB-INDC  = ERROR.
         PERFORM ROLLBACK.
       ELSE.
-        ITAB-INDC   = SUCCES.
-        ITAB-RESULT = 'OK'.
+        ITAB-INDC  = SUCCES.
         PERFORM COMMIT.
       ENDIF.
     ENDIF.
@@ -839,8 +827,7 @@ ENDFORM.                    "CHECK_TECO_ELIGIBLE
 FORM SEND_EMAIL.
   DATA : SUBJECT_EMAIL(50).
   DATA : LX_BCS TYPE REF TO CX_BCS,
-         LV_ERR TYPE STRING,
-         L_SENT TYPE C LENGTH 1.
+         LV_ERR TYPE STRING.
   DATA : L_PER(7).
   DATA : LT_G TYPE STANDARD TABLE OF TY_GRP WITH HEADER LINE.
 
@@ -888,7 +875,7 @@ FORM SEND_EMAIL.
       LO_SEND_REQUEST->SET_SENDER( I_SENDER = LO_SENDER ).
 
       "Recipient TO
-      IF PA_TO[] IS NOT INITIAL.
+      IF PA_TO IS NOT INITIAL.
         LOOP AT PA_TO.
           CLEAR LO_RECIPIENT.
           LO_RECIPIENT = CL_CAM_ADDRESS_BCS=>CREATE_INTERNET_ADDRESS( PA_TO-LOW ).
@@ -897,7 +884,7 @@ FORM SEND_EMAIL.
       ENDIF.
 
       "Recipient CC
-      IF PA_CC[] IS NOT INITIAL.
+      IF PA_CC IS NOT INITIAL.
         LOOP AT PA_CC.
           CLEAR LO_RECIPIENT.
           LO_RECIPIENT = CL_CAM_ADDRESS_BCS=>CREATE_INTERNET_ADDRESS( PA_CC-LOW ).
@@ -907,7 +894,7 @@ FORM SEND_EMAIL.
       ENDIF.
 
       "Recipient BCC
-      IF PA_BCC[] IS NOT INITIAL.
+      IF PA_BCC IS NOT INITIAL.
         LOOP AT PA_BCC.
           CLEAR LO_RECIPIENT.
           LO_RECIPIENT = CL_CAM_ADDRESS_BCS=>CREATE_INTERNET_ADDRESS( PA_BCC-LOW ).
@@ -917,13 +904,9 @@ FORM SEND_EMAIL.
       ENDIF.
 
       "Send email
-      L_SENT = LO_SEND_REQUEST->SEND( I_WITH_ERROR_SCREEN = 'X' ).
-      IF L_SENT = 'X'.
-        COMMIT WORK.
-        MESSAGE 'Email hasil TECO berhasil dikirim' TYPE 'S'.
-      ELSE.
-        MESSAGE 'Email gagal dimasukkan ke send request' TYPE 'S' DISPLAY LIKE 'E'.
-      ENDIF.
+      LO_SEND_REQUEST->SEND( I_WITH_ERROR_SCREEN = 'X' ).
+      COMMIT WORK.
+      MESSAGE 'Email hasil TECO berhasil dikirim' TYPE 'S' DISPLAY LIKE 'E'.
 
     CATCH CX_BCS INTO LX_BCS.
       LV_ERR = LX_BCS->GET_TEXT( ).
@@ -965,9 +948,7 @@ FORM APPEND_SUMMARY_HTML.
   DATA: L_TOTAL TYPE I,
         L_TECO  TYPE I,
         L_REL   TYPE I,
-        L_ERR   TYPE I,
-        L_OK    TYPE I,
-        L_SKIP  TYPE I.
+        L_ERR   TYPE I.
   DATA: L_COUNT     TYPE STRING,
         L_STATUS    TYPE STRING,
         L_RESULT    TYPE STRING,
@@ -1000,7 +981,7 @@ FORM APPEND_SUMMARY_HTML.
   PERFORM APPEND_HTML USING '</tr>'.
 
   LOOP AT LT_G.
-    CLEAR: L_TOTAL, L_TECO, L_REL, L_ERR, L_OK, L_SKIP,
+    CLEAR: L_TOTAL, L_TECO, L_REL, L_ERR,
            L_COUNT, L_STATUS, L_RESULT, L_ROW_OPEN.
 
     LOOP AT ITAB WHERE GRUP = LT_G-GRUP.
@@ -1012,11 +993,6 @@ FORM APPEND_SUMMARY_HTML.
       ENDIF.
       IF ITAB-ERR = 'X'.
         ADD 1 TO L_ERR.
-      ENDIF.
-      IF ITAB-RESULT = 'OK'.
-        ADD 1 TO L_OK.
-      ELSEIF ITAB-RESULT = 'SKIPPED'.
-        ADD 1 TO L_SKIP.
       ENDIF.
     ENDLOOP.
 
@@ -1046,16 +1022,9 @@ FORM APPEND_SUMMARY_HTML.
       ELSEIF P_TEST = 'X'.
         L_RESULT = 'Test Run'.
         L_ROW_OPEN = '<tr style="background:#eef5fb;">'.
-      ELSEIF L_TOTAL > 0 AND L_TOTAL = L_OK
-         AND L_TOTAL = L_TECO.
+      ELSE.
         L_RESULT = 'OK'.
         L_ROW_OPEN = '<tr>'.
-      ELSEIF L_TOTAL > 0 AND L_TOTAL = L_SKIP.
-        L_RESULT = 'Skipped'.
-        L_ROW_OPEN = '<tr style="background:#fff8e1;">'.
-      ELSE.
-        L_RESULT = 'Review'.
-        L_ROW_OPEN = '<tr style="background:#fbf1f1;">'.
       ENDIF.
     ENDIF.
 
@@ -1080,9 +1049,6 @@ FORM APPEND_SUMMARY_HTML.
                   L_RES_ESC '</span></td>' INTO L_HTML.
     ELSEIF L_RESULT = 'Test Run'.
       CONCATENATE '<td align="center"><span style="color:#1f5f8b;font-weight:bold;">'
-                  L_RES_ESC '</span></td>' INTO L_HTML.
-    ELSEIF L_RESULT = 'Skipped'.
-      CONCATENATE '<td align="center"><span style="color:#9a6700;font-weight:bold;">'
                   L_RES_ESC '</span></td>' INTO L_HTML.
     ELSE.
       CONCATENATE '<td align="center"><span style="color:#2e7d32;font-weight:bold;">'
@@ -1311,9 +1277,10 @@ FORM BUILD_XLS USING P_GRUP CHANGING P_XML TYPE STRING.
       CONCATENATE ITAB-END+6(2) '.' ITAB-END+4(2) '.'
                   ITAB-END(4) INTO L_D2.
     ENDIF.
-    L_RES = ITAB-RESULT.
-    IF L_RES IS INITIAL.
-      L_RES = 'N/A'.
+    IF ITAB-ERR = 'X'.
+      L_RES = 'ERROR'.
+    ELSE.
+      L_RES = 'OK'.
     ENDIF.
 
     APPEND '<Row>' TO LT_X.
@@ -1342,7 +1309,7 @@ FORM BUILD_XLS USING P_GRUP CHANGING P_XML TYPE STRING.
   APPEND '<TopRowBottomPane>1</TopRowBottomPane>' TO LT_X.
   APPEND '<ActivePane>2</ActivePane>' TO LT_X.
   APPEND '</WorksheetOptions>' TO LT_X.
-  APPEND '<AutoFilter x:Range="R1C1:R1C13"' TO LT_X.
+  APPEND '<AutoFilter x:Range="R1C1:R1C12"' TO LT_X.
   APPEND ' xmlns="urn:schemas-microsoft-com:office:excel"/>' TO LT_X.
   APPEND '</Worksheet>' TO LT_X.
   APPEND '</Workbook>' TO LT_X.
@@ -1474,7 +1441,6 @@ FORM F_FIELD_CATALOG_PREVIEW.
     'WERKS'           ''  'X'  '' '6'    'Plant'                  '' '' '' '',
     'ERDAT'           ''  'X'  '' '10'   'Created On'             '' '' '' '',
     'STATUS'          ''  ''   '' '30'   'Status Order'           '' '' '' '',
-    'RESULT'          ''  ''   '' '10'   'Result'                 '' '' '' '',
     'MESS'            ''  ''   '' '60'   'Message'                '' '' '' ''.
 
   T_FIELDCAT-NO_ZERO = ''.
