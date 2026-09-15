@@ -58,11 +58,15 @@ start_if_missing x11vnc-writable "x11vnc -display ${DISPLAY}.*-rfbport 5998" \
 
 NOVNC_WEB="${HOME}/.local/opt/novnc-web"
 WEBSOCKIFY="${HOME}/.local/opt/novnc-venv/bin/websockify"
-start_if_missing websockify-6080 "websockify.*6080" \
+start_if_missing websockify-6080 "[w]ebsockify.*6080" \
   "${WEBSOCKIFY}" --web "${NOVNC_WEB}" 0.0.0.0:6080 127.0.0.1:5999
 
-start_if_missing websockify-6081 "websockify.*6081" \
-  "${WEBSOCKIFY}" --web "${NOVNC_WEB}" 100.73.54.71:6081 127.0.0.1:5998
+AUTH_PLUGIN="hashed_basic_auth.HashedBasicAuth"
+AUTH_SOURCE="${BASE_DIR}/pcr-auth.json"
+start_if_missing websockify-6081 "[w]ebsockify.*6081" \
+  env PYTHONPATH="${PWD}/scripts" "${WEBSOCKIFY}" --web "${NOVNC_WEB}" \
+      --auth-plugin "${AUTH_PLUGIN}" --auth-source "${AUTH_SOURCE}" \
+      127.0.0.1:6081 127.0.0.1:5998
 
 printf 'DISPLAY=%s\nCUA_SOCKET=%s\nVNC=127.0.0.1:%s (view-only)\n' \
   "${DISPLAY}" "${CUA_SOCKET}" "${VNC_PORT}"
