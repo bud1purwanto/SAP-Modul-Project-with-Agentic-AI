@@ -19,19 +19,16 @@ TYPES: BEGIN OF TY_DISPLAY,
          NAME1        TYPE KNA1-NAME1,
          FIELD_NAME   TYPE ZQM_COA_CUST_COL-FIELD_NAME,
          FIELD_LABEL  TYPE ZQM_COA_CUST_COL-FIELD_LABEL,
-         COL_SIZE     TYPE ZQM_COA_CUST_COL-COL_SIZE,
          SEQ_NO       TYPE ZQM_COA_CUST_COL-SEQ_NO,
          ACTIVE       TYPE ZQM_COA_CUST_COL-ACTIVE,
          STATUS_TXT   TYPE C LENGTH 40,
          LINE_COLOR   TYPE C LENGTH 4,
-         CELLTAB      TYPE LVC_T_STYL,
        END OF TY_DISPLAY.
 
 TYPES: BEGIN OF TY_FIELD_F4,
          FIELD_NAME   TYPE CHAR30,
          FIELD_LABEL  TYPE CHAR40,
          CATEGORY     TYPE CHAR20,
-         COL_SIZE     TYPE CHAR1,
        END OF TY_FIELD_F4.
 
 * Forward declaration for Event Receiver Class
@@ -147,9 +144,8 @@ START-OF-SELECTION.
     PERFORM GET_DATABASE_DATA.
   ENDIF.
 
-  IF GT_DISPLAY[] IS INITIAL AND
-     ( R_EDT = 'X' OR R_DSP = 'X' ).
-    MESSAGE 'No data' TYPE 'S'.
+  IF GT_DISPLAY[] IS INITIAL AND R_DSP = 'X'.
+    MESSAGE 'Tidak ada data konfigurasi ditemukan.' TYPE 'S'.
     STOP.
   ENDIF.
 
@@ -204,39 +200,38 @@ FORM INIT_FIELD_DICTIONARY.
     GT_FIELD_F4-FIELD_NAME   = &1.
     GT_FIELD_F4-FIELD_LABEL  = &2.
     GT_FIELD_F4-CATEGORY     = &3.
-    GT_FIELD_F4-COL_SIZE     = &4.
     APPEND GT_FIELD_F4.
   END-OF-DEFINITION.
 
-  _ADD_F4 'DO_NUMBER'           'DO Number'                  'Delivery'     'M'.
-  _ADD_F4 'PO_NUMBER'           'PO Number'                  'Order'        'L'.
-  _ADD_F4 'HU_NUMBER'           'HU Number'                  'Handling'     'M'.
-  _ADD_F4 'NO_PALET'            'No Palet'                   'Packaging'    'M'.
-  _ADD_F4 'TYPE'                'Type'                       'Material'     'S'.
-  _ADD_F4 'THICK'               'Thick'                      'Dimension'    'S'.
-  _ADD_F4 'ROLL_NUMBER'         'Roll Number'                'Identifier'   'L'.
-  _ADD_F4 'BATCH_NUMBER'        'Batch Number'               'Identifier'   'M'.
-  _ADD_F4 'TEXT_BARCODE'        'Text Barcode'               'Identifier'   'M'.
-  _ADD_F4 'WIDTH'               'Width'                      'Dimension'    'S'.
-  _ADD_F4 'LENGTH'              'Length'                     'Dimension'    'S'.
-  _ADD_F4 'WEIGHT_PER_ROL'      'Weight Per Roll'            'Dimension'    'S'.
-  _ADD_F4 'JOINT'               'Joint'                      'Spec'         'S'.
-  _ADD_F4 'QTY'                 'Qty'                        'Quantity'     'S'.
-  _ADD_F4 'TOTAL_ROLL'          'Total Roll'                 'Quantity'     'S'.
-  _ADD_F4 'TOTAL_WEIGHT_PALET'  'Total Weight Per Pallet'    'Quantity'     'S'.
-  _ADD_F4 'GG_PART_NUMBER'      'GG Part Number (OPR)'       'Customer Mat' 'M'.
-  _ADD_F4 'EXPIRED_DATE'        'Expired Date'               'Date'         'M'.
-  _ADD_F4 'PRODUCTION_DATE'     'Production Date'            'Date'         'M'.
-  _ADD_F4 'USED_BEFORE'         'Used Before'                'Date'         'M'.
-  _ADD_F4 'MANUFACTURING_DATE'  'Manufacturing Date'         'Date'         'M'.
-  _ADD_F4 'NUMBER_OF_JOINT'     'Number Of Joint (Splice)'   'Spec'         'S'.
-  _ADD_F4 'LENGTH_OF_SPLICE'    'Length Of Splice'           'Spec'         'S'.
-  _ADD_F4 'LOT_NUMBER'          'Lot Number'                 'Identifier'   'M'.
-  _ADD_F4 'NO_PALET_TRIAS'      'No Palet Trias'             'Packaging'    'M'.
-  _ADD_F4 'BARCODE'             'Barcode'                    'Identifier'   'L'.
-  _ADD_F4 'SO_NUMBER'           'SO Number'                  'Order'        'M'.
-  _ADD_F4 'TREATMENT_IN'        'Treatment IN'               'Spec'         'M'.
-  _ADD_F4 'TREATMENT_OUT'       'Treatment OUT'              'Spec'         'M'.
+  _ADD_F4 'DO_NUMBER'           'DO Number'                  'Delivery'.
+  _ADD_F4 'PO_NUMBER'           'PO Number'                  'Order'.
+  _ADD_F4 'HU_NUMBER'           'HU Number'                  'Handling'.
+  _ADD_F4 'NO_PALET'            'No Palet'                   'Packaging'.
+  _ADD_F4 'TYPE'                'Type'                       'Material'.
+  _ADD_F4 'THICK'               'Thick'                      'Dimension'.
+  _ADD_F4 'ROLL_NUMBER'         'Roll Number'                'Identifier'.
+  _ADD_F4 'BATCH_NUMBER'        'Batch Number'               'Identifier'.
+  _ADD_F4 'TEXT_BARCODE'        'Text Barcode'               'Identifier'.
+  _ADD_F4 'WIDTH'               'Width'                      'Dimension'.
+  _ADD_F4 'LENGTH'              'Length'                     'Dimension'.
+  _ADD_F4 'WEIGHT_PER_ROL'      'Weight Per Roll'            'Dimension'.
+  _ADD_F4 'JOINT'               'Joint'                      'Spec'.
+  _ADD_F4 'QTY'                 'Qty'                        'Quantity'.
+  _ADD_F4 'TOTAL_ROLL'          'Total Roll'                 'Quantity'.
+  _ADD_F4 'TOTAL_WEIGHT_PALET'  'Total Weight Per Pallet'    'Quantity'.
+  _ADD_F4 'GG_PART_NUMBER'      'GG Part Number (OPR)'       'Customer Mat'.
+  _ADD_F4 'EXPIRED_DATE'        'Expired Date'               'Date'.
+  _ADD_F4 'PRODUCTION_DATE'     'Production Date'            'Date'.
+  _ADD_F4 'USED_BEFORE'         'Used Before'                'Date'.
+  _ADD_F4 'MANUFACTURING_DATE'  'Manufacturing Date'         'Date'.
+  _ADD_F4 'NUMBER_OF_JOINT'     'Number Of Joint (Splice)'   'Spec'.
+  _ADD_F4 'LENGTH_OF_SPLICE'    'Length Of Splice'           'Spec'.
+  _ADD_F4 'LOT_NUMBER'          'Lot Number'                 'Identifier'.
+  _ADD_F4 'NO_PALET_TRIAS'      'No Palet Trias'             'Packaging'.
+  _ADD_F4 'BARCODE'             'Barcode'                    'Identifier'.
+  _ADD_F4 'SO_NUMBER'           'SO Number'                  'Order'.
+  _ADD_F4 'TREATMENT_IN'        'Treatment IN'               'Spec'.
+  _ADD_F4 'TREATMENT_OUT'       'Treatment OUT'              'Spec'.
 ENDFORM.                    " INIT_FIELD_DICTIONARY
 
 *&---------------------------------------------------------------------*
@@ -244,8 +239,7 @@ ENDFORM.                    " INIT_FIELD_DICTIONARY
 *&---------------------------------------------------------------------*
 FORM INIT_CREATE_DATA.
   REFRESH GT_DISPLAY.
-  DATA: LV_IDX TYPE NUMC2,
-        LS_STYLE TYPE LVC_S_STYL.
+  DATA: LV_IDX TYPE NUMC2.
   DO 10 TIMES.
     LV_IDX = SY-INDEX.
     CLEAR GT_DISPLAY.
@@ -253,10 +247,6 @@ FORM INIT_CREATE_DATA.
     GT_DISPLAY-ACTIVE     = 'X'.
     GT_DISPLAY-STATUS_TXT = 'New Entry'.
     GT_DISPLAY-LINE_COLOR = ''. " Clean default color
-    CLEAR LS_STYLE.
-    LS_STYLE-FIELDNAME = 'STATUS_TXT'.
-    LS_STYLE-STYLE = CL_GUI_ALV_GRID=>MC_STYLE_DISABLED.
-    INSERT LS_STYLE INTO TABLE GT_DISPLAY-CELLTAB.
     APPEND GT_DISPLAY.
   ENDDO.
 ENDFORM.                    " INIT_CREATE_DATA
@@ -266,8 +256,7 @@ ENDFORM.                    " INIT_CREATE_DATA
 *&---------------------------------------------------------------------*
 FORM GET_DATABASE_DATA.
   DATA: LT_DB TYPE TABLE OF ZQM_COA_CUST_COL WITH HEADER LINE,
-        LT_KNA1 TYPE TABLE OF KNA1 WITH HEADER LINE,
-        LS_STYLE TYPE LVC_S_STYL.
+        LT_KNA1 TYPE TABLE OF KNA1 WITH HEADER LINE.
 
   REFRESH: GT_DISPLAY.
 
@@ -298,7 +287,6 @@ FORM GET_DATABASE_DATA.
     GT_DISPLAY-KUNNR        = LT_DB-KUNNR.
     GT_DISPLAY-FIELD_NAME   = LT_DB-FIELD_NAME.
     GT_DISPLAY-FIELD_LABEL  = LT_DB-FIELD_LABEL.
-    GT_DISPLAY-COL_SIZE     = LT_DB-COL_SIZE.
     GT_DISPLAY-SEQ_NO       = LT_DB-SEQ_NO.
     GT_DISPLAY-ACTIVE       = LT_DB-ACTIVE.
 
@@ -321,28 +309,6 @@ FORM GET_DATABASE_DATA.
     ELSE.
       GT_DISPLAY-STATUS_TXT = 'Inactive (Deactivated)'.
       GT_DISPLAY-LINE_COLOR = 'C600'. " Merah untuk Inactive
-    ENDIF.
-
-    IF R_EDT = 'X'.
-      CLEAR LS_STYLE.
-      LS_STYLE-FIELDNAME = 'KUNNR'.
-      LS_STYLE-STYLE = CL_GUI_ALV_GRID=>MC_STYLE_DISABLED.
-      INSERT LS_STYLE INTO TABLE GT_DISPLAY-CELLTAB.
-
-      CLEAR LS_STYLE.
-      LS_STYLE-FIELDNAME = 'NAME1'.
-      LS_STYLE-STYLE = CL_GUI_ALV_GRID=>MC_STYLE_DISABLED.
-      INSERT LS_STYLE INTO TABLE GT_DISPLAY-CELLTAB.
-
-      CLEAR LS_STYLE.
-      LS_STYLE-FIELDNAME = 'FIELD_NAME'.
-      LS_STYLE-STYLE = CL_GUI_ALV_GRID=>MC_STYLE_DISABLED.
-      INSERT LS_STYLE INTO TABLE GT_DISPLAY-CELLTAB.
-
-      CLEAR LS_STYLE.
-      LS_STYLE-FIELDNAME = 'STATUS_TXT'.
-      LS_STYLE-STYLE = CL_GUI_ALV_GRID=>MC_STYLE_DISABLED.
-      INSERT LS_STYLE INTO TABLE GT_DISPLAY-CELLTAB.
     ENDIF.
 
     APPEND GT_DISPLAY.
@@ -419,7 +385,6 @@ FORM UPLOAD_TEXT_FILE.
       READ TABLE LT_FIELDS INDEX 3 INTO GT_DISPLAY-FIELD_LABEL.
       READ TABLE LT_FIELDS INDEX 4 INTO GT_DISPLAY-SEQ_NO.
       READ TABLE LT_FIELDS INDEX 5 INTO GT_DISPLAY-ACTIVE.
-      READ TABLE LT_FIELDS INDEX 6 INTO GT_DISPLAY-COL_SIZE.
       GT_DISPLAY-STATUS_TXT = 'Uploaded (Ready to Save)'.
       GT_DISPLAY-LINE_COLOR = 'C300'. " Yellow
       APPEND GT_DISPLAY.
@@ -482,7 +447,6 @@ FORM PARSE_EXCEL_MATRIX TABLES PT_RAW STRUCTURE ALSMEX_TABLINE.
         GT_DISPLAY-KUNNR        = LV_KUNNR.
         GT_DISPLAY-FIELD_NAME   = LT_COL_HDR-FLD_DEF-FIELD_NAME.
         GT_DISPLAY-FIELD_LABEL  = LT_COL_HDR-FLD_DEF-FIELD_LABEL.
-        GT_DISPLAY-COL_SIZE     = LT_COL_HDR-FLD_DEF-COL_SIZE.
         GT_DISPLAY-SEQ_NO       = LV_SEQ.
         GT_DISPLAY-ACTIVE       = 'X'.
         GT_DISPLAY-STATUS_TXT   = 'Uploaded (Ready to Save)'.
@@ -528,9 +492,6 @@ ENDFORM.                    " DISPLAY_ALV_GRID
 *&      Form  CALLER_EXIT
 *&---------------------------------------------------------------------*
 FORM CALLER_EXIT USING E_GRID TYPE SLIS_DATA_CALLER_EXIT.
-  DATA: LT_DROP TYPE LVC_T_DROP,
-        LS_DROP TYPE LVC_S_DROP.
-
   CALL FUNCTION 'GET_GLOBALS_FROM_SLVC_FULLSCR'
     IMPORTING
       E_GRID = GO_GRID.
@@ -541,18 +502,6 @@ FORM CALLER_EXIT USING E_GRID TYPE SLIS_DATA_CALLER_EXIT.
     ENDIF.
     SET HANDLER GO_EVENT_RECEIVER->HANDLE_TOOLBAR FOR GO_GRID.
     SET HANDLER GO_EVENT_RECEIVER->HANDLE_USER_COMMAND FOR GO_GRID.
-
-    CLEAR LS_DROP.
-    LS_DROP-HANDLE = 1.
-    LS_DROP-VALUE = 'S'.
-    APPEND LS_DROP TO LT_DROP.
-    LS_DROP-VALUE = 'M'.
-    APPEND LS_DROP TO LT_DROP.
-    LS_DROP-VALUE = 'L'.
-    APPEND LS_DROP TO LT_DROP.
-    CALL METHOD GO_GRID->SET_DROP_DOWN_TABLE
-      EXPORTING
-        IT_DROP_DOWN = LT_DROP.
   ENDIF.
 ENDFORM.                    " CALLER_EXIT
 
@@ -561,14 +510,14 @@ ENDFORM.                    " CALLER_EXIT
 *&---------------------------------------------------------------------*
 FORM SET_PF_STATUS USING RT_EXTAB TYPE SLIS_T_EXTAB.
   IF R_CRT = 'X' OR R_UPL = 'X'.
-    SET TITLEBAR 'MAIN101'.
-    SET PF-STATUS 'MAIN101' EXCLUDING RT_EXTAB.
+    SET TITLEBAR 'MAIN101' OF PROGRAM 'ZMAP_COA_MIC'.
+    SET PF-STATUS 'MAIN101' OF PROGRAM 'ZMAP_COA_MIC' EXCLUDING RT_EXTAB.
   ELSEIF R_EDT = 'X'.
-    SET TITLEBAR 'MAIN102'.
-    SET PF-STATUS 'MAIN102' EXCLUDING RT_EXTAB.
+    SET TITLEBAR 'MAIN102' OF PROGRAM 'ZMAP_COA_MIC'.
+    SET PF-STATUS 'MAIN102' OF PROGRAM 'ZMAP_COA_MIC' EXCLUDING RT_EXTAB.
   ELSEIF R_DSP = 'X'.
-    SET TITLEBAR 'MAIN103'.
-    SET PF-STATUS 'MAIN103' EXCLUDING RT_EXTAB.
+    SET TITLEBAR 'MAIN103' OF PROGRAM 'ZMAP_COA_MIC'.
+    SET PF-STATUS 'MAIN103' OF PROGRAM 'ZMAP_COA_MIC' EXCLUDING RT_EXTAB.
   ENDIF.
 ENDFORM.                    " SET_PF_STATUS
 
@@ -607,15 +556,10 @@ ENDFORM.                    " USER_COMMAND
 FORM BUILD_FIELDCAT.
   REFRESH GT_FIELDCAT.
   DATA: LS_FCAT TYPE LVC_S_FCAT.
-  DATA: LV_EDIT     TYPE C VALUE ' ',
-        LV_KEY_EDIT TYPE C VALUE ' '.
+  DATA: LV_EDIT TYPE C VALUE ' '.
 
   IF R_CRT = 'X' OR R_EDT = 'X' OR R_UPL = 'X'.
     LV_EDIT = 'X'.
-  ENDIF.
-
-  IF R_CRT = 'X' OR R_UPL = 'X'.
-    LV_KEY_EDIT = 'X'.
   ENDIF.
 
   DEFINE _ADD_FCAT.
@@ -628,18 +572,10 @@ FORM BUILD_FIELDCAT.
     APPEND LS_FCAT TO GT_FIELDCAT.
   END-OF-DEFINITION.
 
-  _ADD_FCAT 'KUNNR'        'Customer Code'    12  LV_KEY_EDIT 'X'.
-  IF R_CRT <> 'X'.
-    _ADD_FCAT 'NAME1'      'Customer Name'    30  ' '         ' '.
-  ENDIF.
-  _ADD_FCAT 'FIELD_NAME'   'Roll Field (F4)'  20  LV_KEY_EDIT 'X'.
+  _ADD_FCAT 'KUNNR'        'Customer Code'    12  LV_EDIT 'X'.
+  _ADD_FCAT 'NAME1'        'Customer Name'    30  ' '     ' '.
+  _ADD_FCAT 'FIELD_NAME'   'Roll Field (F4)'  20  LV_EDIT 'X'.
   _ADD_FCAT 'FIELD_LABEL'  'Header Label'     25  LV_EDIT ' '.
-  _ADD_FCAT 'COL_SIZE'     'Size (S/M/L)'       8  LV_EDIT ' '.
-  READ TABLE GT_FIELDCAT INTO LS_FCAT WITH KEY FIELDNAME = 'COL_SIZE'.
-  IF SY-SUBRC = 0.
-    LS_FCAT-DRDN_HNDL = 1.
-    MODIFY GT_FIELDCAT FROM LS_FCAT INDEX SY-TABIX.
-  ENDIF.
   _ADD_FCAT 'SEQ_NO'       'Seq'              5   LV_EDIT ' '.
   _ADD_FCAT 'ACTIVE'       'Act'              4   LV_EDIT ' '.
   _ADD_FCAT 'STATUS_TXT'   'Status'           22  ' '     ' '.
@@ -654,16 +590,7 @@ FORM BUILD_LAYOUT.
   GS_LAYOUT-CWIDTH_OPT = 'X'.
   GS_LAYOUT-BOX_FNAME  = 'BOX'.
   GS_LAYOUT-INFO_FNAME = 'LINE_COLOR'.
-  GS_LAYOUT-STYLEFNAME = 'CELLTAB'.
-  IF R_CRT = 'X'.
-    GS_LAYOUT-GRID_TITLE = 'Create COA Batch Mapping'.
-  ELSEIF R_EDT = 'X'.
-    GS_LAYOUT-GRID_TITLE = 'Edit COA Batch Mapping'.
-  ELSEIF R_DSP = 'X'.
-    GS_LAYOUT-GRID_TITLE = 'Display COA Batch Mapping'.
-  ELSEIF R_UPL = 'X'.
-    GS_LAYOUT-GRID_TITLE = 'Upload COA Batch Mapping'.
-  ENDIF.
+  GS_LAYOUT-GRID_TITLE = 'COA Dynamic Roll Columns Configuration per Customer'.
   IF R_CRT = 'X' OR R_EDT = 'X' OR R_UPL = 'X'.
     GS_LAYOUT-EDIT = 'X'.
   ENDIF.
@@ -818,8 +745,7 @@ FORM ADD_NEW_ROW.
 
   DATA: LV_MAX_SEQ TYPE NUMC2 VALUE 0,
         LV_KUNNR   TYPE KUNNR,
-        LV_NAME1   TYPE KNA1-NAME1,
-        LS_STYLE   TYPE LVC_S_STYL.
+        LV_NAME1   TYPE KNA1-NAME1.
 
   LOOP AT GT_DISPLAY.
     IF GT_DISPLAY-KUNNR IS NOT INITIAL.
@@ -840,12 +766,6 @@ FORM ADD_NEW_ROW.
   GT_DISPLAY-ACTIVE       = 'X'.
   GT_DISPLAY-STATUS_TXT   = 'New Entry (Unsaved)'.
   GT_DISPLAY-LINE_COLOR   = 'C300'. " Yellow
-  IF R_CRT = 'X' OR R_EDT = 'X'.
-    CLEAR LS_STYLE.
-    LS_STYLE-FIELDNAME = 'STATUS_TXT'.
-    LS_STYLE-STYLE = CL_GUI_ALV_GRID=>MC_STYLE_DISABLED.
-    INSERT LS_STYLE INTO TABLE GT_DISPLAY-CELLTAB.
-  ENDIF.
   APPEND GT_DISPLAY.
 
   IF GO_GRID IS BOUND.
@@ -912,7 +832,6 @@ FORM SAVE_DATABASE_CHANGES.
     LT_INS-KUNNR        = GT_DISPLAY-KUNNR.
     LT_INS-FIELD_NAME   = GT_DISPLAY-FIELD_NAME.
     LT_INS-FIELD_LABEL  = GT_DISPLAY-FIELD_LABEL.
-    LT_INS-COL_SIZE     = GT_DISPLAY-COL_SIZE.
     LT_INS-SEQ_NO       = GT_DISPLAY-SEQ_NO.
     LT_INS-ACTIVE       = GT_DISPLAY-ACTIVE.
     APPEND LT_INS.

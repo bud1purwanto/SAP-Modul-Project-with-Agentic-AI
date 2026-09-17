@@ -2,6 +2,12 @@
 
 PoC pengendalian SAP GUI for Java lewat display X11 khusus.
 
+## Aturan Eksekusi GUI — WAJIB DIPATUHI
+- Jika support SAP atau user secara eksplisit meminta GUI: **WAJIB** pakai stack Virtual VNC display `:99` + `cua-driver`.
+- Dilarang keras mengalihkan ke RFC / BAPI jika permintaan eksplisit GUI, agar Baginda dapat memantau langsung via browser.
+- Endpoint Monitor: `https://pc.abap.web.id`
+- Endpoint Override: `https://pcr.abap.web.id` (Auth Basic: `abap`)
+
 ## Start
 
 `scripts/start-sap-gui-monitor.sh`

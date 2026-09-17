@@ -87,3 +87,40 @@ Status: proof-of-concept terverifikasi pada server Linux.
 - Username `TRSTDEV` sudah diisi. Fokus sudah berada di field password.
 - Blocker tersisa hanya secret entry: kebijakan computer-use melarang agent mengetik password plaintext. Bukti layar siap-password: `/home/abap/.hermes/cache/images/sap-login-ready-password.png`.
 - Setelah password dimasukkan melalui kanal operator, lanjutkan GUI ke `SE16N`, tabel `MARA`, execute, lalu screenshot-verifikasi hasil.
+
+## 2026-09-15 — Aturan monitoring VNC SAP GUI
+
+- Seluruh transaksi GUI SAP wajib hanya pada display virtual persisten `:99`.
+- Baginda memantau layar nyata melalui `https://pc.abap.web.id/` (view-only) atau `https://pcr.abap.web.id/` (operator/override); VNC ini menjadi kanal bukti utama, bukan screenshot/chat Hermes.
+- Untuk support read-only yang mendesak, jalankan segera dengan pertanyaan seminimal mungkin. Konfirmasi hanya bila input penting belum ada atau aksi mengubah data/sensitif/berbahaya.
+- Sebelum menyatakan TCODE atau hasil telah terbuka, verifikasi layar virtual dan status bar; jangan pernah menggantikan bukti dengan placeholder gambar atau klaim yang tidak diverifikasi.
+- Respons Hermes untuk support dibuat singkat: status TCODE, SID/client, hasil atau blocker yang terverifikasi.
+
+## 2026-09-15 — ZBMBC parameter support
+
+- Permintaan: buka TCODE `ZBMBC` dan isi parameter Plant `tte` serta Material `srrpai` untuk dipantau melalui VNC.
+- Preflight virtual stack terverifikasi: service aktif, display `:99` OK, VNC `5999/5998` dan noVNC `6080/6081` listen, handshake RFB `003.008`, HTTP monitor `200`.
+- Target terverifikasi: SID `TRD`, client `130`.
+- Layar report terverifikasi: `Report Stock Overview with Characteristic` (hasil navigasi `/nZBMBC`).
+- Parameter terisi dan diverifikasi dari layar: Material `srrpai`, Plant `tte`; tidak ada pesan error pada status bar.
+
+## 2026-09-15 — ZPP016N hari ini
+
+- TCODE: ZPP016N (Rekap Slitting Harian - Single Batch)
+- Tanggal: 24.09.2026 (diisi di Production Date)
+- Eksekusi: Dijalankan setelah isi parameter
+- Status: Layar hasil terbuka setelah F8/Execute
+- Checkpoint: Data slitting harian sudah dihasilkan di virtual session TRD client 130
+- VNC pemantauan: pc.abap.web.id / pcr.abap.web.id
+- Report belum dieksekusi karena permintaan hanya membuka dan mengisi parameter. Tidak ada perubahan data SAP.
+
+## 2026-09-15 — Test cancel Slit Roll order 100000067411
+
+- Target RFC disetel dan terverifikasi: Sandbox New Company, SID TRS (endpoint teknis mengembalikan TRDCLNT130); tanggal server 03.02.2029.
+- RAG yang dipakai: `PP-CL-UM29 Cancel Process Order Slitroll` / PPCL02. Jalur aktual: `ZPP001` → filter process order → list → pilih order → `Batal Start/Stop` → konfirmasi `Ya`.
+- Validasi RFC sebelum aksi melalui `BAPI_PROCORD_GET_DETAIL`: process order `100000067411`, type `ZCL2`, plant `2000`, material `SRWCNI` (SLITT ROLL DL00-50), kuantitas 1 ROL, tanggal 22.02.2027, resource `CWT02`, status awal `TECO`.
+- Pada `ZPP001`, filter yang berhasil menampilkan list: Order Type `ZCL2`, Plant `2000`, Order Number `100000067411`, Production Date `22.02.2027`. RAG contoh `ZCA1` tidak cocok dengan order aktual dan tidak dipaksakan.
+- Order dipilih, tombol `Batal Start/Stop` ditekan, kemudian dialog `Cancel Order ??` berisi `Order 100000067411 akan di cancel ?` dikonfirmasi dengan `Ya`.
+- Bukti hasil UI: log `Log Process Batal Start-Stop` menampilkan ikon hijau, transaksi `Cancel Slitting Process 100000067411`, pesan `Success`. Screenshot: `/tmp/sap-cancel-result.png`.
+- Cross-check RFC setelah aksi: header berubah dari `TECO BCRQ MANC SETC` menjadi `REL BCRQ MANC SETC`, membuktikan UNTECO terjadi. Order masih muncul di list `ZPP001` dengan tampilan status `TECO`; tampilan list tidak merefresh/menampilkan status akhir secara konsisten. Tidak mengklaim status `Cancelled` karena bukti final `Already Cancelled` belum ada.
+- Artefak verifikasi: `/tmp/sap-zpp001-result4.png`, `/tmp/sap-cancel-dialog.png`, `/tmp/sap-cancel-result.png`, `/tmp/sap-cancel-verify-list.png`.

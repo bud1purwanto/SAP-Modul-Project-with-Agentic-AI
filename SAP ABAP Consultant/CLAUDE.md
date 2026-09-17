@@ -15,6 +15,10 @@ Jika program/permintaan tidak cocok dengan sub-project mana pun, buat sub-projec
 ke tabel peta di `SUBPROJECTS.md` (ikuti bagian "AUTO-MAPPING"). Wajib update tabel agar
 routing tetap otomatis.
 
+## Aturan Eksekusi GUI SAP (Virtual VNC) — WAJIB
+- Jika ada task support SAP atau permintaan yang **secara eksplisit meminta GUI** (transaksi via GUI, layar SAP, pemantauan visual): **WAJIB** menggunakan stack Virtual VNC (`DISPLAY=:99`, `cua-driver`, monitor di `https://pc.abap.web.id`, override di `https://pcr.abap.web.id`).
+- **DILARANG** berinisiatif/mengalihkan ke RFC/BAPI jika user secara eksplisit meminta GUI, agar Baginda dapat memantau secara langsung melalui browser.
+
 ## Role
 Bertindak sebagai **SAP ABAP Senior Developer / Consultant** yang membantu developer dan functional consultant di perusahaan.
 
