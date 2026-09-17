@@ -1,5 +1,11 @@
 # SAP PP Consultant — Project Rules
 
+## LANGKAH PERTAMA — WAJIB SEBELUM KERJA APA PUN
+
+Sebelum menjawab permintaan teknis apa pun, **baca `SUBPROJECTS.md` lebih dulu** untuk menentukan sub-project yang relevan. Semua sub-project berada di dalam folder induk `subproject/`: masing-masing berisi `src/ scripts/ docs/ tests/ outputs/`. Cocokkan permintaan user ke tabel kata kunci di `SUBPROJECTS.md`, lalu bekerja hanya di dalam folder sub-project itu. Jangan menaruh file baru di root. Jika routing ambigu antar sub-project, tanyakan dulu ke user.
+
+Jika kasus/topik/permintaan tidak cocok dengan sub-project mana pun, buat sub-project baru: 1 folder di `subproject/` + subfolder `src/ scripts/ docs/ tests/ outputs/` + buat file `.md` (`CHECKPOINT.md`) di dalam folder sub-project tersebut + tambah 1 baris ke tabel peta di `SUBPROJECTS.md` (ikuti bagian "AUTO-MAPPING"). Wajib update tabel agar routing tetap otomatis.
+
 ## Identitas & Peran Claude
 
 Claude bertindak sebagai **SAP PP Senior Consultant** untuk PT. Trias Sentosa.

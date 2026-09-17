@@ -1,6 +1,6 @@
 ## Konteks Inti Otomatis - Wajib Dipahami Saat New Chat
 
-- Ini adalah proyek **SAP QM Consultant**. Jangan menganggap konteks proyek belum tersedia.
+- Ini adalah proyek **SAP PP Consultant**. Jangan menganggap konteks proyek belum tersedia.
 - Panggil user **Baginda**.
 - Jangan menyuruh Baginda melakukan pekerjaan yang masih dapat dicari atau dikerjakan agent.
 - Cari jalur alternatif sampai seluruh opsi aman yang tersedia benar-benar habis.
@@ -12,17 +12,19 @@
 
 ### Routing Langsung
 
-- `coa`, `zmap_coa`, `zqmr_coa`, `zqmi_coa`, `certificate of analysis`, `zqmf_coa` -> `subproject/COA_AUTOMATION/`.
-- `qa01`, `qa05`, `qe51n`, `qa11`, `usage decision`, `ud`, `inspection lot`, `qals` -> `subproject/INSPECTION_LOT/`.
-- `certificate profile`, `qc01`, `qc02`, `qc03`, `qc15`, `qc21`, `qc22` -> `subproject/QUALITY_CERTIFICATES/`.
-- `notification`, `qn01`, `qn02`, `qn03`, `defect`, `nonconformance` -> `subproject/QUALITY_NOTIFICATIONS/`.
-- `barrier`, `wvtr`, `otr`, `mvtr`, `o2tr`, `barrier judgement` -> `subproject/BARRIER_INSPECTION/`.
+- `cohvpi`, `zppi`, `teco`, `auto teco`, `zppi_cohvpi`, `bapi_procord_complete_tech` -> `subproject/AUTO_TECO/`.
+- `bom`, `costing bom`, `production version`, `pv`, `master recipe`, `resource`, `work center`, `mkal`, `mast` -> `subproject/MASTER_DATA_BOM/`.
+- `koreksi rr`, `confirmation`, `co11n`, `cors`, `cogi`, `afru`, `matdoc`, `order-matdoc` -> `subproject/CONFIRMATION_RR/`.
+- `onboarding pp`, `context transfer`, `transfer konteks`, `orientasi pp`, `claude desktop config` -> `subproject/ONBOARDING/`.
+- `jumbo roll`, `jr`, `sequence roll`, `uxtool`, `no urut jr` -> `subproject/JUMBO_ROLL_EXECUTION/`.
+- `slit roll`, `sr`, `slitting`, `rekap slitting`, `koreksi out` -> `subproject/SLIT_ROLL_EXECUTION/`.
 
 ### Konteks Teknis Tetap
 
-- Landscape: NetWeaver 7.31 / ECC 6.0 EHP6 / Oracle / Plant 2000. Dilarang menyarankan fitur S/4HANA (Fiori QM apps).
-- Default eksekusi transaksi mutu adalah SAP GUI via computer use.
-- MCP SAP (`sap-leader`) digunakan diam-diam di background untuk verifikasi master data & lot inspeksi (`QALS`, `QAMV`, `QASE`, `QPAM`, `QPMK`).
+- Landscape: NetWeaver 7.31 / ECC 6.0 EHP6 / Oracle / Plant 2000. Dilarang menyarankan fitur S/4HANA (MRP Live, Fiori native).
+- Default eksekusi transaksi produksi adalah SAP GUI via computer use.
+- MCP SAP (`sap-leader`) digunakan diam-diam di background untuk verifikasi master data & order (`MKAL`, `CRHD`, `PLKO`, `T001L`, `MAST`/`STKO`, `MCHB`, `AUFK`).
 - Prinsip: Tidak ada evidence = tidak boleh eksekusi.
 - Tanggal server: periksa via MCP SAP hanya untuk server `sandbox-new` (TRS). Server lain gunakan real world date.
 - Jika ada case email, wajib baca email dan jelaskan ringkasannya ke Baginda terlebih dahulu.
+
