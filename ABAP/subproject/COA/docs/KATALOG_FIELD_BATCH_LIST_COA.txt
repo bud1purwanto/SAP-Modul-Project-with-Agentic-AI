@@ -1,0 +1,32 @@
+No	Field Name (Input Key)	Header Label (Default)	Kategori	Size (S/M/L)	Sumber Data SAP	Contoh Nilai
+1	NO	No	Identifier	S	Nomor Urut Baris (1 2 3..)	1
+2	DO_NUMBER	DO Number	Delivery	M	LIPS-VBELN (Delivery Order)	85004908
+3	PO_NUMBER	PO Number	Order	L	VBAK-BSTNK / VBKD-BSTKD (Customer PO)	PO-2024-001
+4	SO_NUMBER	SO Number	Order	M	LIPS-VGBEL / VBFA (Sales Order)	0010023456
+5	ROLL_NUMBER	Roll Number	Identifier	L	LIPS-NOMSR / Batch Number	R24090001
+6	BATCH_NUMBER	Batch Number	Identifier	M	MCH1-CHARG (Batch SAP)	B240915A
+7	LOT_NUMBER	Lot Number	Identifier	M	QALS-PRUEFLOS (Inspection Lot)	040000123456
+8	BARCODE	Barcode	Identifier	L	MCH1-CHARG (Barcode Text)	B240915A
+9	TEXT_BARCODE	Text Barcode	Identifier	M	MCH1-CHARG (Text Barcode)	B240915A
+10	HU_NUMBER	HU Number	Handling	M	VEKP-EXIDV (Handling Unit No)	1000000045
+11	NO_PALET	No Palet	Packaging	M	Handling Unit Pallet ID	P-01
+12	NO_PALET_TRIAS	No Palet Trias	Packaging	M	HU Pallet ID Internal	P-01
+13	TOTAL_ROLL	Total Roll	Quantity	S	Jumlah Roll dalam Pallet	4
+14	TOTAL_WEIGHT_PALET	Total Weight Per Pallet	Quantity	S	Total Berat Pallet (KG)	1250.50
+15	TYPE	Type	Material	S	Klasifikasi Material / ZZCODE	BOPP-PLAIN
+16	THICK	Thick	Dimension	S	Karakteristik Batch THICKNESS (Micron)	20
+17	WIDTH	Width	Dimension	S	LIPS-ZZWIDTH (Lebar Roll - mm)	1250
+18	LENGTH	Length	Dimension	S	LIPS-ZZLENGTH (Panjang Roll - m)	6000
+19	CORE	Core	Dimension	S	Karakteristik Batch CORE (Inch)	3
+20	QTY	Qty	Quantity	S	Jumlah Roll per Baris	1
+21	WEIGHT_PER_ROL	Weight Per Roll	Dimension	S	LIPS-NTGEW (Berat Bersih Roll - KG)	312.50
+22	JOINT	Joint	Spec	S	Jumlah Sambungan (Splice 1..3)	0
+23	NUMBER_OF_JOINT	Number Of Joint (Splice)	Spec	S	Jumlah Sambungan Splice	1
+24	LENGTH_OF_SPLICE	Length Of Splice	Spec	S	Akumulasi Panjang Sambungan (Meter)	15
+25	TREATMENT_IN	Treatment IN	Spec	M	Karakteristik Corona Sisi Dalam	42 DYNE
+26	TREATMENT_OUT	Treatment OUT	Spec	M	Karakteristik Corona Sisi Luar	38 DYNE
+27	PRODUCTION_DATE	Production Date	Date	M	MCH1-HSDAT (Tgl Produksi)	15.09.2024
+28	MANUFACTURING_DATE	Manufacturing Date	Date	M	MCH1-HSDAT (Tgl Manufaktur)	15.09.2024
+29	EXPIRED_DATE	Expired Date	Date	M	MCH1-VFDAT (Tgl Kedaluwarsa)	15.09.2026
+30	USED_BEFORE	Used Before	Date	M	MCH1-VFDAT (Batas Pemakaian)	15.09.2026
+31	GG_PART_NUMBER	GG Part Number (OPR)	Customer Mat	M	Part Number Khusus Gudang Garam	GG-BOPP-20

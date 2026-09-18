@@ -1,0 +1,5021 @@
+REPORT Z_PATCH_SANDBOX.
+DATA: LT_SOURCE TYPE TABLE OF ABAPTXT255 WITH HEADER LINE.
+DATA: LV_OK TYPE C, LV_MSG TYPE STRING, N1 TYPE I.
+DATA: W TYPE ABAPTXT255-LINE.
+FORM A USING P TYPE ABAPTXT255-LINE.
+  LT_SOURCE-LINE = P.
+  APPEND LT_SOURCE.
+ENDFORM.
+START-OF-SELECTION.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '*&  Include           ZQMI_CERTIFICATE_F01'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = 'INITIALIZATION.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '  MOVE ''Program Information'' TO INFO.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = 'AT SELECTION-SCREEN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  IF SY-UCOMM = ''INFO''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '    PERFORM F_PROG_INFO USING V_PROG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = 'INITIALIZATION.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CALL FUNCTION ''CONVERSION_EXIT_ATINN_INPUT'.
+  W+44(44) = ''' EXPORTING INPUT = ''ZZNOMORROLL'' IMPORTING '.
+  W+88(20) = 'OUTPUT = ATINN_ROLL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CALL FUNCTION ''CONVERSION_EXIT_ATINN_INPUT'.
+  W+44(44) = ''' EXPORTING INPUT = ''ZZCODE'' IMPORTING OUTPU'.
+  W+88(15) = 'T = ATINN_CODE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = 'START-OF-SELECTION.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  IF P_VBELN IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    MESSAGE ''Nomor ODO (Delivery) WAJIB diis'.
+  W+44(44) = 'i! Meski ingin filter by Batch/Roll, ODO tet'.
+  W+88(44) = 'ap wajib diisi agar SAP tidak Time-Out.'' TYP'.
+  W+132(6) = 'E ''I''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(7) = '  ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    PERFORM GET_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SORT IT_DATA BY VBELN CHARG NUMMIC NUM A'.
+  W+44(24) = 'SCENDING CHK DESCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    CALL SCREEN 0100.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*&      Form  get_data'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(31) = '----------AAA-----------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = 'FORM GET_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '  DATA : TEXT1 TYPE C LENGTH 25,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '         TEXT2 TYPE C LENGTH 30,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '         INSPOPER TYPE BAPI2045L2-INSPOPER,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '         ROLL TYPE C LENGTH 10,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '         LV_KUNNR LIKE ZMAP_COA-KUNNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  DATA : R_PSTYV TYPE RANGE OF LIPS-PSTYV,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '         WA_PSTYV LIKE LINE OF R_PSTYV,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         IT_ZMAP_DELIV TYPE STANDARD TABLE O'.
+  W+44(29) = 'F ZMAP_TYPE WITH HEADER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CLEAR : TEXT1, TEXT2,ROLL, R_PSTYV, IT_ZMA'.
+  W+44(8) = 'P_DELIV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  REFRESH : R_PSTYV, IT_ZMAP_DELIV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  SELECT PROG TYPE VALUE INTO CORRESPONDING '.
+  W+44(44) = 'FIELDS OF TABLE IT_ZMAP_DELIV FROM ZMAP_TYPE'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    WHERE PROG = SY-CPROG AND TYPE = ''ITEM C'.
+  W+44(9) = 'ATEGORY''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  LOOP AT IT_ZMAP_DELIV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '    WA_PSTYV-SIGN = ''I''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '    WA_PSTYV-OPTION = ''EQ''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '    WA_PSTYV-LOW = IT_ZMAP_DELIV-VALUE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '    APPEND WA_PSTYV TO R_PSTYV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '  IF R_PSTYV[] IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    WA_PSTYV-SIGN = ''I''. WA_PSTYV-OPTION = '''.
+  W+44(44) = 'EQ''. WA_PSTYV-LOW = ''ZB''. APPEND WA_PSTYV TO'.
+  W+88(9) = ' R_PSTYV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  IF P_CHARG IS INITIAL AND P_ATWRT IS NOT I'.
+  W+44(7) = 'NITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    SELECT OBJEK INTO WA_OBJEK-OBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '      FROM  AUSP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '      WHERE AUSP~ATINN = ATINN_ROLL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      AND AUSP~ATWRT IN P_ATWRT"-LOW "= ''4 P'.
+  W+44(12) = 'EE 5 010103'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      %_HINTS ORACLE ''INDEX("AUSP~N1")''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '      APPEND WA_OBJEK TO IT_OBJEK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    ENDSELECT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '    IF IT_OBJEK[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '      " Extract unique CHARG to fetch LIPS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      DATA: IT_CHARG_TMP LIKE TABLE OF WA_OB'.
+  W+44(21) = 'JEK WITH HEADER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '      IT_CHARG_TMP[] = IT_OBJEK[].'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      LOOP AT IT_OBJEK INTO WA_OBJEK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        SELECT SINGLE INOB~OBJEK INTO WA_OBJ'.
+  W+44(9) = 'EK-IOBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '        FROM  INOB'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '        WHERE CUOBJ = WA_OBJEK-OBJEK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        SPLIT WA_OBJEK-IOBJEK AT SPACE INTO '.
+  W+44(12) = 'TEXT1 TEXT2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '        CONDENSE: TEXT1,TEXT2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '        WA_OBJEK-OBJ = TEXT1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '        WA_OBJEK-CHARG = TEXT2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '        MODIFY IT_OBJEK FROM WA_OBJEK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '      ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '      IF IT_OBJEK[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        SELECT VBELN POSNR CHARG MATNR WERKS'.
+  W+44(6) = ' UECHA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          INTO CORRESPONDING FIELDS OF TABLE'.
+  W+44(8) = ' IT_DATA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '          FROM LIPS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '          FOR ALL ENTRIES IN IT_OBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '          WHERE VBELN IN P_VBELN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '            AND POSNR IN P_POSNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '            AND MATNR IN P_MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '            AND CHARG = IT_OBJEK-CHARG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '            AND PSTYV IN R_PSTYV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '        IF P_POSNR-LOW IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          SELECT VBELN POSNR CHARG MATNR WER'.
+  W+44(8) = 'KS UECHA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            APPENDING CORRESPONDING FIELDS O'.
+  W+44(15) = 'F TABLE IT_DATA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            FROM LIPS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '            FOR ALL ENTRIES IN IT_OBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '            WHERE VBELN IN P_VBELN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '              AND UECHA IN P_POSNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '              AND MATNR IN P_MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '              AND CHARG = IT_OBJEK-CHARG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '              AND PSTYV IN R_PSTYV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(7) = '  ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT VBELN POSNR CHARG MATNR WERKS UEC'.
+  W+44(2) = 'HA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      INTO CORRESPONDING FIELDS OF TABLE IT_'.
+  W+44(4) = 'DATA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      FROM LIPS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      WHERE VBELN IN P_VBELN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        AND POSNR IN P_POSNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        AND MATNR IN P_MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        AND CHARG IN P_CHARG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '        AND PSTYV IN R_PSTYV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    IF P_POSNR-LOW IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      SELECT VBELN POSNR CHARG MATNR WERKS U'.
+  W+44(4) = 'ECHA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        APPENDING CORRESPONDING FIELDS OF TA'.
+  W+44(11) = 'BLE IT_DATA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        FROM LIPS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '        WHERE VBELN IN P_VBELN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '          AND UECHA IN P_POSNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '          AND MATNR IN P_MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '          AND CHARG IN P_CHARG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '          AND PSTYV IN R_PSTYV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '  DELETE IT_DATA WHERE CHARG IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " Enhancement: Group by Material (Represen'.
+  W+44(13) = 'tative Batch)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  " SORT IT_DATA BY VBELN MATNR CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " DELETE ADJACENT DUPLICATES FROM IT_DATA '.
+  W+44(22) = 'COMPARING VBELN MATNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " ----------------------------------------'.
+  W+44(30) = '------------------------------'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " PHASE 1 & 2: BULK CHARACTERISTIC EXTRACT'.
+  W+44(3) = 'ION'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " ----------------------------------------'.
+  W+44(30) = '------------------------------'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CLEAR IT_BATCH_COLLECT. REFRESH IT_BATCH_C'.
+  W+44(7) = 'OLLECT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '    IT_BATCH_COLLECT-MATNR = IT_DATA-MATNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '    IT_BATCH_COLLECT-CHARG = IT_DATA-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '    APPEND IT_BATCH_COLLECT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '  SORT IT_BATCH_COLLECT BY MATNR CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DELETE ADJACENT DUPLICATES FROM IT_BATCH_C'.
+  W+44(29) = 'OLLECT COMPARING MATNR CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  CLEAR IT_INOB. REFRESH IT_INOB.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  CLEAR IT_AUSP. REFRESH IT_AUSP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CLEAR IT_TEMP_OBJEK. REFRESH IT_TEMP_OBJEK'.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '  IF IT_BATCH_COLLECT[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '    LOOP AT IT_BATCH_COLLECT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IT_TEMP_OBJEK-OBJEK = IT_BATCH_COLLECT'.
+  W+44(7) = '-MATNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IT_TEMP_OBJEK-OBJEK+18(10) = IT_BATCH_'.
+  W+44(14) = 'COLLECT-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      APPEND IT_TEMP_OBJEK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '    ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT CUOBJ OBJEK INTO TABLE IT_INOB_RA'.
+  W+44(1) = 'W'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      FROM INOB'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '      FOR ALL ENTRIES IN IT_TEMP_OBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '      WHERE OBJEK = IT_TEMP_OBJEK-OBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '        AND OBTAB = ''MCH1''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '    LOOP AT IT_INOB_RAW.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      IT_INOB-CUOBJ = IT_INOB_RAW-CUOBJ.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      IT_INOB-OBJEK = IT_INOB_RAW-CUOBJ.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IT_INOB-MATNR = IT_INOB_RAW-OBJEK(18).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IT_INOB-CHARG = IT_INOB_RAW-OBJEK+18(1'.
+  W+44(3) = '0).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '      APPEND IT_INOB.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '    ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    SORT IT_INOB BY MATNR CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  IF IT_INOB[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT OBJEK ATINN ATWRT INTO TABLE IT_A'.
+  W+44(3) = 'USP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      FROM AUSP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      FOR ALL ENTRIES IN IT_INOB'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      WHERE OBJEK = IT_INOB-OBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        AND ( ATINN = ATINN_ROLL OR ATINN = '.
+  W+44(12) = 'ATINN_CODE )'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '        AND KLART = ''023''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    SORT IT_AUSP BY OBJEK ATINN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " ----------------------------------------'.
+  W+44(30) = '------------------------------'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '  " PHASE 3: ALV POPULATION'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " ----------------------------------------'.
+  W+44(30) = '------------------------------'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '    CLEAR: IT_DATA-NOMSR, IT_DATA-ZZTYPE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    DATA: L_SUBRC TYPE SY-SUBRC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    READ TABLE IT_INOB WITH KEY MATNR = IT_D'.
+  W+44(44) = 'ATA-MATNR CHARG = IT_DATA-CHARG BINARY SEARC'.
+  W+88(2) = 'H.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IF SY-SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      READ TABLE IT_AUSP WITH KEY OBJEK = IT'.
+  W+44(44) = '_INOB-OBJEK ATINN = ATINN_ROLL BINARY SEARCH'.
+  W+88(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '      IF SY-SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '        IT_DATA-NOMSR = IT_AUSP-ATWRT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      READ TABLE IT_AUSP WITH KEY OBJEK = IT'.
+  W+44(44) = '_INOB-OBJEK ATINN = ATINN_CODE BINARY SEARCH'.
+  W+88(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '      L_SUBRC = SY-SUBRC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '      IF SY-SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '        IT_DATA-ZZTYPE = IT_AUSP-ATWRT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '      L_SUBRC = 4.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    IF L_SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      " Edited by J. Budi (Antigravity) on 2'.
+  W+44(9) = '8.06.2026'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      DATA: IT_ZMAP_GEN LIKE TABLE OF IT_ZMA'.
+  W+44(19) = 'P WITH HEADER LINE,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            IT_ZMAP_CUS LIKE TABLE OF IT_ZMA'.
+  W+44(19) = 'P WITH HEADER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      CLEAR : IT_ZMAP, LV_KUNNR, IT_ZMAP_GEN'.
+  W+44(14) = ', IT_ZMAP_CUS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      REFRESH: IT_ZMAP, IT_ZMAP_GEN, IT_ZMAP'.
+  W+44(5) = '_CUS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '      SELECT SINGLE KUNAG INTO LV_KUNNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        FROM LIKP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '        WHERE VBELN = IT_DATA-VBELN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      " Edited by J. Budi (Antigravity) on 2'.
+  W+44(9) = '8.06.2026'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '      SELECT MATNR MIC KUNNR METHOD MAPPING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        INTO CORRESPONDING FIELDS OF TABLE I'.
+  W+44(10) = 'T_ZMAP_GEN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '        FROM ZMAP_COA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '        WHERE MATNR    = IT_DATA-MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '          AND KUNNR    = '' '''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '          AND DELETION NE ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      IF LV_KUNNR IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        SELECT MATNR MIC KUNNR METHOD MAPPIN'.
+  W+44(1) = 'G'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          INTO CORRESPONDING FIELDS OF TABLE'.
+  W+44(12) = ' IT_ZMAP_CUS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '          FROM ZMAP_COA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '          WHERE MATNR    = IT_DATA-MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '            AND KUNNR    = LV_KUNNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '            AND DELETION NE ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      IT_ZMAP[] = IT_ZMAP_GEN[].'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '      SORT IT_ZMAP BY MIC ASCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '      LOOP AT IT_ZMAP_CUS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        READ TABLE IT_ZMAP WITH KEY MIC = IT'.
+  W+44(28) = '_ZMAP_CUS-MIC BINARY SEARCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '        IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          IT_ZMAP-METHOD = IT_ZMAP_CUS-METHO'.
+  W+44(2) = 'D.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          IT_ZMAP-KUNNR  = IT_ZMAP_CUS-KUNNR'.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          IT_ZMAP-MAPPING = IT_ZMAP_CUS-MAPP'.
+  W+44(4) = 'ING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '          MODIFY IT_ZMAP INDEX SY-TABIX.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '        ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '          APPEND IT_ZMAP_CUS TO IT_ZMAP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '      ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '      SORT IT_ZMAP BY MIC ASCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      DELETE ADJACENT DUPLICATES FROM IT_ZMA'.
+  W+44(16) = 'P COMPARING MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      IF IT_ZMAP[] IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        MESSAGE ''Material belum dimapping di'.
+  W+44(44) = ' ZMAP_COA. Harap lengkapi mapping terlebih d'.
+  W+88(34) = 'ahulu!'' TYPE ''S'' DISPLAY LIKE ''E''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '        STOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Edited by J. Budi (Antigravity) on 28.'.
+  W+44(7) = '06.2026'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '    PERFORM GET_TRACED_LOTS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    PERFORM GET_MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    IF IT_DATA-UECHA IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '      IT_DATA-UECHA = IT_DATA-POSNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '    MODIFY IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  IT_LOT[] = IT_DATA[].'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  CLEAR IT_DATA. REFRESH IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  SORT IT_MIC1 BY VBELN POSNR CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '  LOOP AT IT_LOT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    READ TABLE IT_MIC1 WITH KEY VBELN = IT_L'.
+  W+44(44) = 'OT-VBELN POSNR = IT_LOT-POSNR CHARG = IT_LOT'.
+  W+88(21) = '-CHARG BINARY SEARCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IF SY-SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      LOOP AT IT_MIC1 WHERE VBELN = IT_LOT-V'.
+  W+44(44) = 'BELN AND POSNR = IT_LOT-POSNR AND CHARG = IT'.
+  W+88(11) = '_LOT-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        SELECT SINGLE CODE1 VORGLFNR INTO (I'.
+  W+44(33) = 'T_MIC1-CMICMIT, IT_MIC1-VORGLFNR)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '          FROM QAMR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          WHERE QAMR~PRUEFLOS = IT_MIC1-INSL'.
+  W+44(2) = 'OT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '          AND QAMR~MERKNR = IT_MIC1-MERKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '        IF IT_MIC1-CMICMIT IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          " Ambil nilai single result (cycle'.
+  W+44(35) = ') terakhir dari QASE untuk MVTR/OTR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          IF IT_MIC1-MIC CS ''MVTR'' OR IT_MIC'.
+  W+44(15) = '1-MIC CS ''OTR''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            DATA: BEGIN OF LT_QASE OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                    PROBENR LIKE QASE-PROBEN'.
+  W+44(2) = 'R,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                    ORIGINAL_INPUT LIKE QASE'.
+  W+44(16) = '-ORIGINAL_INPUT,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                    MESSWERT LIKE QASE-MESSW'.
+  W+44(4) = 'ERT,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '                  END OF LT_QASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '            CLEAR LT_QASE. REFRESH LT_QASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            SELECT PROBENR ORIGINAL_INPUT ME'.
+  W+44(25) = 'SSWERT INTO TABLE LT_QASE'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '              FROM QASE'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              WHERE PRUEFLOS = IT_MIC1-INSLO'.
+  W+44(1) = 'T'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '                AND MERKNR = IT_MIC1-MERKNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '                AND ATTRIBUT = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            SORT LT_QASE BY PROBENR DESCENDI'.
+  W+44(3) = 'NG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '            READ TABLE LT_QASE INDEX 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '            IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              IF LT_QASE-ORIGINAL_INPUT IS N'.
+  W+44(11) = 'OT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                IT_MIC1-CMICMIT = LT_QASE-OR'.
+  W+44(13) = 'IGINAL_INPUT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                IT_MIC1-MICMIT  = LT_QASE-ME'.
+  W+44(7) = 'SSWERT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '              ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                WRITE LT_QASE-MESSWERT TO IT'.
+  W+44(44) = '_MIC1-CMICMIT EXPONENT 0 DECIMALS 3 LEFT-JUS'.
+  W+88(7) = 'TIFIED.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                IT_MIC1-MICMIT  = LT_QASE-ME'.
+  W+44(7) = 'SSWERT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '              ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              IT_MIC1-PROBENR = LT_QASE-PROB'.
+  W+44(4) = 'ENR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              IT_MIC1-MESSWERT = LT_QASE-MES'.
+  W+44(6) = 'SWERT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '            ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          " Fallback ke rata-rata (MITTELWER'.
+  W+44(40) = 'T) jika bukan MVTR/OTR atau nilai kosong'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '          IF IT_MIC1-CMICMIT IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            DATA: LV_MITTEL TYPE QAMR-MITTEL'.
+  W+44(5) = 'WERT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '            CLEAR LV_MITTEL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            READ TABLE GT_LOT_AVG INTO GS_LO'.
+  W+44(44) = 'T_AVG WITH KEY INSLOT = IT_MIC1-INSLOT MERKN'.
+  W+88(19) = 'R = IT_MIC1-MERKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '            IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              LV_MITTEL = GS_LOT_AVG-MITTELW'.
+  W+44(4) = 'ERT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              " Ambil VORGLFNR dari lot pert'.
+  W+44(3) = 'ama'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              SELECT SINGLE VORGLFNR INTO IT'.
+  W+44(44) = '_MIC1-VORGLFNR FROM QAMR WHERE PRUEFLOS = IT'.
+  W+88(41) = '_MIC1-INSLOT AND MERKNR = IT_MIC1-MERKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '            ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              SELECT SINGLE MITTELWERT VORGL'.
+  W+44(3) = 'FNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                INTO (LV_MITTEL, IT_MIC1-VOR'.
+  W+44(6) = 'GLFNR)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '                FROM QAMR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                WHERE QAMR~PRUEFLOS = IT_MIC'.
+  W+44(8) = '1-INSLOT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                AND QAMR~MERKNR = IT_MIC1-ME'.
+  W+44(5) = 'RKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '            ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '            IF LV_MITTEL IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              WRITE LV_MITTEL TO IT_MIC1-CMI'.
+  W+44(42) = 'CMIT EXPONENT 0 DECIMALS 3 LEFT-JUSTIFIED.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '            ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '          IF IT_MIC1-CMICMIT IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            DATA: LV_ANZWERTG TYPE QAMR-ANZW'.
+  W+44(5) = 'ERTG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '            CLEAR LV_ANZWERTG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            READ TABLE GT_LOT_AVG INTO GS_LO'.
+  W+44(44) = 'T_AVG WITH KEY INSLOT = IT_MIC1-INSLOT MERKN'.
+  W+88(19) = 'R = IT_MIC1-MERKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '            IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              IT_MIC1-MICMIT = GS_LOT_AVG-MI'.
+  W+44(9) = 'TTELWERT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              LV_ANZWERTG = GS_LOT_AVG-ANZWE'.
+  W+44(4) = 'RTG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              WRITE IT_MIC1-MICMIT TO IT_MIC'.
+  W+44(44) = '1-CMICMIT EXPONENT 0 DECIMALS 3 LEFT-JUSTIFI'.
+  W+88(3) = 'ED.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '            ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              SELECT SINGLE MITTELWERT ANZWE'.
+  W+44(38) = 'RTG INTO (IT_MIC1-MICMIT, LV_ANZWERTG)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '                FROM QAMR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                WHERE QAMR~PRUEFLOS = IT_MIC'.
+  W+44(8) = '1-INSLOT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                AND QAMR~MERKNR = IT_MIC1-ME'.
+  W+44(5) = 'RKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              IF SY-SUBRC = 0 AND LV_ANZWERT'.
+  W+44(6) = 'G > 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                WRITE IT_MIC1-MICMIT TO IT_M'.
+  W+44(44) = 'IC1-CMICMIT EXPONENT 0 DECIMALS 3 LEFT-JUSTI'.
+  W+88(5) = 'FIED.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '              ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '                IT_MIC1-CMICMIT = ''-''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '                IT_MIC1-MICMIT = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '              ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '            ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      CLEAR IT_MIC1-METHOD.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      IF LV_KUNNR IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        SELECT SINGLE METHOD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '          INTO IT_MIC1-METHOD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '          FROM ZMAP_COA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          WHERE MATNR = IT_LOT-MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '            AND MIC   = IT_MIC1-MIC'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '            AND KUNNR = LV_KUNNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '            AND DELETION NE ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '      IF IT_MIC1-METHOD IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        SELECT SINGLE METHOD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '          INTO IT_MIC1-METHOD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '          FROM ZMAP_COA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          WHERE MATNR = IT_LOT-MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '            AND MIC   = IT_MIC1-MIC'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '            AND KUNNR = '' '''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '            AND DELETION NE ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      SELECT SINGLE MASSEINHSW INTO IT_MIC1-'.
+  W+44(3) = 'UOM'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            FROM QPMK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '            WHERE MKMNR = IT_MIC1-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          MOVE-CORRESPONDING IT_MIC1 TO WA_D'.
+  W+44(4) = 'ATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          APPEND WA_DATA TO IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '        ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '      APPEND IT_LOT TO IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  IT_LOOP[] = IT_DATA[].'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DELETE ADJACENT DUPLICATES FROM IT_LOOP CO'.
+  W+44(14) = 'MPARING CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_LOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '    IT_LOOP-CMICMIT = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '    MODIFY IT_LOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  DELETE IT_DATA WHERE MIC IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " Enhancement: Aggregate/Average MIC resul'.
+  W+44(25) = 'ts for identical Material'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DATA: IT_DATA_AVG LIKE IT_DATA OCCURS 0 WI'.
+  W+44(15) = 'TH HEADER LINE,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '        LV_SUM TYPE QAMR-MITTELWERT,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '        LV_COUNT TYPE I.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '  SORT IT_DATA BY VBELN MATNR MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '  DATA: LV_HAS_EMPTY TYPE C.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '    IF IT_DATA_AVG IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      IT_DATA_AVG = IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      LV_SUM = IT_DATA-MICMIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '      LV_COUNT = 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '      IF IT_DATA-CMICMIT = ''-''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '        LV_HAS_EMPTY = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '      ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '        LV_HAS_EMPTY = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    ELSEIF IT_DATA_AVG-VBELN = IT_DATA-VBELN'.
+  W+44(4) = ' AND'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '           IT_DATA_AVG-MATNR = IT_DATA-MATNR'.
+  W+44(4) = ' AND'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '           IT_DATA_AVG-MIC   = IT_DATA-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '      LV_SUM = LV_SUM + IT_DATA-MICMIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      LV_COUNT = LV_COUNT + 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '      IF IT_DATA-CMICMIT = ''-''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '        LV_HAS_EMPTY = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '      IF LV_COUNT > 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '        IF LV_HAS_EMPTY = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          IT_DATA_AVG-CMICMIT = ''-''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '        ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          IT_DATA_AVG-MICMIT = LV_SUM / LV_C'.
+  W+44(5) = 'OUNT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          " Jika data bersifat kuantitatif ('.
+  W+44(44) = 'ada sum), ubah format text CMICMIT ke hasil '.
+  W+88(9) = 'rata-rata'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '          IF LV_COUNT > 1 AND LV_SUM <> 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            WRITE IT_DATA_AVG-MICMIT TO IT_D'.
+  W+44(44) = 'ATA_AVG-CMICMIT EXPONENT 0 DECIMALS 3 LEFT-J'.
+  W+88(9) = 'USTIFIED.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '      APPEND IT_DATA_AVG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      IT_DATA_AVG = IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      LV_SUM = IT_DATA-MICMIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '      LV_COUNT = 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '      IF IT_DATA-CMICMIT = ''-''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '        LV_HAS_EMPTY = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '      ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '        LV_HAS_EMPTY = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '  IF IT_DATA_AVG IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    IF LV_COUNT > 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      IF LV_HAS_EMPTY = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '        IT_DATA_AVG-CMICMIT = ''-''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '      ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IT_DATA_AVG-MICMIT = LV_SUM / LV_COU'.
+  W+44(3) = 'NT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '        IF LV_COUNT > 1 AND LV_SUM <> 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          WRITE IT_DATA_AVG-MICMIT TO IT_DAT'.
+  W+44(44) = 'A_AVG-CMICMIT EXPONENT 0 DECIMALS 3 LEFT-JUS'.
+  W+88(7) = 'TIFIED.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '    APPEND IT_DATA_AVG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '  IT_DATA[] = IT_DATA_AVG[].'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IT_DATA-CHK = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '    IT_DATA-NUMMIC = 2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    READ TABLE IT_ZMAP WITH KEY MIC = IT_DAT'.
+  W+44(20) = 'A-MIC BINARY SEARCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IF SY-SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      IT_DATA-CHK = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '      IT_DATA-NUMMIC = 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      IT_DATA-NUM = IT_ZMAP-NUM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '    " Backup original aggregated QM value'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '    IT_DATA-ORIG_CMICMIT = IT_DATA-CMICMIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    " --- BEGIN ZLOG_COA CHECK ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    DATA: WA_ZLOG TYPE ZLOG_COA,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '          LV_KUNNR_LOG TYPE KUNNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '    CLEAR LV_KUNNR_LOG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT SINGLE KUNAG INTO LV_KUNNR_LOG FR'.
+  W+44(36) = 'OM LIKP WHERE VBELN = IT_DATA-VBELN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '    CLEAR WA_ZLOG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT SINGLE VALUE1 VALUE2 INTO (WA_ZLO'.
+  W+44(39) = 'G-VALUE1, WA_ZLOG-VALUE2) FROM ZLOG_COA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      WHERE PRUEFLOS = IT_DATA-INSLOT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '        AND MIC = IT_DATA-MIC'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        AND KUNNR = LV_KUNNR_LOG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        AND DELETION <> ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      " If there is data in ZLOG_COA, overri'.
+  W+44(20) = 'de CMICMIT (Preview)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '      IF WA_ZLOG-VALUE2 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '        IT_DATA-CMICMIT = WA_ZLOG-VALUE2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '      ELSEIF WA_ZLOG-VALUE1 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        WRITE WA_ZLOG-VALUE1 TO IT_DATA-CMIC'.
+  W+44(41) = 'MIT EXPONENT 0 DECIMALS 3 LEFT-JUSTIFIED.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    " --- END ZLOG_COA CHECK ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Menyimpan status tersimpan saat ini un'.
+  W+44(35) = 'tuk keperluan validasi sebelum EXEC'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    IT_DATA-SAVED_CMICMIT = IT_DATA-CMICMIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '    MODIFY IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '  SORT IT_DATA BY VBELN CHK DESCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = 'ENDFORM.                    "get_data'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '*&      Form  GET_MIC'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = 'FORM GET_MIC .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  DATA : INS  LIKE QALS-PRUEFLOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '         INS2 LIKE QALS-PRUEFLOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '         CTR TYPE I.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  CLEAR IT_MIC. REFRESH IT_MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  CLEAR IT_MIC2. REFRESH IT_MIC2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '  REFRESH GT_LOT_AVG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " Hitung rata-rata jika ada lot ke-2 (dari'.
+  W+44(14) = ' LOT_SR_CONV2)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  IF LOT_SR_CONV IS NOT INITIAL AND LOT_SR_C'.
+  W+44(20) = 'ONV2 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    DATA: LT_QAMR1 TYPE TABLE OF QAMR WITH H'.
+  W+44(11) = 'EADER LINE,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          LT_QAMR2 TYPE TABLE OF QAMR WITH H'.
+  W+44(11) = 'EADER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT * INTO TABLE LT_QAMR1 FROM QAMR W'.
+  W+44(28) = 'HERE PRUEFLOS = LOT_SR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT * INTO TABLE LT_QAMR2 FROM QAMR W'.
+  W+44(29) = 'HERE PRUEFLOS = LOT_SR_CONV2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    LOOP AT LT_QAMR1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      READ TABLE LT_QAMR2 WITH KEY MERKNR = '.
+  W+44(16) = 'LT_QAMR1-MERKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '      IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '        GS_LOT_AVG-INSLOT = LOT_SR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        GS_LOT_AVG-MERKNR = LT_QAMR1-MERKNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        GS_LOT_AVG-MITTELWERT = ( LT_QAMR1-M'.
+  W+44(38) = 'ITTELWERT + LT_QAMR2-MITTELWERT ) / 2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        GS_LOT_AVG-ANZWERTG = LT_QAMR1-ANZWE'.
+  W+44(4) = 'RTG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '        APPEND GS_LOT_AVG TO GT_LOT_AVG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '    ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_ZMAP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    CLEAR INS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Tentukan sumber Inspection Lot berdasa'.
+  W+44(12) = 'rkan MAPPING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '    IF IT_ZMAP-MAPPING CS ''SR Base Film''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      INS = LOT_SR_BASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    ELSEIF IT_ZMAP-MAPPING CS ''JR Base Film'''.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      INS = LOT_JR_BASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    ELSEIF IT_ZMAP-MAPPING CS ''SR Converting'.
+  W+44(2) = '''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      INS = LOT_SR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    ELSEIF IT_ZMAP-MAPPING CS ''JR Converting'.
+  W+44(2) = '''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      INS = LOT_JR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      " Default fallback jika kosong, mungki'.
+  W+44(28) = 'n ambil dari SR Convert/Base'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      INS = LOT_SR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '    IF INS IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      SELECT SINGLE VERWMERKM KURZTEXT TOLER'.
+  W+44(23) = 'ANZUN TOLERANZOB MERKNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        INTO (IT_MIC-MIC,IT_MIC-MICDES,IT_MI'.
+  W+44(37) = 'C-MICMIN,IT_MIC-MICMAX,IT_MIC-MERKNR)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        FROM QAMV'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        WHERE PRUEFLOS = INS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '          AND VERWMERKM = IT_ZMAP-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '      IF SY-SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '        PERFORM COPY.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '        IT_MIC-SEQ = 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        IT_MIC-INSLOT = INS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '        APPEND IT_MIC TO IT_MIC2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '      ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        " Pengecualian untuk MVTR/OTR Barrie'.
+  W+44(44) = 'r yang MIC-nya bisa berbeda (seperti WVTR/O2'.
+  W+88(3) = 'TR)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF IT_ZMAP-MIC CS ''MVTR'' OR IT_ZMAP-'.
+  W+44(13) = 'MIC CS ''OTR''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          SELECT VERWMERKM KURZTEXT TOLERANZ'.
+  W+44(20) = 'UN TOLERANZOB MERKNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            INTO (IT_MIC-MIC,IT_MIC-MICDES,I'.
+  W+44(41) = 'T_MIC-MICMIN,IT_MIC-MICMAX,IT_MIC-MERKNR)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            FROM QAMV'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '            WHERE PRUEFLOS = INS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            IF IT_MIC-MIC CS ''MVTR'' OR IT_MI'.
+  W+44(18) = 'C-MIC CS ''WVTR'' OR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '               IT_MIC-MIC CS ''OTR''  OR IT_MI'.
+  W+44(16) = 'C-MIC CS ''O2TR''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '               IF IT_MIC-MIC CS IT_ZMAP-MIC '.
+  W+44(31) = 'OR IT_ZMAP-MIC CS IT_MIC-MIC OR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                  ( IT_ZMAP-MIC CS ''MVTR'' AN'.
+  W+44(27) = 'D IT_MIC-MIC CS ''WVTR'' ) OR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                  ( IT_ZMAP-MIC CS ''OTR'' AND'.
+  W+44(24) = ' IT_MIC-MIC CS ''O2TR'' ).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '                 PERFORM COPY.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '                 IT_MIC-SEQ = 5.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '                 IT_MIC-INSLOT = INS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '                 IF IT_MIC-MIC CS ''MVTR'' OR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '                    IT_MIC-MIC CS ''WVTR''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                   IT_MIC-BARRIER_TYPE = ''MV'.
+  W+44(4) = 'TR''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                 ELSEIF IT_MIC-MIC CS ''OTR'' '.
+  W+44(2) = 'OR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                        IT_MIC-MIC CS ''O2TR'''.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                   IT_MIC-BARRIER_TYPE = ''OT'.
+  W+44(3) = 'R''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '                 ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                   IT_MIC-BARRIER_TYPE = ''X'''.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '                 ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                 IT_MIC-MIC = IT_ZMAP-MIC. "'.
+  W+44(33) = ' Timpa agar sesuai dengan Mapping'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '                 APPEND IT_MIC TO IT_MIC2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '               ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '            ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '          ENDSELECT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " Pastikan semua MIC dari ZMAP_COA tetap m'.
+  W+44(44) = 'asuk ke list meskipun tidak ada di Inspectio'.
+  W+88(5) = 'n Lot'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '  SORT IT_MIC2 BY MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_ZMAP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    READ TABLE IT_MIC2 WITH KEY MIC = IT_ZMA'.
+  W+44(20) = 'P-MIC BINARY SEARCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IF SY-SUBRC <> 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '      CLEAR IT_MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM COPY. " Fix: isi VBELN/POSNR/C'.
+  W+44(43) = 'HARG/MATNR dst agar match balik di GET_DATA'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '      IT_MIC-MIC = IT_ZMAP-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      IT_MIC-METHOD = IT_ZMAP-METHOD.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      SELECT SINGLE KURZTEXT INTO IT_MIC-MIC'.
+  W+44(44) = 'DES FROM QPMT WHERE MKMNR = IT_ZMAP-MIC AND '.
+  W+88(14) = 'SPRACHE = ''E''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '      IF SY-SUBRC <> 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '        IT_MIC-MICDES = IT_ZMAP-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      SELECT SINGLE MASSEINHSW INTO IT_MIC-U'.
+  W+44(39) = 'OM FROM QPMK WHERE MKMNR = IT_ZMAP-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IT_MIC-SEQ = 99. " Penanda tidak ada d'.
+  W+44(16) = 'i Inspection Lot'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '      IT_MIC-INSLOT = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '      APPEND IT_MIC TO IT_MIC2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '  SORT IT_MIC2 BY MIC ASCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DELETE ADJACENT DUPLICATES FROM IT_MIC2 CO'.
+  W+44(12) = 'MPARING MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '  CLEAR CTR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '  CTR = LINES( IT_MIC2 ).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '  IF CTR NE 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    APPEND LINES OF IT_MIC2 FROM 1 TO CTR TO'.
+  W+44(9) = ' IT_MIC1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  CLEAR IT_MIC2. REFRESH IT_MIC2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = 'ENDFORM.                    " GET_MIC'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '*&      Form  COPY'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = 'FORM COPY .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_MIC-VBELN = IT_DATA-VBELN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_MIC-POSNR = IT_DATA-POSNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_MIC-CHARG = IT_DATA-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_MIC-NOMSR = IT_DATA-NOMSR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  IT_MIC-ZZTYPE = IT_DATA-ZZTYPE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_MIC-MATNR = IT_DATA-MATNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_MIC-UECHA = IT_DATA-UECHA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_MIC-WERKS = IT_DATA-WERKS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = 'ENDFORM.                    " COPY'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*&      Form  DOWNLOAD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = 'FORM DOWNLOAD .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '  TABLES RLGRAP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '  DATA:  DEF_PATH LIKE RLGRAP-FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  DATA: TMP_FILENAME LIKE RLGRAP-FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  DATA V_FILENAME TYPE STRING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '  DATA : BEGIN OF IT_FIELDNAMES OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '           FIELD(30),'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '         END OF IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  REFRESH IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '  CLEAR IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  IT_FIELDNAMES-FIELD = ''Nomor ODO''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '  IT_FIELDNAMES-FIELD = ''Item''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '  IT_FIELDNAMES-FIELD = ''Batch''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  IT_FIELDNAMES-FIELD = ''Nomor SR''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  IT_FIELDNAMES-FIELD = ''Material''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  IT_FIELDNAMES-FIELD = ''MIC''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  IT_FIELDNAMES-FIELD = ''MIC Description''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  IT_FIELDNAMES-FIELD = ''Unit Of Measure''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  IT_FIELDNAMES-FIELD = ''Testing Method ''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  IT_FIELDNAMES-FIELD = ''Lower Limit''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  IT_FIELDNAMES-FIELD = ''Upper Limit''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '  IT_FIELDNAMES-FIELD = ''Value''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '  CLEAR: IT_EXPORT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '  REFRESH:IT_EXPORT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  LOOP AT IT_DATA WHERE CHK EQ ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    CLEAR IT_EXPORT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    IT_EXPORT-VBELN = IT_DATA-VBELN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    IT_EXPORT-UECHA = IT_DATA-UECHA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    IT_EXPORT-CHARG = IT_DATA-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    IT_EXPORT-NOMSR = IT_DATA-NOMSR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    IT_EXPORT-MATNR = IT_DATA-MATNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    IT_EXPORT-MIC = IT_DATA-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '    IT_EXPORT-MICDES = IT_DATA-MICDES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    IT_EXPORT-UOM = IT_DATA-UOM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '    IT_EXPORT-METHOD = IT_DATA-METHOD.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '    IT_EXPORT-MICMIN = IT_DATA-MICMIN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '    IT_EXPORT-MICMAX = IT_DATA-MICMAX.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '    IT_EXPORT-CMICMIT = IT_DATA-CMICMIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '*    IT_EXPORT-CHK = IT_DATA-CHK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    APPEND IT_EXPORT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  CALL FUNCTION ''WS_FILENAME_GET'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      DEF_FILENAME     = RLGRAP-FILENAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      DEF_PATH         = DEF_PATH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '      MASK             = '',*.xls.'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      MODE             = ''S'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      TITLE            = TEXT-011'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      FILENAME         = TMP_FILENAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    EXCEPTIONS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      INV_WINSYS       = 01'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      NO_BATCH         = 02'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      SELECTION_CANCEL = 03'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      SELECTION_ERROR  = 04.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '    RLGRAP-FILENAME = TMP_FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(7) = '  ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    EXIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CONCATENATE RLGRAP-FILENAME ''.XLS'' INTO V_'.
+  W+44(9) = 'FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '*  V_FILENAME = RLGRAP-FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  CALL FUNCTION ''GUI_DOWNLOAD'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      FILENAME              = V_FILENAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '      FILETYPE              = ''ASC'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      WRITE_FIELD_SEPARATOR = ''X'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      CONFIRM_OVERWRITE     = ''X'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      SHOW_TRANSFER_STATUS  = ''X'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    TABLES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '      DATA_TAB              = IT_EXPORT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      FIELDNAMES            = IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '  IF SY-SUBRC <> 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '    MESSAGE I000(0K) WITH ''Download error''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    STOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = 'ENDFORM.                    " DOWNLOAD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '*&      Form  SELALL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = 'FORM SELALL .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  LOOP AT IT_DATA WHERE CHK NE ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '    IT_DATA-CHK = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '    MODIFY IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = 'ENDFORM.                    " SELALL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '*&      Form  DESALL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = 'FORM DESALL .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  LOOP AT IT_DATA WHERE CHK EQ ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IT_DATA-CHK = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '    MODIFY IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = 'ENDFORM.                    " DESALL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '*&      Form  DOWNLOAD_DETAIL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = 'FORM DOWNLOAD_DETAIL .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '*  TABLES RLGRAP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '  DATA:  DEF_PATH LIKE RLGRAP-FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  DATA: TMP_FILENAME LIKE RLGRAP-FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  DATA V_FILENAME TYPE STRING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '  DATA : BEGIN OF IT_FIELDNAMES OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '           FIELD(30),'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '         END OF IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  REFRESH IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '  CLEAR IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '  IT_FIELDNAMES-FIELD = ''Properties''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  IT_FIELDNAMES-FIELD = ''Unit of Measure''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '  IT_FIELDNAMES-FIELD = ''Testing Method''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  IT_FIELDNAMES-FIELD = ''Lower Limit''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  IT_FIELDNAMES-FIELD = ''Upper Limit''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '  IT_FIELDNAMES-FIELD = ''Value''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  APPEND IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '  REFRESH IT_DETAILD.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  LOOP AT IT_DETAIL WHERE CHK = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    MOVE-CORRESPONDING IT_DETAIL TO IT_DETAI'.
+  W+44(3) = 'LD.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '    APPEND IT_DETAILD.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  CALL FUNCTION ''WS_FILENAME_GET'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      DEF_FILENAME     = RLGRAP-FILENAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      DEF_PATH         = DEF_PATH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '      MASK             = '',*.xls.'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      MODE             = ''S'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      TITLE            = TEXT-011'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      FILENAME         = TMP_FILENAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    EXCEPTIONS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      INV_WINSYS       = 01'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      NO_BATCH         = 02'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '      SELECTION_CANCEL = 03'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      SELECTION_ERROR  = 04.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '    RLGRAP-FILENAME = TMP_FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(7) = '  ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    EXIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CONCATENATE RLGRAP-FILENAME ''.XLS'' INTO V_'.
+  W+44(9) = 'FILENAME.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  CALL FUNCTION ''GUI_DOWNLOAD'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      FILENAME              = V_FILENAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '      FILETYPE              = ''ASC'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      WRITE_FIELD_SEPARATOR = ''X'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      CONFIRM_OVERWRITE     = ''X'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      SHOW_TRANSFER_STATUS  = ''X'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    TABLES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      DATA_TAB              = IT_DETAILD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      FIELDNAMES            = IT_FIELDNAMES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '  IF SY-SUBRC <> 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '    MESSAGE I000(0K) WITH ''Download error''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    STOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'ENDFORM.                    " DOWNLOAD_DETAI'.
+  W+44(1) = 'L'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '*&      Form  SELMAPPING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = 'FORM SELMAPPING .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  LOOP AT IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IT_DATA-CHK = ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    READ TABLE IT_ZMAP WITH KEY MIC = IT_DAT'.
+  W+44(20) = 'A-MIC BINARY SEARCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '    IF SY-SUBRC EQ 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      IT_DATA-CHK = ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '    MODIFY IT_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '  SORT IT_DATA BY VBELN CHK DESCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = 'ENDFORM.                    " SELMAPPING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '*&      Form  F_PRINT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  -->  p1        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '*  <--  p2        text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = 'FORM F_PRINT .'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '  DATA: I_NAST LIKE NAST.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  DATA: I_SSFCOMPOP TYPE SSFCOMPOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  DATA: I_SSFCTRLOP  TYPE SSFCTRLOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DATA: I_RECIPIENT          TYPE SWOTOBJID.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DATA: I_SENDER             TYPE SWOTOBJID.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '  DATA: I_ADDR_KEY           LIKE ADDR_KEY.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DATA: IT_QAMV TYPE QAMV OCCURS 0 WITH HEAD'.
+  W+44(8) = 'ER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '  DATA: QUANTITY TYPE CHAR12.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  PERFORM GET_COMPANY_NAME. "ADD NEW COMPANY'.
+  W+44(11) = ' 19/09/2018'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '  WRITE NTGEW TO QUANTITY DECIMALS 2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '  LOOP AT IT_DETAIL WHERE CHK EQ ''X''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '*    it_QAMV-VERWMERKM = it_detail-MIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '    IT_QAMV-KURZTEXT = IT_DETAIL-MICDES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '    IT_QAMV-STEUERKZ = IT_DETAIL-UOM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '    IT_QAMV-DUMMY40 = IT_DETAIL-METHOD.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '    IT_QAMV-TOLERANZOB = IT_DETAIL-MICMIN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '    IT_QAMV-TOLERANZUN = IT_DETAIL-MICMAX.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '    IT_QAMV-DUMMY20 = IT_DETAIL-CMICMIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '*    it_QAMV-PHYSPROBE = it_detail-NUM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '*    it_QAMV-LTEXTKZ = it_detail-NUMMIC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '*    it_QAMV-LTEXTSPR = it_detail-CHK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '*    it_QAMV-LTEXTEKZ = it_detail-TYPE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '    APPEND IT_QAMV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '  ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  CALL FUNCTION ''SSF_FUNCTION_MODULE_NAME'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      FORMNAME           = ''ZQMF_COA'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      FM_NAME            = LF_FM_NAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    EXCEPTIONS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      NO_FORM            = 1'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      NO_FUNCTION_MODULE = 2'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '      OTHERS             = 3.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '  CALL FUNCTION LF_FM_NAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '      CONTROL_PARAMETERS = I_SSFCTRLOP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '      OUTPUT_OPTIONS     = I_SSFCOMPOP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      CUSTOMER           = NAME1'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      DELIVERY           = VBELN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '      PRODUCT            = PRODUCT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '      QUANTITY           = QUANTITY'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      WIDTH              = WIDTH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      COMPANYTXT         = COMPANYTXT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    TABLES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '      IT_QAMV            = IT_QAMV'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    EXCEPTIONS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      FORMATTING_ERROR   = 1'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      INTERNAL_ERROR     = 2'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      SEND_ERROR         = 3'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      USER_CANCELED      = 4'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '      OTHERS             = 5.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '*PROPERTIS = IT_DETAIL-MICDES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '*UNIT OF MEASURE = IT_DETAIL-UOM'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '*METHOD = IT_DETAIL-METHOD'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '*LOWER LIMIT = IT_DETAIL-MICMIN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '*UPPER LIMIT = IT_DETAIL-MICMAX'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '*VALUE = IT_DETAIL-CMICMIT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = 'ENDFORM.                    " F_PRINT'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '*&      Form  GET_COMPANY_NAME'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '*       text'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*-------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'FORM GET_COMPANY_NAME. "ADD NEW COMPANY 19/0'.
+  W+44(6) = '9/2018'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  DATA:ZWERKS LIKE LIPS-WERKS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '       ZVBELN LIKE LIPS-VBELN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '  IF VBELN IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    CALL FUNCTION ''CONVERSION_EXIT_ALPHA_INP'.
+  W+44(3) = 'UT'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '        INPUT  = VBELN'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '        OUTPUT = ZVBELN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT SINGLE WERKS FROM LIPS INTO ZWERK'.
+  W+44(24) = 'S WHERE VBELN EQ ZVBELN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(7) = '  ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    MESSAGE ''Nomor ODO tidak ada!'' TYPE ''I''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    STOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  SELECT SINGLE T001~BUTXT FROM T001'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    JOIN T001K ON T001~BUKRS EQ T001K~BUKRS '.
+  W+44(15) = 'INTO COMPANYTXT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '    WHERE T001K~BWKEY EQ ZWERKS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'ENDFORM.                    "GET_COMPANY_NAM'.
+  W+44(1) = 'E'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '*&      Form  GET_TRACED_LOTS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = 'TYPES: BEGIN OF TY_TRACE_DATA,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         MOTHER_ROLL         TYPE C LENGTH 5'.
+  W+44(2) = '0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         LOT_JR_CONV         TYPE QALS-PRUEF'.
+  W+44(4) = 'LOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         LOT_SR_BASE         TYPE QALS-PRUEF'.
+  W+44(4) = 'LOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         LOT_JR_BASE         TYPE QALS-PRUEF'.
+  W+44(4) = 'LOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         L_JR_CONV_BATCH     TYPE MCH1-CHARG'.
+  W+44(1) = ','.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         L_SR_BASE_BATCH     TYPE MCH1-CHARG'.
+  W+44(1) = ','.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         L_JR_BASE_BATCH     TYPE MCH1-CHARG'.
+  W+44(1) = ','.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         LOT_SR_CONV_SIBLING TYPE QALS-PRUEF'.
+  W+44(4) = 'LOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         LOT_SR_CONV_SIBLING2 TYPE QALS-PRUE'.
+  W+44(5) = 'FLOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '       END OF TY_TRACE_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'DATA: GT_TRACE_DATA TYPE TABLE OF TY_TRACE_D'.
+  W+44(4) = 'ATA,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '      GS_TRACE_DATA TYPE TY_TRACE_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = 'TYPES: BEGIN OF TY_LOT_AVG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '         INSLOT     TYPE QALS-PRUEFLOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '         MERKNR     TYPE QAMR-MERKNR,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '         MITTELWERT TYPE QAMR-MITTELWERT,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '         ANZWERTG   TYPE QAMR-ANZWERTG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '       END OF TY_LOT_AVG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = 'DATA: GT_LOT_AVG TYPE TABLE OF TY_LOT_AVG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      GS_LOT_AVG TYPE TY_LOT_AVG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = 'DATA: LOT_SR_CONV2 TYPE QALS-PRUEFLOS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = 'FORM GET_TRACED_LOTS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '  DATA: L_AUFNR LIKE AFPO-AUFNR,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        L_MBLNR LIKE MSEG-MBLNR,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        L_MATNR LIKE MSEG-MATNR,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        L_CHARG LIKE MSEG-CHARG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        L_LICHA LIKE MCH1-LICHA,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '        L_LEN TYPE I,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '        L_TEMP TYPE I.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '  DATA: L_JR_CONV_BATCH LIKE MCH1-CHARG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '        L_SR_BASE_BATCH LIKE MCH1-CHARG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '        L_JR_BASE_BATCH LIKE MCH1-CHARG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LT_SR TYPE TABLE OF ZQM_GET_BATCH_SR'.
+  W+44(18) = ' WITH HEADER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '  DATA: V_LINE  TYPE C LENGTH 20,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '        V_CODE  TYPE C LENGTH 20,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '        V_MOYE  TYPE C LENGTH 20,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '        V_SEQ   TYPE C LENGTH 20,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '        V_DUMMY TYPE C LENGTH 50,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '        L_MOTHER_ROLL TYPE C LENGTH 50.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '  DATA: LV_SEARCH_SR TYPE CHARG_D,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '        LV_LATEST_SR TYPE CHARG_D.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DATA: LV_FALLBACK_AUFNR_1 LIKE MSEG-AUFNR,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LV_FALLBACK_PARENT_1 LIKE MSEG-CHARG'.
+  W+44(1) = ','.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LV_FALLBACK_AUFNR_2 LIKE MSEG-AUFNR,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LV_FALLBACK_PARENT_2 LIKE MSEG-CHARG'.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CLEAR: LOT_SR_CONV, LOT_JR_CONV, LOT_SR_BA'.
+  W+44(16) = 'SE, LOT_JR_BASE,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '         LOT_SR_CONV2,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '         L_JR_CONV_BATCH, L_SR_BASE_BATCH, L'.
+  W+44(15) = '_JR_BASE_BATCH,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '         GS_TRACE_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " Edited by J. Budi (Antigravity) on 29.06'.
+  W+44(44) = '.2026 - Inspection Lot Tracing via Sibling S'.
+  W+88(1) = 'R'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  SPLIT IT_DATA-NOMSR AT SPACE INTO V_LINE V'.
+  W+44(27) = '_CODE V_MOYE V_SEQ V_DUMMY.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  CONCATENATE V_LINE V_CODE V_MOYE V_SEQ INT'.
+  W+44(35) = 'O L_MOTHER_ROLL SEPARATED BY SPACE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  " 1. SR Converting Lot'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  SELECT SINGLE PRUEFLOS INTO LOT_SR_CONV FR'.
+  W+44(44) = 'OM QALS WHERE CHARG = IT_DATA-CHARG AND ART '.
+  W+88(8) = '= ''Z04''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  READ TABLE GT_TRACE_DATA INTO GS_TRACE_DAT'.
+  W+44(44) = 'A WITH KEY MOTHER_ROLL = L_MOTHER_ROLL BINAR'.
+  W+88(9) = 'Y SEARCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    L_JR_CONV_BATCH = GS_TRACE_DATA-L_JR_CON'.
+  W+44(8) = 'V_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    LOT_JR_CONV     = GS_TRACE_DATA-LOT_JR_C'.
+  W+44(4) = 'ONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    L_SR_BASE_BATCH = GS_TRACE_DATA-L_SR_BAS'.
+  W+44(8) = 'E_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    LOT_SR_BASE     = GS_TRACE_DATA-LOT_SR_B'.
+  W+44(4) = 'ASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    L_JR_BASE_BATCH = GS_TRACE_DATA-L_JR_BAS'.
+  W+44(8) = 'E_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    LOT_JR_BASE     = GS_TRACE_DATA-LOT_JR_B'.
+  W+44(4) = 'ASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '    IF LOT_SR_CONV IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      LOT_SR_CONV = GS_TRACE_DATA-LOT_SR_CON'.
+  W+44(10) = 'V_SIBLING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      LOT_SR_CONV2 = GS_TRACE_DATA-LOT_SR_CO'.
+  W+44(12) = 'NV_SIBLING2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '    RETURN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '  IF LOT_SR_CONV IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    PERFORM GET_ORIGINAL_BATCH USING IT_DATA'.
+  W+44(29) = '-CHARG CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '    CALL FUNCTION ''ZQM_GET_BATCH_JR_BY_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '        CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '        CHARG_J = L_JR_CONV_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    " --- BEGIN FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Jika JR gagal ditemukan, mungkin terpu'.
+  W+44(44) = 'tus oleh Change Grade (309) di tengah hierar'.
+  W+88(2) = 'ki'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    IF L_JR_CONV_BATCH IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_VALID_ORDER_FROM_MSEG USIN'.
+  W+44(44) = 'G LV_SEARCH_SR CHANGING LV_FALLBACK_AUFNR_1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IF LV_FALLBACK_AUFNR_1 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        PERFORM GET_VALID_COMPONENT_FROM_MSE'.
+  W+44(44) = 'G USING LV_FALLBACK_AUFNR_1 CHANGING LV_FALL'.
+  W+88(14) = 'BACK_PARENT_1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF LV_FALLBACK_PARENT_1 IS NOT INITI'.
+  W+44(3) = 'AL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '          " Bypass change grade parent'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          PERFORM GET_ORIGINAL_BATCH USING L'.
+  W+44(42) = 'V_FALLBACK_PARENT_1 CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '          " Coba panggil lagi'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          CALL FUNCTION ''ZQM_GET_BATCH_JR_BY'.
+  W+44(4) = '_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '              CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '              CHARG_J = L_JR_CONV_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    " --- END FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '    IF L_JR_CONV_BATCH IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '      REFRESH LT_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      CALL FUNCTION ''ZQM_GET_BATCH_SR_BY_JR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '          CHARGJR = L_JR_CONV_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        TABLES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '          T_SR    = LT_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      DATA: LV_FOUND_PRUEFLOS TYPE QALS-PRUE'.
+  W+44(5) = 'FLOS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '      LOOP AT LT_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        CLEAR LV_FOUND_PRUEFLOS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        PERFORM GET_NEWEST_BATCH USING LT_SR'.
+  W+44(29) = '-CHARG CHANGING LV_LATEST_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        SELECT SINGLE PRUEFLOS INTO LV_FOUND'.
+  W+44(44) = '_PRUEFLOS FROM QALS WHERE CHARG = LV_LATEST_'.
+  W+88(19) = 'SR AND ART = ''Z04''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF LV_FOUND_PRUEFLOS IS INITIAL AND '.
+  W+44(28) = 'LV_LATEST_SR <> LT_SR-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          SELECT SINGLE PRUEFLOS INTO LV_FOU'.
+  W+44(44) = 'ND_PRUEFLOS FROM QALS WHERE CHARG = LT_SR-CH'.
+  W+88(20) = 'ARG AND ART = ''Z04''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF LV_FOUND_PRUEFLOS IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          IF GS_TRACE_DATA-LOT_SR_CONV_SIBLI'.
+  W+44(14) = 'NG IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            GS_TRACE_DATA-LOT_SR_CONV_SIBLIN'.
+  W+44(22) = 'G = LV_FOUND_PRUEFLOS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          ELSEIF GS_TRACE_DATA-LOT_SR_CONV_S'.
+  W+44(44) = 'IBLING <> LV_FOUND_PRUEFLOS AND GS_TRACE_DAT'.
+  W+88(34) = 'A-LOT_SR_CONV_SIBLING2 IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            GS_TRACE_DATA-LOT_SR_CONV_SIBLIN'.
+  W+44(23) = 'G2 = LV_FOUND_PRUEFLOS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            EXIT. " Ditemukan 2 inspection l'.
+  W+44(18) = 'ot dari saudara SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '      ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IF GS_TRACE_DATA-LOT_SR_CONV_SIBLING I'.
+  W+44(14) = 'S NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LOT_SR_CONV = GS_TRACE_DATA-LOT_SR_C'.
+  W+44(12) = 'ONV_SIBLING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LOT_SR_CONV2 = GS_TRACE_DATA-LOT_SR_'.
+  W+44(14) = 'CONV_SIBLING2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(7) = '  ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Jika LOT_SR_CONV langsung ketemu, kita'.
+  W+44(44) = ' tetap butuh JR_CONV_BATCH untuk mencari LOT'.
+  W+88(26) = '_JR_CONV dan SR_BASE_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    PERFORM GET_ORIGINAL_BATCH USING IT_DATA'.
+  W+44(29) = '-CHARG CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '    CALL FUNCTION ''ZQM_GET_BATCH_JR_BY_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '        CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '        CHARG_J = L_JR_CONV_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    " --- BEGIN FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Jika JR gagal ditemukan, mungkin terpu'.
+  W+44(44) = 'tus oleh Change Grade (309) di tengah hierar'.
+  W+88(2) = 'ki'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    IF L_JR_CONV_BATCH IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_VALID_ORDER_FROM_MSEG USIN'.
+  W+44(44) = 'G LV_SEARCH_SR CHANGING LV_FALLBACK_AUFNR_1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IF LV_FALLBACK_AUFNR_1 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        PERFORM GET_VALID_COMPONENT_FROM_MSE'.
+  W+44(44) = 'G USING LV_FALLBACK_AUFNR_1 CHANGING LV_FALL'.
+  W+88(14) = 'BACK_PARENT_1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF LV_FALLBACK_PARENT_1 IS NOT INITI'.
+  W+44(3) = 'AL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '          " Bypass change grade parent'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          PERFORM GET_ORIGINAL_BATCH USING L'.
+  W+44(42) = 'V_FALLBACK_PARENT_1 CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '          " Coba panggil lagi'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          CALL FUNCTION ''ZQM_GET_BATCH_JR_BY'.
+  W+44(4) = '_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '              CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '              CHARG_J = L_JR_CONV_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    " --- END FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  " 2. JR Converting Lot'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  IF L_JR_CONV_BATCH IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT SINGLE PRUEFLOS INTO LOT_JR_CONV '.
+  W+44(44) = 'FROM QALS WHERE CHARG = L_JR_CONV_BATCH AND '.
+  W+88(31) = '( ART = ''Z02'' OR ART = ''Z03'' ).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '    IF LOT_JR_CONV IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_JR_SIBLING_LOT USING L_JR_'.
+  W+44(32) = 'CONV_BATCH CHANGING LOT_JR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '  " 3. Cari SR Base Film Batch'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  IF L_JR_CONV_BATCH IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    PERFORM GET_VALID_ORDER_FROM_MSEG USING '.
+  W+44(33) = 'L_JR_CONV_BATCH CHANGING L_AUFNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '    IF L_AUFNR IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_VALID_COMPONENT_FROM_MSEG '.
+  W+44(31) = 'USING L_AUFNR CHANGING L_CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      IF L_CHARG IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        SELECT SINGLE MATNR INTO L_MATNR FRO'.
+  W+44(29) = 'M MCH1 WHERE CHARG = L_CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '      IF L_CHARG IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '        L_LEN = STRLEN( L_MATNR ).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '        L_TEMP = L_LEN - 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF L_MATNR(2) = ''SR'' AND ( L_MATNR+L'.
+  W+44(44) = '_TEMP(1) = ''A'' OR L_MATNR+L_TEMP(1) = ''O'' ).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          SELECT SINGLE LICHA INTO L_LICHA F'.
+  W+44(44) = 'ROM MCH1 WHERE MATNR = L_MATNR AND CHARG = L'.
+  W+88(7) = '_CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          IF L_LICHA IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '            L_SR_BASE_BATCH = L_LICHA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '          ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '            L_SR_BASE_BATCH = L_CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '        ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          L_SR_BASE_BATCH = L_CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(7) = '  ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Jika tidak ada JR Conv, mungkin inputn'.
+  W+44(20) = 'ya langsung SR Base?'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    L_SR_BASE_BATCH = IT_DATA-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " Fix dinamis (permintaan user 15/07/2026)'.
+  W+44(44) = ': JR yang ditemukan di atas (L_JR_CONV_BATCH'.
+  W+88(1) = ')'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " ternyata tidak punya turunan SR Base Fil'.
+  W+44(41) = 'm (tidak dikonsumsi order manapun sebagai'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " komponen SR/JR). Artinya JR tsb sebenarn'.
+  W+44(44) = 'ya JR Base Film (terminal, bukan JR Converti'.
+  W+88(4) = 'ng),'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " dan batch DO ini sendiri sudah SR Base F'.
+  W+44(42) = 'ilm - bukan SR Converting. Re-label supaya'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " tracing lanjut dengan benar ke JR Base F'.
+  W+44(32) = 'ilm, bukan berhenti/salah label.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  IF L_JR_CONV_BATCH IS NOT INITIAL AND L_SR'.
+  W+44(23) = '_BASE_BATCH IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '    L_JR_BASE_BATCH = L_JR_CONV_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '    CLEAR: L_JR_CONV_BATCH, LOT_JR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    L_SR_BASE_BATCH = IT_DATA-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  " 3. SR Base Film Lot'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  IF L_SR_BASE_BATCH IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT SINGLE PRUEFLOS INTO LOT_SR_BASE '.
+  W+44(44) = 'FROM QALS WHERE CHARG = L_SR_BASE_BATCH AND '.
+  W+88(12) = 'ART = ''Z04''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    IF L_JR_BASE_BATCH IS INITIAL. " Skip re'.
+  W+44(44) = '-search kalau JR Base sudah ketemu dari re-l'.
+  W+88(15) = 'abeling di atas'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '    IF LOT_SR_BASE IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_ORIGINAL_BATCH USING L_SR_'.
+  W+44(33) = 'BASE_BATCH CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      CALL FUNCTION ''ZQM_GET_BATCH_JR_BY_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '          CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          CHARG_J = L_JR_BASE_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    " --- BEGIN FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Jika JR gagal ditemukan, mungkin terpu'.
+  W+44(44) = 'tus oleh Change Grade (309) di tengah hierar'.
+  W+88(2) = 'ki'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    IF L_JR_BASE_BATCH IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_VALID_ORDER_FROM_MSEG USIN'.
+  W+44(44) = 'G LV_SEARCH_SR CHANGING LV_FALLBACK_AUFNR_2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IF LV_FALLBACK_AUFNR_2 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        PERFORM GET_VALID_COMPONENT_FROM_MSE'.
+  W+44(44) = 'G USING LV_FALLBACK_AUFNR_2 CHANGING LV_FALL'.
+  W+88(14) = 'BACK_PARENT_2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF LV_FALLBACK_PARENT_2 IS NOT INITI'.
+  W+44(3) = 'AL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '          " Bypass change grade parent'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          PERFORM GET_ORIGINAL_BATCH USING L'.
+  W+44(42) = 'V_FALLBACK_PARENT_2 CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '          " Coba panggil lagi'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          CALL FUNCTION ''ZQM_GET_BATCH_JR_BY'.
+  W+44(4) = '_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '              CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '              CHARG_J = L_JR_BASE_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    " --- END FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      IF L_JR_BASE_BATCH IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '        REFRESH LT_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        CALL FUNCTION ''ZQM_GET_BATCH_SR_BY_J'.
+  W+44(2) = 'R'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '          EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '            CHARGJR = L_JR_BASE_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          TABLES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '            T_SR    = LT_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '        LOOP AT LT_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          PERFORM GET_NEWEST_BATCH USING LT_'.
+  W+44(31) = 'SR-CHARG CHANGING LV_LATEST_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          SELECT SINGLE PRUEFLOS INTO LOT_SR'.
+  W+44(44) = '_BASE FROM QALS WHERE CHARG = LV_LATEST_SR A'.
+  W+88(15) = 'ND ART = ''Z04''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '          IF LOT_SR_BASE IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '            EXIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '        ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      " Cari JR_BASE_BATCH untuk mencari LOT'.
+  W+44(8) = '_JR_BASE'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_ORIGINAL_BATCH USING L_SR_'.
+  W+44(33) = 'BASE_BATCH CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      CALL FUNCTION ''ZQM_GET_BATCH_JR_BY_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '          CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(17) = '        IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '          CHARG_J = L_JR_BASE_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '    " --- BEGIN FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Jika JR gagal ditemukan, mungkin terpu'.
+  W+44(44) = 'tus oleh Change Grade (309) di tengah hierar'.
+  W+88(2) = 'ki'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    IF L_JR_BASE_BATCH IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_VALID_ORDER_FROM_MSEG USIN'.
+  W+44(44) = 'G LV_SEARCH_SR CHANGING LV_FALLBACK_AUFNR_2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IF LV_FALLBACK_AUFNR_2 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        PERFORM GET_VALID_COMPONENT_FROM_MSE'.
+  W+44(44) = 'G USING LV_FALLBACK_AUFNR_2 CHANGING LV_FALL'.
+  W+88(14) = 'BACK_PARENT_2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        IF LV_FALLBACK_PARENT_2 IS NOT INITI'.
+  W+44(3) = 'AL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '          " Bypass change grade parent'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          PERFORM GET_ORIGINAL_BATCH USING L'.
+  W+44(42) = 'V_FALLBACK_PARENT_2 CHANGING LV_SEARCH_SR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '          " Coba panggil lagi'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          CALL FUNCTION ''ZQM_GET_BATCH_JR_BY'.
+  W+44(4) = '_SR'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            EXPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '              CHARG_S = LV_SEARCH_SR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '            IMPORTING'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '              CHARG_J = L_JR_BASE_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '    " --- END FALLBACK WRAPPER ---'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    ENDIF. " penutup guard L_JR_BASE_BATCH I'.
+  W+44(9) = 'S INITIAL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '  " 4. JR Base Film Lot'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '  IF L_JR_BASE_BATCH IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT SINGLE PRUEFLOS INTO LOT_JR_BASE '.
+  W+44(44) = 'FROM QALS WHERE CHARG = L_JR_BASE_BATCH AND '.
+  W+88(31) = '( ART = ''Z02'' OR ART = ''Z03'' ).'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '    IF LOT_JR_BASE IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      PERFORM GET_JR_SIBLING_LOT USING L_JR_'.
+  W+44(32) = 'BASE_BATCH CHANGING LOT_JR_BASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " Setelah selesai mencari semuanya, simpan'.
+  W+44(9) = ' ke cache'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  GS_TRACE_DATA-MOTHER_ROLL = L_MOTHER_ROLL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  GS_TRACE_DATA-L_JR_CONV_BATCH = L_JR_CONV_'.
+  W+44(6) = 'BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  GS_TRACE_DATA-LOT_JR_CONV = LOT_JR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  GS_TRACE_DATA-L_SR_BASE_BATCH = L_SR_BASE_'.
+  W+44(6) = 'BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  GS_TRACE_DATA-LOT_SR_BASE = LOT_SR_BASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  GS_TRACE_DATA-L_JR_BASE_BATCH = L_JR_BASE_'.
+  W+44(6) = 'BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '  GS_TRACE_DATA-LOT_JR_BASE = LOT_JR_BASE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  IF GS_TRACE_DATA-LOT_SR_CONV_SIBLING IS IN'.
+  W+44(37) = 'ITIAL AND LOT_SR_CONV IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    GS_TRACE_DATA-LOT_SR_CONV_SIBLING = LOT_'.
+  W+44(8) = 'SR_CONV.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  IF GS_TRACE_DATA-LOT_SR_CONV_SIBLING2 IS I'.
+  W+44(39) = 'NITIAL AND LOT_SR_CONV2 IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    GS_TRACE_DATA-LOT_SR_CONV_SIBLING2 = LOT'.
+  W+44(10) = '_SR_CONV2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '  APPEND GS_TRACE_DATA TO GT_TRACE_DATA.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = 'ENDFORM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '*&      Form  GET_ORIGINAL_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'FORM GET_ORIGINAL_BATCH USING P_BATCH CHANGI'.
+  W+44(20) = 'NG P_ORIGINAL_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '  DATA: LV_OLD_BATCH TYPE CHARG_D.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '  P_ORIGINAL_BATCH = P_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(5) = '  DO.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '    CLEAR LV_OLD_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT CHARG INTO LV_OLD_BATCH FROM ZBAT'.
+  W+44(8) = 'CHISTORY'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '      UP TO 1 ROWS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '      WHERE NCHARG = P_ORIGINAL_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      ORDER BY BUDAT DESCENDING UZEIT DESCEN'.
+  W+44(5) = 'DING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    ENDSELECT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    IF SY-SUBRC = 0 AND LV_OLD_BATCH IS NOT '.
+  W+44(8) = 'INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '      P_ORIGINAL_BATCH = LV_OLD_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '      EXIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDDO.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = 'ENDFORM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '*&      Form  GET_NEWEST_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'FORM GET_NEWEST_BATCH USING P_BATCH CHANGING'.
+  W+44(16) = ' P_NEWEST_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '  DATA: LV_NEW_BATCH TYPE CHARG_D.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '  P_NEWEST_BATCH = P_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(5) = '  DO.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '    CLEAR LV_NEW_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SELECT NCHARG INTO LV_NEW_BATCH FROM ZBA'.
+  W+44(9) = 'TCHISTORY'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '      UP TO 1 ROWS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '      WHERE CHARG = P_NEWEST_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      ORDER BY BUDAT DESCENDING UZEIT DESCEN'.
+  W+44(5) = 'DING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '    ENDSELECT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    IF SY-SUBRC = 0 AND LV_NEW_BATCH IS NOT '.
+  W+44(8) = 'INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '      P_NEWEST_BATCH = LV_NEW_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(9) = '    ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '      EXIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDDO.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = 'ENDFORM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '*&      Form  GET_JR_SIBLING_LOT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'FORM GET_JR_SIBLING_LOT USING P_BATCH TYPE C'.
+  W+44(6) = 'HARG_D'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                        CHANGING P_LOT TYPE '.
+  W+44(14) = 'QALS-PRUEFLOS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '  DATA: LV_CUOBJ_BM TYPE MCH1-CUOBJ_BM,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '        LV_OBJEK TYPE AUSP-OBJEK,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '        LV_ROLL_STR TYPE AUSP-ATWRT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  DATA: BEGIN OF LT_PARTS OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '          PART(50) TYPE C,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '        END OF LT_PARTS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '  DATA: LV_PART(50) TYPE C,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '        LV_PREFIX(50) TYPE C,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '        LV_SEQ_STR(10) TYPE C,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '        LV_SEQ_NUM TYPE I,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '        LV_LINES TYPE I.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '  DATA: LV_IDX TYPE I,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '        LV_START TYPE I,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '        LV_END TYPE I,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '        LV_SEQ_NEW_STR TYPE C LENGTH 3,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '        LV_BATCH_NEW TYPE CHARG_D,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(36) = '        LV_ROLL_NEW TYPE AUSP-ATWRT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '  DATA: BEGIN OF LT_SIBLING_ROLLS OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '          ATWRT TYPE AUSP-ATWRT,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        END OF LT_SIBLING_ROLLS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '  DATA: BEGIN OF LT_CUOBJ OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '          OBJEK TYPE AUSP-OBJEK,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '        END OF LT_CUOBJ.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  DATA: BEGIN OF LT_CUOBJ_BM OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '          CUOBJ_BM TYPE MCH1-CUOBJ_BM,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '        END OF LT_CUOBJ_BM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '  DATA: BEGIN OF LT_BATCHES OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '          CHARG TYPE MCH1-CHARG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '        END OF LT_BATCHES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '  DATA: BEGIN OF LT_LOTS OCCURS 0,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '          PRUEFLOS TYPE QALS-PRUEFLOS,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '          CHARG TYPE QALS-CHARG,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '        END OF LT_LOTS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '  CLEAR P_LOT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '  IF P_BATCH IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '    RETURN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " 2. Dapatkan CUOBJ_BM (Internal Object Nu'.
+  W+44(35) = 'mber) dari tabel MCH1 untuk P_BATCH'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '  SELECT SINGLE CUOBJ_BM INTO LV_CUOBJ_BM'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    FROM MCH1'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '    WHERE CHARG = P_BATCH.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  IF SY-SUBRC <> 0 OR LV_CUOBJ_BM IS INITIAL'.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '    RETURN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(25) = '  LV_OBJEK = LV_CUOBJ_BM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '  " 3. Dapatkan teks Nomor Roll dari AUSP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(38) = '  SELECT SINGLE ATWRT INTO LV_ROLL_STR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    FROM AUSP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '    WHERE OBJEK = LV_OBJEK'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '      AND ATINN = ATINN_ROLL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '      AND KLART = ''023'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '      AND MAFID = ''O''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  IF SY-SUBRC <> 0 OR LV_ROLL_STR IS INITIAL'.
+  W+44(1) = '.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '    RETURN.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  " 4. Ekstrak prefix dan sequence dari Nomo'.
+  W+44(31) = 'r Roll (misal: "W CGA 108 001")'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  SPLIT LV_ROLL_STR AT SPACE INTO TABLE LT_P'.
+  W+44(5) = 'ARTS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '  DESCRIBE TABLE LT_PARTS LINES LV_LINES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '  IF LV_LINES >= 2.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '    READ TABLE LT_PARTS INDEX LV_LINES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '    LV_SEQ_STR = LT_PARTS-PART.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '    " Reconstruct prefix'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '    DATA: LV_IDX_PREFIX TYPE I.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '    LV_IDX_PREFIX = 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    CLEAR LV_PREFIX.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '    WHILE LV_IDX_PREFIX < LV_LINES.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      READ TABLE LT_PARTS INDEX LV_IDX_PREFI'.
+  W+44(2) = 'X.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      LV_PART = LT_PARTS-PART.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      IF LV_PREFIX IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        LV_PREFIX = LV_PART.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(11) = '      ELSE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        CONCATENATE LV_PREFIX LV_PART INTO L'.
+  W+44(28) = 'V_PREFIX SEPARATED BY SPACE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '      LV_IDX_PREFIX = LV_IDX_PREFIX + 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    ENDWHILE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    " Pastikan karakter terakhir (sequence) '.
+  W+44(12) = 'adalah angka'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(35) = '    IF LV_SEQ_STR CO ''0123456789 ''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      LV_SEQ_NUM = LV_SEQ_STR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(33) = '      LV_START = LV_SEQ_NUM - 10.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '      LV_END = LV_SEQ_NUM + 10.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(22) = '      IF LV_START < 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(21) = '        LV_START = 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      " Generate Sibling Rolls'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(24) = '      LV_IDX = LV_START.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '      WHILE LV_IDX <= LV_END.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        IF LV_IDX <> LV_SEQ_NUM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          UNPACK LV_IDX TO LV_SEQ_NEW_STR. "'.
+  W+44(36) = ' Akan menghasilkan padding ''001'' dst'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          CONCATENATE LV_PREFIX LV_SEQ_NEW_S'.
+  W+44(39) = 'TR INTO LV_ROLL_NEW SEPARATED BY SPACE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          LT_SIBLING_ROLLS-ATWRT = LV_ROLL_N'.
+  W+44(3) = 'EW.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '          APPEND LT_SIBLING_ROLLS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '        LV_IDX = LV_IDX + 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(15) = '      ENDWHILE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '      IF LT_SIBLING_ROLLS[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        " 5. Konversi balik Nomor Roll Sibli'.
+  W+44(27) = 'ng ke Batch Sibling (CUOBJ)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(40) = '        SELECT OBJEK INTO TABLE LT_CUOBJ'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(19) = '          FROM AUSP'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          FOR ALL ENTRIES IN LT_SIBLING_ROLL'.
+  W+44(1) = 'S'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(34) = '          WHERE ATINN = ATINN_ROLL'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            AND ATWRT = LT_SIBLING_ROLLS-ATW'.
+  W+44(2) = 'RT'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(29) = '            AND KLART = ''023'''.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '            AND MAFID = ''O''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(37) = '        IF LT_CUOBJ[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '          " Pindahkan OBJEK (CHAR 50) ke CUO'.
+  W+44(44) = 'BJ_BM (NUMC 18) agar kompatibel dengan FOR A'.
+  W+88(10) = 'LL ENTRIES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(27) = '          LOOP AT LT_CUOBJ.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            LT_CUOBJ_BM-CUOBJ_BM = LT_CUOBJ-'.
+  W+44(6) = 'OBJEK.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '            APPEND LT_CUOBJ_BM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '          ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '          " 6. Dapatkan CHARG dari MCH1'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '          IF LT_CUOBJ_BM[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            SELECT CHARG INTO TABLE LT_BATCH'.
+  W+44(2) = 'ES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '              FROM MCH1'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              FOR ALL ENTRIES IN LT_CUOBJ_BM'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              WHERE CUOBJ_BM = LT_CUOBJ_BM-C'.
+  W+44(8) = 'UOBJ_BM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '          IF LT_BATCHES[] IS NOT INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '            " 7. Cari Lot Inspeksi (QALS)'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '            SELECT PRUEFLOS CHARG INTO TABLE'.
+  W+44(8) = ' LT_LOTS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(23) = '              FROM QALS'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '              FOR ALL ENTRIES IN LT_BATCHES'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              WHERE CHARG = LT_BATCHES-CHARG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '                AND ( ART = ''Z02'' OR ART = '''.
+  W+44(7) = 'Z03'' ).'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(28) = '            IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '              SORT LT_LOTS BY PRUEFLOS DESCE'.
+  W+44(6) = 'NDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '              READ TABLE LT_LOTS INDEX 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '              IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(41) = '                P_LOT = LT_LOTS-PRUEFLOS.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '              ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '            ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '          ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(14) = '        ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = 'ENDFORM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(39) = '*&      Form  GET_VALID_ORDER_FROM_MSEG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'FORM GET_VALID_ORDER_FROM_MSEG USING P_CHARG'.
+  W+44(18) = ' CHANGING P_AUFNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DATA: LT_MSEG TYPE TABLE OF MSEG WITH HEAD'.
+  W+44(8) = 'ER LINE,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LT_CANC TYPE TABLE OF MSEG WITH HEAD'.
+  W+44(8) = 'ER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '  CLEAR P_AUFNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  SELECT AUFNR MBLNR MJAHR ZEILE SMBLN SJAHR'.
+  W+44(18) = ' SMBLP BWART CHARG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    INTO CORRESPONDING FIELDS OF TABLE LT_MS'.
+  W+44(2) = 'EG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    FROM MSEG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    WHERE CHARG = P_CHARG AND BWART IN (''101'.
+  W+44(9) = ''', ''102'')'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    %_HINTS ORACLE ''INDEX("MSEG" "MSEG~Z07")'.
+  W+44(2) = '''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '    LT_CANC[] = LT_MSEG[].'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '    DELETE LT_CANC WHERE SMBLN IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    LOOP AT LT_CANC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      DELETE LT_MSEG WHERE MBLNR = LT_CANC-S'.
+  W+44(44) = 'MBLN AND MJAHR = LT_CANC-SJAHR AND ZEILE = L'.
+  W+88(13) = 'T_CANC-SMBLP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '    ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    DELETE LT_MSEG WHERE SMBLN IS NOT INITIA'.
+  W+44(19) = 'L OR BWART = ''102''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SORT LT_MSEG BY MBLNR DESCENDING ZEILE D'.
+  W+44(10) = 'ESCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(31) = '    READ TABLE LT_MSEG INDEX 1.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(30) = '      P_AUFNR = LT_MSEG-AUFNR.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(10) = '    ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = 'ENDFORM.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(43) = '*&      Form  GET_VALID_COMPONENT_FROM_MSEG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '*&------------------------------------------'.
+  W+44(28) = '---------------------------*'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = 'FORM GET_VALID_COMPONENT_FROM_MSEG USING P_A'.
+  W+44(22) = 'UFNR CHANGING P_CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  DATA: LT_MSEG TYPE TABLE OF MSEG WITH HEAD'.
+  W+44(8) = 'ER LINE,'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '        LT_CANC TYPE TABLE OF MSEG WITH HEAD'.
+  W+44(8) = 'ER LINE.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(16) = '  CLEAR P_CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '  SELECT AUFNR MBLNR MJAHR ZEILE SMBLN SJAHR'.
+  W+44(24) = ' SMBLP BWART CHARG MATNR'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    INTO CORRESPONDING FIELDS OF TABLE LT_MS'.
+  W+44(2) = 'EG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '    FROM MSEG'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    WHERE AUFNR = P_AUFNR AND BWART IN (''261'.
+  W+44(26) = ''', ''262'') AND CHARG <> ''''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(18) = '  IF SY-SUBRC = 0.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(26) = '    LT_CANC[] = LT_MSEG[].'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(42) = '    DELETE LT_CANC WHERE SMBLN IS INITIAL.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    LOOP AT LT_CANC.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      DELETE LT_MSEG WHERE MBLNR = LT_CANC-S'.
+  W+44(44) = 'MBLN AND MJAHR = LT_CANC-SJAHR AND ZEILE = L'.
+  W+88(13) = 'T_CANC-SMBLP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '    ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    DELETE LT_MSEG WHERE SMBLN IS NOT INITIA'.
+  W+44(19) = 'L OR BWART = ''262''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '    SORT LT_MSEG BY MBLNR DESCENDING ZEILE D'.
+  W+44(10) = 'ESCENDING.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(20) = '    LOOP AT LT_MSEG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      " Pastikan yang diambil adalah materia'.
+  W+44(44) = 'l Base Film (SR/JR), bukan komponen pelengka'.
+  W+88(1) = 'p'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(44) = '      IF LT_MSEG-MATNR(2) = ''SR'' OR LT_MSEG-'.
+  W+44(16) = 'MATNR(2) = ''JR''.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(32) = '        P_CHARG = LT_MSEG-CHARG.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(13) = '        EXIT.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '      ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(12) = '    ENDLOOP.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = '  ENDIF.'.
+  PERFORM A USING W.
+  CLEAR W.
+  W(8) = 'ENDFORM.'.
+  PERFORM A USING W.
+  CALL FUNCTION 'Z_RFC_PROGRAM_UPDATE'
+    EXPORTING
+      IV_PROGRAM_NAME = 'ZQMI_COA_F01' " <-- Sesuaikan nama jika di Sandbox berbeda
+      IV_PACKAGE      = '$TMP'
+      IV_CORRNUMBER   = ' '
+    IMPORTING
+      EV_SUCCESS      = LV_OK
+      EV_MESSAGE      = LV_MSG
+    TABLES
+      IT_SOURCE       = LT_SOURCE.
+  WRITE: / 'SUCCESS=', LV_OK.
+  WRITE: / 'MESSAGE=', LV_MSG.
+  DESCRIBE TABLE LT_SOURCE LINES N1.
+  WRITE: / 'LINES OUT=', N1.
