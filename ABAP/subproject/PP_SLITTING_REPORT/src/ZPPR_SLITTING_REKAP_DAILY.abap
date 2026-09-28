@@ -1,0 +1,94 @@
+*&---------------------------------------------------------------------*
+*& Report  ZPPR_SLITTING_REKAP_DAILY
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT  ZPPR_SLITTING_REKAP_DAILY.
+
+INCLUDE <ICON>.
+INCLUDE ZABAPALV.
+INCLUDE ZPPR_SLITTING_REKAP_DAILY_TOP.
+INCLUDE ZPPR_SLITTING_REKAP_DAILY_F01.
+
+INITIALIZATION.
+  PERFORM F_INITITIALIZATION.
+
+AT SELECTION-SCREEN ON VALUE-REQUEST FOR ZLINE-LOW.
+  PERFORM F_GET_VALUES_REQUEST CHANGING ZLINE-LOW.
+
+AT SELECTION-SCREEN OUTPUT.
+  IF MATKL[] IS INITIAL.
+    MATKL-SIGN = 'I'.
+    MATKL-OPTION = 'BT'.
+    MATKL-LOW  = '300001'.
+    MATKL-HIGH = '300024'.  " Modified by William at 24.07.2022 (OPP7 CPP1) - New Modify by Dila at 02.05.2025 (LAMINATOR #2 #3)
+    APPEND MATKL.
+  ENDIF.
+
+  AUTHORITY-CHECK OBJECT 'Z_OLAP' ID 'ZOLAP' FIELD '1'.
+  IF SY-SUBRC NE 0.
+    LOOP AT SCREEN.
+      IF SCREEN-NAME = 'V_RB2'.
+        SCREEN-ACTIVE = '0'.
+        MODIFY SCREEN.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
+
+
+START-OF-SELECTION.
+  PERFORM DEFINE_AUART.
+
+  IF V_RB1 = 'X'.
+    IF WERKS-HIGH IS INITIAL.
+      LOOP AT WERKS.
+        AUTHORITY-CHECK OBJECT 'Z_WERKS' ID 'ZWERKS' FIELD WERKS-LOW.
+        IF SY-SUBRC NE 0.
+          MESSAGE 'No Authorization' TYPE 'E'.
+        ENDIF.
+      ENDLOOP.
+    ELSE.
+      AUTHORITY-CHECK OBJECT 'Z_WERKS'
+       ID 'ZWERKS' FIELD WERKS-LOW
+       ID 'ZWERKS' FIELD WERKS-HIGH.
+      IF SY-SUBRC NE 0.
+        MESSAGE 'No Authorization' TYPE 'E'.
+      ENDIF.
+    ENDIF.
+    PERFORM GET_DATA.
+    PERFORM TO_SCREEN.
+  ELSE.
+    AUTHORITY-CHECK OBJECT 'ZOLAP'
+             ID 'ACTVT' FIELD '01'
+             ID 'ZTCODE' FIELD 'ZPP016N'.
+    IF SY-SUBRC <> 0.
+      MESSAGE 'No Authorization to download data...!'  TYPE 'I'. "#EC NOTEXT
+      EXIT.
+    ELSE.
+      DATA: CON_NAME LIKE DBCON-CON_NAME.
+      SELECT SINGLE CON_NAME
+        INTO CON_NAME
+        FROM DBCON
+       WHERE CON_NAME = 'TRIASDB05'.
+      IF SY-SUBRC NE 0.
+        MESSAGE 'Connection TRIASDB05 not found!'  TYPE 'I'. "#EC NOTEXT
+        EXIT.
+      ELSE.
+        PERFORM GET_DATA.
+
+        UNASSIGN <FS_MSEG>.
+        READ TABLE IT_MSEG ASSIGNING <FS_MSEG> INDEX 1.
+        IF SY-SUBRC = 0.
+          PERFORM WRITE_DATA.
+        ENDIF.
+      ENDIF.
+    ENDIF.
+
+  ENDIF.
+
+
+
+END-OF-SELECTION.

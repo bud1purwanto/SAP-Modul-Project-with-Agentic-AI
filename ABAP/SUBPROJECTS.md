@@ -8,7 +8,7 @@ Semua sub-project berada di dalam folder induk `subproject/`.
 
 ```
 SAP ABAP Consultant/
-├── CLAUDE.md
+├── AGENTS.md
 ├── SUBPROJECTS.md          <- file ini (peta routing)
 ├── subproject/
 │   ├── PO_AUTO_RELEASE/
@@ -17,7 +17,12 @@ SAP ABAP Consultant/
 │   ├── COA/
 │   ├── BARRIER/
 │   ├── GI_JR_CLOSING/
-│   └── MES_CONTROL_TOWER/
+│   ├── MES_CONTROL_TOWER/
+│   ├── PP_SLITTING_REPORT/
+│   ├── PLANNING_SLITROLL/
+│   ├── DAILY_ABAP_BRIEFING/
+│   ├── SAP_GUI_AUTOMATION/
+│   └── ZPP005N/
 ├── _SHARED/                <- helper generik lintas program
 └── _REVIEW_IMAGES/         <- screenshot lama belum teridentifikasi
 ```
@@ -47,6 +52,9 @@ Setiap sub-project memakai subfolder standar:
 | `subproject/PLANNING_SLITROLL/` | `ZPPR_PLANNING_SLITROLL` | Report ALV hasil planning Slit Roll, relasi vendor batch ke original order dan original ke combine order, mapping order type SR di `ZMAP_TYPE` | planning slit roll, hasil planning sr, zppr_planning_slitroll, original order, combine order, vendor batch |
 | `subproject/DAILY_ABAP_BRIEFING/` | Daily Briefing Agent | Triage email SAP/ABAP 24 jam, deteksi task development pending, dan checkpoint hasil briefing | daily briefing abap, briefing sap, email abap pending, cron abap |
 | `subproject/SAP_GUI_AUTOMATION/` | SAP GUI for Java + Cua Driver | Display X11 khusus, computer-use transaksi SAP, screenshot verification, dan pemantauan VNC lokal | sap gui, sap logon, computer use, cua-driver, gui automation, monitor transaksi |
+| `subproject/ZPP005N/` | `ZPPR_PENDING_ORDER_ALF` | Report Pending Order (monitoring Sales Order vs Production Order, status Delivery & Stock TTA, kolom SKU Design SubCont CKI, Digital Boardroom) | zpp005n, zpp005, zppr_pending_order_alf, pending order, so pending, order alf |
+| `subproject/ZPP090/` | `ZPPI_CHANGE_JR_NUMBER` | Koreksi dan pemunduran sequence nomor Jumbo Roll (JR), update counter tabel `ZSEQNUM` & log `ZLOG_JRNO`, penanganan multi-step rollback | zpp090, zppi_change_jr_number, change jr, memundurkan no roll, sequence roll jr, zseqnum, zlog_jrno |
+
 
 ## Folder Non-Sub-Project
 
@@ -59,7 +67,7 @@ Setiap sub-project memakai subfolder standar:
 2. Jika ambigu antara dua sub-project (mis. PO release vs PO email), tanyakan ke user sebelum lanjut.
 3. Baca konteks dari `docs/` sub-project itu dulu (FS/TS) sebelum ubah kode.
 4. Source hasil kerja simpan di `src/`, script di `scripts/`, backup/dump di `outputs/` sub-project yang sama — jangan taruh di root atau di dalam `subproject/` langsung.
-5. Aturan push/update program tetap berlaku penuh dari CLAUDE.md: **write program hanya di server `sandbox-new`**, prioritas FM `Z_RFC_PROGRAM_UPDATE`.
+5. Aturan push/update program tetap berlaku penuh dari AGENTS.md: **write program hanya di server `sandbox-new`**, prioritas FM `Z_RFC_PROGRAM_UPDATE`.
 
 ## AUTO-MAPPING — Menambah Sub-Project Baru (WAJIB)
 
@@ -76,5 +84,5 @@ Ringkas: **setiap sub-project baru = 1 folder di `subproject/` + 1 baris di tabe
 
 ## Catatan Housekeeping
 
-- File `ZQMI_COA_Technical_Specification.docx` di root belum bisa dipindah (terbuka di Word). Tutup Word, lalu pindah manual ke `subproject/COA/docs/`.
-- Folder lama kosong `docs/ scripts/ tests/ tools/ outputs/` di root sudah tidak dipakai. Hapus manual lewat File Explorer.
+- Root folder telah dirapikan: file spesifikasi PO Notification dan output Last Price telah dipindahkan ke `subproject/PO_EMAIL/`.
+- File source `ZPPR_PENDING_ORDER_ALF.abap` telah dipindahkan ke `subproject/ZPP005N/src/`.

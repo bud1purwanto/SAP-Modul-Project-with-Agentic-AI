@@ -114,6 +114,35 @@ Status: proof-of-concept terverifikasi pada server Linux.
 - VNC pemantauan: pc.abap.web.id / pcr.abap.web.id
 - Report belum dieksekusi karena permintaan hanya membuka dan mengisi parameter. Tidak ada perubahan data SAP.
 
+## 2026-09-21 — Hardening boot persistence dan self-healing
+
+- `loginctl show-user abap -p Linger` menghasilkan `Linger=yes`; user systemd manager tersedia sejak boot tanpa menunggu login interaktif.
+- `sap-gui-monitor.service` dan `pcr-auth-proxy.service` sama-sama `enabled` pada `default.target`.
+- `sap-gui-monitor.service` diubah dari `Type=oneshot` menjadi `Type=simple` dengan supervisor foreground `scripts/run-sap-gui-monitor.sh`.
+- Supervisor memantau tiap 5 detik:
+  - display X11 `:99`;
+  - PID Xvfb, Openbox, SAP GUI Java, cua-driver, dua x11vnc, serta dua websockify;
+  - listener `5998`, `5999`, `6080`, dan `6083`.
+- Startup menggunakan readiness grace maksimum 45 detik agar proses asynchronous tidak dianggap gagal sebelum siap.
+- `Restart=always` dan `RestartSec=3` membangun ulang seluruh virtual stack saat satu komponen kritis mati.
+- `pcr-auth-proxy.service` tidak lagi memakai `Requires=sap-gui-monitor.service`; ini mencegah proxy 6081 ikut berhenti permanen ketika SAP GUI melakukan self-healing.
+- Proxy operator memakai `Restart=always` dan tetap terlindungi Basic Auth.
+- Verifikasi nyata:
+  - proses SAP GUI Java dimatikan dengan `SIGKILL`; supervisor mendeteksi kegagalan dan seluruh stack pulih otomatis dalam 7 detik (`NRestarts` bertambah dari 0 menjadi 1);
+  - proses utama Nginx proxy dimatikan dengan `SIGKILL`; port 6081 pulih otomatis dalam 5 detik (`NRestarts` bertambah menjadi 1);
+  - setelah pemulihan: service keduanya `active/running`, `tests/verify-stack.sh` PASS, monitor lokal/publik HTTP 200, operator lokal/publik HTTP 401 sesuai autentikasi;
+  - `systemd-analyze --user verify` lulus tanpa error/warning.
+
+## 2026-09-21 — Pemulihan service setelah path proyek berubah
+
+- Gejala: SAP GUI virtual session mati sejak boot; display `:99` tidak reachable dan listener `5998/5999/6080/6081` tidak tersedia.
+- Akar masalah terverifikasi dari journal: `sap-gui-monitor.service` gagal `status=200/CHDIR` karena `WorkingDirectory` dan `ExecStart/ExecStop` masih menunjuk `/home/abap/.local/share/sap-gui-automation`, sementara proyek aktual berada di `/data/Projects/SAP/ABAP/subproject/SAP_GUI_AUTOMATION`.
+- Masalah kedua: `After=default.target` bersamaan dengan `WantedBy=default.target`, ditambah dependency `pcr-auth-proxy.service`, menimbulkan ordering cycle saat boot.
+- Perbaikan: unit diarahkan ke path proyek aktual; ordering diubah menjadi `After=graphical-session-pre.target`; lifecycle Nginx operator proxy dipisahkan penuh ke `pcr-auth-proxy.service` agar script SAP GUI tidak menjalankan instance kedua.
+- Verifikasi systemd: `systemd-analyze --user verify` bersih; `sap-gui-monitor.service` active dan enabled; `pcr-auth-proxy.service` active dan enabled.
+- Verifikasi stack: display `:99` reachable; SAP GUI Java dan cua-driver aktif; RFB `5999/5998` mengembalikan `RFB 003.008`; noVNC view `6080` HTTP 200; operator `6081` HTTP 401 sesuai Basic Auth; endpoint publik `pc.abap.web.id` HTTP 200 dan `pcr.abap.web.id` HTTP 401.
+- `cua-driver doctor` seluruh probe OK dan `tests/verify-stack.sh` PASS. SAP GUI tetap dijalankan sebagai systemd user virtual session, tidak dipindahkan ke Docker.
+
 ## 2026-09-15 — Test cancel Slit Roll order 100000067411
 
 - Target RFC disetel dan terverifikasi: Sandbox New Company, SID TRS (endpoint teknis mengembalikan TRDCLNT130); tanggal server 03.02.2029.
@@ -124,3 +153,22 @@ Status: proof-of-concept terverifikasi pada server Linux.
 - Bukti hasil UI: log `Log Process Batal Start-Stop` menampilkan ikon hijau, transaksi `Cancel Slitting Process 100000067411`, pesan `Success`. Screenshot: `/tmp/sap-cancel-result.png`.
 - Cross-check RFC setelah aksi: header berubah dari `TECO BCRQ MANC SETC` menjadi `REL BCRQ MANC SETC`, membuktikan UNTECO terjadi. Order masih muncul di list `ZPP001` dengan tampilan status `TECO`; tampilan list tidak merefresh/menampilkan status akhir secara konsisten. Tidak mengklaim status `Cancelled` karena bukti final `Already Cancelled` belum ada.
 - Artefak verifikasi: `/tmp/sap-zpp001-result4.png`, `/tmp/sap-cancel-dialog.png`, `/tmp/sap-cancel-result.png`, `/tmp/sap-cancel-verify-list.png`.
+
+## 2026-09-24 — Percobaan login Production AIX
+
+- Permintaan: mencoba login SAP GUI Production AIX.
+- Preflight virtual session berhasil: `sap-gui-monitor.service` active; X11 `:99` reachable; cua-driver socket khusus aktif; VNC `5999` handshake `RFB 003.008`; noVNC view `6080` HTTP 200.
+- SAP Logon menampilkan koneksi `Production AIX` dengan route `/H/192.168.1.151/S/3200`. Koneksi dipilih lewat double-click foreground setelah driver menyatakan background input tidak tersedia pada SAP GUI Java.
+- Bukti jaringan: proses Java SAP GUI memiliki koneksi TCP `ESTAB` dari `192.168.88.83:38480` ke `192.168.1.151:3200`.
+- Setelah 16 detik dan capture ulang, layar SAP GUI tetap kosong/gelap. Tidak ada SID, client, form user/password, maupun pesan error yang bisa diverifikasi secara visual. AT-SPI Java juga hanya mengekspos window utama.
+- Status: transport ke endpoint Production AIX terbuka, tetapi layar login belum dapat diverifikasi; tidak ada kredensial yang dimasukkan dan tidak ada transaksi atau perubahan data SAP.
+- Artefak bukti: `/home/abap/.hermes/cache/scratch/sap-gui/prod-login-preflight.png`, `prod-login-screen.png`, dan `prod-login-waited.png`.
+
+## 2026-09-25 — Login Production AIX (TRP Client 999) berhasil
+
+- Permintaan: buka SAP GUI Production dan login dengan user `TRSTDEV`.
+- Preflight virtual session `:99` dan socket `/home/abap/.cache/cua-driver/cua-driver-sap.sock` aktif.
+- Koneksi `Production AIX` (`/H/192.168.1.151/S/3200`) berhasil dibuka ke window `TRP (1) (000)` (PID `1261704`, window_id `27263616`).
+- Temuan teknis penting pada SAP GUI Java: `cua-driver call type_text` dalam `delivery_mode="foreground"` memotong karakter pertama apabila field belum mendeteksi fokus internal penuh atau sedang dalam kondisi ter-highlight penuh setelah error login; pengetikan dengan duplikasi karakter awal saat field terblok menghasilkan input utuh.
+- Login ke `TRP` Client `999` (`eccprodkr`) dengan user `TRSTDEV` berhasil diverifikasi masuk ke layar `SAP Easy Access` (`TRP (1) (999)`).
+- Artefak bukti: `/home/abap/.hermes/cache/scratch/sap-screen.png`.

@@ -6,7 +6,7 @@ Setelah membaca dokumen ini, baca `SMARTFORMS_PATCH.md` secara lengkap. Dokumen 
 
 Urutan panduan:
 
-1. `CLAUDE.md`
+1. `AGENTS.md`
 2. `subproject/COA/docs/COA.md`
 3. `subproject/COA/docs/SMARTFORM.md`
 4. `subproject/COA/docs/SMARTFORMS_PATCH.md`

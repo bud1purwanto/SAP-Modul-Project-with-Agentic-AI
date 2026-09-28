@@ -64,8 +64,7 @@ start_if_missing websockify-6080 "[w]ebsockify.*6080" \
 start_if_missing websockify-6083 "[w]ebsockify.*6083" \
   "${WEBSOCKIFY}" --web "${NOVNC_WEB}" 127.0.0.1:6083 127.0.0.1:5998
 
-start_if_missing nginx-pcr-auth "nginx.*pcr-auth-proxy" \
-  /usr/sbin/nginx -p /home/abap/.local/opt/pcr-auth-proxy -c /home/abap/.local/opt/pcr-auth-proxy/nginx.conf
-
+# Nginx operator proxy dikelola oleh pcr-auth-proxy.service agar lifecycle dan
+# dependency-nya eksplisit; jangan menjalankan instance kedua dari script ini.
 printf 'DISPLAY=%s\nCUA_SOCKET=%s\nVNC=127.0.0.1:%s (view-only)\n' \
   "${DISPLAY}" "${CUA_SOCKET}" "${VNC_PORT}"
